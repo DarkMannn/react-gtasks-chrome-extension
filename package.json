@@ -4,16 +4,21 @@
     "description": "Handy extension to use google tasks like a true power user",
     "repository": "https://github.com/DarkMannn/react-gtasks-chrome-extension",
     "private": true,
-    "dependencies": {
-        "react": "^16.8.6",
-        "react-dom": "^16.8.6",
-        "react-scripts": "3.0.1"
-    },
     "scripts": {
         "start": "react-scripts start",
         "build": "INLINE_RUNTIME_CHUNK=false react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
+    },
+    "dependencies": {
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6",
+        "react-scripts": "3.0.1",
+        "styled-components": "^4.3.2"
+    },
+    "devDependencies": {
+        "enzyme": "^3.10.0",
+        "enzyme-adapter-react-16": "^1.14.0"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -36,7 +41,8 @@
         "extension",
         "google",
         "task",
-        "tasks"
+        "tasks",
+        "power"
     ],
     "author": "DarkMannn",
     "license": "MIT"

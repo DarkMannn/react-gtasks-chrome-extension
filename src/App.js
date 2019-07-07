@@ -1,16 +1,44 @@
-import React from 'react';
-import './App.css';
+import React, { useEffect } from 'react';
+import { css } from 'styled-components';
+import 'styled-components/macro';
+import TaskListPicker from './components/task-list-picker/task-list-picker.js';
+
+const AppCss = css`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    text-align: center;
+`;
+const AppHeaderCss = css`
+    background-color: #282c34;
+    width: 100%;
+    height: 10vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5vh;
+`;
+const AppBodyCss = css`
+    width: 100%;
+    height: 100%;
+    background-color: #2d6570;
+    color: #282c34;
+    font-size: 2vh;
+`;
 
 function App() {
-    return (
-        <div className="App">
-            <header className="App-header">
-                <p>
-                    Google Tasks - DarkMannn
-                </p>
-            </header>
+    return <div css={AppCss}>
+        <header css={AppHeaderCss}>
+            Google Tasks Power Mode
+        </header>
+        <div css={AppBodyCss}>
+            <TaskListPicker></TaskListPicker>
         </div>
-    );
+    </div>;
 }
 
 export default App;
