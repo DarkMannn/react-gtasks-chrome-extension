@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 import TaskListPicker from './components/task-list-picker/task-list-picker.js';
+import TaskList from './components/task-list/task-list.js';
 
-const AppCss = css`
+const mainCss = css`
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +12,7 @@ const AppCss = css`
     height: 100vh;
     text-align: center;
 `;
-const AppHeaderCss = css`
+const headerCss = css`
     background-color: #282c34;
     width: 100%;
     height: 10vh;
@@ -22,7 +23,7 @@ const AppHeaderCss = css`
     color: white;
     font-size: 2.5vh;
 `;
-const AppBodyCss = css`
+const bodyCss = css`
     width: 100%;
     height: 100%;
     background-color: #2d6570;
@@ -31,12 +32,13 @@ const AppBodyCss = css`
 `;
 
 function App() {
-    return <div css={AppCss}>
-        <header css={AppHeaderCss}>
+    return <div css={mainCss}>
+        <header css={headerCss}>
             Google Tasks Power Mode
         </header>
-        <div css={AppBodyCss}>
-            <TaskListPicker></TaskListPicker>
+        <div css={bodyCss}>
+            {/* <TaskListPicker></TaskListPicker> */}
+            <TaskList></TaskList>
         </div>
     </div>;
 }

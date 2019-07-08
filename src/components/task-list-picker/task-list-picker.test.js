@@ -9,6 +9,5 @@ describe('TaskListPicker component', () => {
     it('renders properly', async () => {
         const wrapper = shallow(<TaskListPicker></TaskListPicker>);
         expect(wrapper.find('div')).toBeTruthy();
-        expect(wrapper.find('ul')).toBeTruthy();
     });
 });
