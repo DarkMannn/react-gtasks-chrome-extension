@@ -38,7 +38,7 @@ function App() {
         </header>
         <div css={bodyCss}>
             {/* <TaskListPicker></TaskListPicker> */}
-            <TaskList></TaskList>
+            <TaskList list="ovo je lista"></TaskList>
         </div>
     </div>;
 }

@@ -8,6 +8,7 @@ const mainCss = css`
     align-items: flex-start;
     justify-content: center;
     text-align: left;
+    border-bottom: 1px solid black;
 `;
 const firstRowCss = css`
     display: flex;
@@ -26,17 +27,19 @@ const titleCss = css`
     display: inline-block;
     width: 230px;
     word-wrap: break-word;
-    text-decoration-line: ${({ isChecked }) => isChecked ? 'line-through' : 'none'}
+    text-decoration-line: ${({ isChecked }) => isChecked ? 'line-through' : 'none'};
 `;
 const dueCss = css`
     display: inline-block;
     width: 70px;
     text-align: center;
+    font-size: 1.2vh;
 `;
 const notesCss = css`
-    display: inline-block;
+    display: ${({ isVisible }) => isVisible ? 'inline-block' : 'none'};
     width: 230px;
     word-wrap: break-word;
+    border-top: 1px solid black;
 `;
 
 function TaskItem({ title, status, notes, due }) {
@@ -47,8 +50,8 @@ function TaskItem({ title, status, notes, due }) {
             <div css={titleCss} isChecked={isChecked}>{title}</div>
         </div>
         <div css={secondRowCss}>
-            <div css={dueCss}>{due || 'date'}</div>
-            <div css={notesCss}>{notes}</div>
+            <div css={dueCss}>{due || 'dd/mm/yyyy'}</div>
+            <div css={notesCss} isVisible={Boolean(notes)}>{notes}</div>
         </div>
     </div>;
 }
