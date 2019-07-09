@@ -43,7 +43,9 @@ const notesCss = css`
 `;
 
 function TaskItem({ title, status, notes, due }) {
+
     const isChecked = status === 'completed';
+
     return <div css={mainCss}>
         <div css={firstRowCss}>
             <div css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>

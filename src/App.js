@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
-import TaskListPicker from './components/task-list-picker/task-list-picker.js';
 import TaskList from './components/task-list/task-list.js';
 
 const mainCss = css`
@@ -37,8 +36,7 @@ function App() {
             Google Tasks Power Mode
         </header>
         <div css={bodyCss}>
-            {/* <TaskListPicker></TaskListPicker> */}
-            <TaskList list="ovo je lista"></TaskList>
+            <TaskList></TaskList>
         </div>
     </div>;
 }
