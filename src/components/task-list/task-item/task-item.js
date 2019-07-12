@@ -36,13 +36,12 @@ const dueCss = css`
     font-size: 1.2vh;
 `;
 const notesCss = css`
-    display: ${({ isVisible }) => isVisible ? 'inline-block' : 'none'};
     width: 230px;
     word-wrap: break-word;
     border-top: 1px solid black;
 `;
 
-function TaskItem({ title, status, notes, due }) {
+function TaskItem({ title, status, notes, due, isHovered }) {
 
     const isChecked = status === 'completed';
 
@@ -51,10 +50,12 @@ function TaskItem({ title, status, notes, due }) {
             <div css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>
             <div css={titleCss} isChecked={isChecked}>{title}</div>
         </div>
-        <div css={secondRowCss}>
-            <div css={dueCss}>{due || 'dd/mm/yyyy'}</div>
-            <div css={notesCss} isVisible={Boolean(notes)}>{notes}</div>
-        </div>
+        {isHovered &&
+            <div css={secondRowCss}>
+                {due && <div css={dueCss}>{due}</div>}
+                {notes && <div css={notesCss}>{notes}</div>}
+            </div>
+        }
     </div>;
 }
 
