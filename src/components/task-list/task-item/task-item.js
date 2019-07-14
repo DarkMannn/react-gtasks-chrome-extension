@@ -9,6 +9,8 @@ const mainCss = css`
     justify-content: center;
     text-align: left;
     border-bottom: 1px solid black;
+    outline: ${({ isHovered }) => isHovered ? '3px solid gold' : 'none'};
+    outline-offset: -3px;
 `;
 const firstRowCss = css`
     display: flex;
@@ -45,7 +47,7 @@ function TaskItem({ title, status, notes, due, isHovered }) {
 
     const isChecked = status === 'completed';
 
-    return <div css={mainCss}>
+    return <div isHovered={isHovered} css={mainCss}>
         <div css={firstRowCss}>
             <div css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>
             <div css={titleCss} isChecked={isChecked}>{title}</div>

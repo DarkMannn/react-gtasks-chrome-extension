@@ -32,7 +32,7 @@ function TaskList() {
             }
             if (isPickerActive) {
                 listPickerRef.current.setTaskList();
-                setItems([...Array(8)]);
+                setItems([...Array(40)]);
                 setIsPickerActive(false);
                 setCursor(0);
             }
@@ -64,4 +64,4 @@ function TaskList() {
 export default TaskList;
 
 let notes = `asdfsfasdfasdfasdfasdfasdfasdfasdfasdfasdfas`;
-let dummyTaskListItems = [...Array(8)].map((_, ind) => `List${ind}`);
+let dummyTaskListItems = [...Array(20)].map((_, ind) => `List${ind}`);

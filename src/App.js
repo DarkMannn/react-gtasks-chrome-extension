@@ -9,6 +9,7 @@ const mainCss = css`
     left: 0;
     width: 300px;
     height: 100vh;
+    border: 2px solid black;
     text-align: center;
 `;
 const headerCss = css`
@@ -25,7 +26,6 @@ const headerCss = css`
 const bodyCss = css`
     width: 100%;
     height: 100%;
-    background-color: #2d6570;
     color: #282c34;
     font-size: 2vh;
 `;
