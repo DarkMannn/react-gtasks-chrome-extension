@@ -47,23 +47,20 @@ function TaskList() {
         }
     };
 
-    // test logging
-    useEffect(() => {
+    useEffect(function calculateItemMaxLimit() {
 
-        const calculateItemMaxLimit = () => Math.floor(((window.innerHeight - 95 - 63) / 36) - 1);
+        const upperHeaderHeight = 95;
+        const taskListNameHeight = 63;
+        const taskItemHeight = 36;
+        const calculateItemMaxLimit = () => Math.floor(
+            ((window.innerHeight - upperHeaderHeight - taskListNameHeight) / taskItemHeight) - 1
+        );
+
         window.addEventListener('resize', () => {
             setItemMaxLimit(calculateItemMaxLimit());
         });
-
         setItemMaxLimit(calculateItemMaxLimit());
     }, []);
-    useEffect(() => {
-
-        console.log(divRef.current && divRef.current.offsetHeight);
-        console.log(window.innerHeight);
-        console.log(itemMaxLimit);
-    });
-    // test logging
 
     return <div css={mainCss} onKeyDown={navigationHandler} tabIndex="0">
         <TaskListPicker
@@ -84,7 +81,9 @@ function TaskList() {
                     const itemOffset = (navigationDir === 'down')
                         ? calculateItemOffset()
                         : (navigationDir === 'up' && cachedItemOffset === cursor)
-                            ? cachedItemOffset - 1
+                            ? cachedItemOffset === 0
+                                ? cachedItemOffset
+                                : cachedItemOffset - 1
                             : cachedItemOffset;
 
                     if (index === items.length - 1) {
