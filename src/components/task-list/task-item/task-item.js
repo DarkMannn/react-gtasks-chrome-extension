@@ -8,17 +8,21 @@ const mainCss = css`
     align-items: flex-start;
     justify-content: center;
     text-align: left;
+    overflow: hidden;
     border-bottom: 1px solid black;
     outline: ${({ isHovered }) => isHovered ? '3px solid gold' : 'none'};
     outline-offset: -3px;
 `;
 const firstRowCss = css`
     display: flex;
+    height: 30px;
     padding-top: 5px;
 `;
 const secondRowCss = css`
     display: flex;
+    height: 30px;
     padding-bottom: 5px;
+    font-size: 1.2vh;
 `;
 const checkboxCss = css`
     display: inline-block;
@@ -35,7 +39,6 @@ const dueCss = css`
     display: inline-block;
     width: 70px;
     text-align: center;
-    font-size: 1.2vh;
 `;
 const notesCss = css`
     width: 230px;
