@@ -13,24 +13,34 @@ const headingCss = css`
     outline: ${({ isHovered }) => isHovered ? '3px solid grey' : 'none'};
     outline-offset: -3px;
 `;
-const taskListCss = css`
-    padding: 10px 0 10px 50px;
+const taskListItemCss = css`
+    display: flexbox;
+    align-items: center;
+    height: ${({ isHovered }) => isHovered ? '60px' : '30px'};
+    padding: 3px 0 2px 50px;
     border-bottom: 1px solid black;
-    text-align: left;
     outline: ${({ isHovered }) => isHovered ? '3px solid blue' : 'none'};
     outline-offset: -3px;
 `;
 
-function TaskListPicker({ isActive, isHovered, taskLists, cursor }, ref) {
+function TaskListPicker({ isExpanded, isHovered, taskLists, cursor, shouldRender }, ref) {
 
     const [taskList, setTaskList] = useState('Initial Task List');
-    useImperativeHandle(ref, () => ({ listName: taskList, setTaskList: () => setTaskList(taskLists[cursor]) }));
-    if (isActive) {
+    useImperativeHandle(ref, () => ({
+        listName: taskList,
+        setTaskList: () => setTaskList(taskLists[cursor])
+    }));
+    if (isExpanded) {
         return <div>
             <div css={headingCss}>Select a Task List</div>
             <div>{
                 taskLists.map((item, index) =>
-                    <div key={index} isHovered={index === cursor} css={taskListCss}>{item}</div>
+                    shouldRender(index) && <div
+                        key={index}
+                        isHovered={index === cursor}
+                        css={taskListItemCss}>
+                        <span>{item}</span>
+                    </div>
                 )
             }</div>
         </div>;
