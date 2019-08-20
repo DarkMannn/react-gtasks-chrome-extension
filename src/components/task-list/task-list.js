@@ -13,18 +13,32 @@ const mainCss = css`
     outline: none;
 `;
 
-function TaskList() {
+function TaskList({ gapiTasks }) {
 
     const listPickerRef = useRef();
     const [cursor, setCursor] = useState(0);
     const [itemMaxLimit, setItemMaxLimit] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
     const [navigationDir, setNavigationDir] = useState('down');
-    const [items, setItems] = useState([...Array(5)]);
+    const [items, setItems] = useState([]);
     const [isListPickerExpanded, setIsListPickerExpanded] = useState(false);
 
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
     const oneIfPickerNotExpanded = !isListPickerExpanded ? 1 : 0;
+
+    const shouldRender = (index) => index > itemOffset - oneIfPickerNotExpanded
+        && index <= itemMaxLimit + itemOffset - oneIfPickerNotExpanded;
+
+    const loadTasklists = () => gapiTasks.tasklists.list()
+        .then(({ result }) => {
+
+            setItems(result.items);
+        });
+    const loadTasks = (tasklist) => gapiTasks.tasks.list({ tasklist })
+        .then(({ result }) => {
+
+            setItems(result.items);
+        });
 
     const keyCodeMap = {
         '38': () => { // arrow up
@@ -41,27 +55,42 @@ function TaskList() {
         },
         '13': () => { // enter
             if (!isListPickerExpanded && cursor === 0) {
-                setItems(dummyTaskListItems);
-                setIsListPickerExpanded(true);
-                setCursor(0);
+                loadTasklists()
+                    .then(() => {
+
+                        setIsListPickerExpanded(true);
+                        setCursor(0);
+                    });
             }
-            if (isListPickerExpanded) {
-                listPickerRef.current.setTaskList();
-                setItems([...Array(80)]);
-                setIsListPickerExpanded(false);
-                setCursor(0);
-                setItemOffset(0);
+            else if (isListPickerExpanded) {
+                listPickerRef.current.setTasklist();
+                loadTasks(items[cursor].id)
+                    .then(() => {
+
+                        setIsListPickerExpanded(false);
+                        setCursor(0);
+                        setItemOffset(0);
+                    });
             }
         }
     };
     const navigationHandler = ({ keyCode }) => keyCodeMap[keyCode] && keyCodeMap[keyCode]();
 
-    const shouldRender = (index) => index > itemOffset - oneIfPickerNotExpanded
-        && index <= itemMaxLimit + itemOffset - oneIfPickerNotExpanded;
+    useEffect(function loadData() {
+
+        gapiTasks.tasklists.list()
+            .then(({ result }) => gapiTasks.tasks.list(
+                { tasklist: result.items[0].id }
+            ))
+            .then(({ result }) => {
+
+                setItems(result.items);
+            });
+    }, [gapiTasks.tasklists, gapiTasks.tasks]);
 
     useEffect(function calculateItemMaxLimit() {
 
-        const upperHeaderHeight = 95;
+        const upperHeaderHeight = window.innerHeight * 0.1;
         const taskListNameHeight = 63;
         const taskItemHeight = 36;
         const calculateItemMaxLimit = () => Math.floor(
@@ -69,6 +98,7 @@ function TaskList() {
         );
 
         window.addEventListener('resize', () => {
+
             setItemMaxLimit(calculateItemMaxLimit());
         });
         setItemMaxLimit(calculateItemMaxLimit());
@@ -80,7 +110,7 @@ function TaskList() {
         if ((navigationDir === 'down') && (cursor >= itemOffset + itemMaxLimit + 1)) {
             newItemOffset = itemOffset + 1;
         }
-        else if ((navigationDir === 'up') && (itemOffset === cursor) && itemOffset !== 0) {
+        else if ((navigationDir === 'up') && (itemOffset === cursor) && (itemOffset !== 0)) {
             newItemOffset = itemOffset - 1;
         }
         else {
@@ -97,16 +127,16 @@ function TaskList() {
             isExpanded={isListPickerExpanded}
             isHovered={cursor === 0}
             cursor={cursor}
-            taskLists={items}
+            tasklists={items}
             shouldRender={shouldRender}>
         </TaskListPicker>
 
         {!isListPickerExpanded && items.map((item, index) =>
             shouldRender(index) && <TaskItem
-                key={index}
-                title={`item-${index + 1}`}
-                due={'12/12/2010'}
-                notes={notes}
+                key={item.id}
+                title={item.title}
+                due={item.due && new Date(item.due).toISOString().split('T')[0]}
+                notes={item.notes}
                 isHovered={cursor === index + 1}>
             </TaskItem>
         )}
@@ -115,10 +145,3 @@ function TaskList() {
 }
 
 export default TaskList;
-
-let notes = `
-    ovo je notes jedan ali vredan
-    i da vidimo kako ce ici sada, mozda da mozda ne
-    ali definitivno da nije da i ne
-`;
-let dummyTaskListItems = [...Array(80)].map((_, ind) => `List${ind}`);

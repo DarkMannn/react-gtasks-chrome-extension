@@ -23,29 +23,29 @@ const taskListItemCss = css`
     outline-offset: -3px;
 `;
 
-function TaskListPicker({ isExpanded, isHovered, taskLists, cursor, shouldRender }, ref) {
+function TaskListPicker({ isExpanded, isHovered, tasklists, cursor, shouldRender }, ref) {
 
-    const [taskList, setTaskList] = useState('Initial Task List');
+    const [tasklist, setTasklist] = useState('tasklist');
     useImperativeHandle(ref, () => ({
-        listName: taskList,
-        setTaskList: () => setTaskList(taskLists[cursor])
+        listName: tasklist,
+        setTasklist: () => setTasklist(tasklists[cursor].title)
     }));
     if (isExpanded) {
         return <div>
             <div css={headingCss}>Select a Task List</div>
             <div>{
-                taskLists.map((item, index) =>
+                tasklists.map((item, index) =>
                     shouldRender(index) && <div
-                        key={index}
+                        key={item.id}
                         isHovered={index === cursor}
                         css={taskListItemCss}>
-                        <span>{item}</span>
+                        <span>{item.title}</span>
                     </div>
                 )
             }</div>
         </div>;
     }
-    return <div css={headingCss} isHovered={isHovered}>{taskList}</div>;
+    return <div css={headingCss} isHovered={isHovered}>{tasklist}</div>;
 }
 
 export default forwardRef(TaskListPicker);
