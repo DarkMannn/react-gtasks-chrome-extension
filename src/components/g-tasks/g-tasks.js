@@ -1,26 +1,32 @@
 import React, {
     useState,
     useEffect,
-    useLayoutEffect,
-    useRef
+    useLayoutEffect
 } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
-import TaskListPicker from './task-list-picker/task-list-picker.js';
+import TasklistItem from './tasklist-item/tasklist-item.js';
 import TaskItem from './task-item/task-item.js';
 
 const mainCss = css`
     outline: none;
 `;
+const headingCss = css`
+    padding: 15px 0 15px 0;
+    border-top: 4px double black;
+    border-bottom: 4px double black;
+    outline: ${({ isHovered }) => isHovered ? '3px solid grey' : 'none'};
+    outline-offset: -3px;
+`;
 
-function TaskList({ gapiTasks }) {
+function GTasks({ gapiTasks }) {
 
-    const listPickerRef = useRef();
     const [cursor, setCursor] = useState(0);
     const [itemMaxLimit, setItemMaxLimit] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
     const [navigationDir, setNavigationDir] = useState('down');
     const [items, setItems] = useState([]);
+    const [tasklist, setTasklist] = useState('');
     const [isListPickerExpanded, setIsListPickerExpanded] = useState(false);
 
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
@@ -59,16 +65,15 @@ function TaskList({ gapiTasks }) {
                     .then(() => {
 
                         setIsListPickerExpanded(true);
-                        setCursor(0);
+                        setCursor(1);
                     });
             }
             else if (isListPickerExpanded) {
-                listPickerRef.current.setTasklist();
                 loadTasks(items[cursor].id)
                     .then(() => {
 
                         setIsListPickerExpanded(false);
-                        setCursor(0);
+                        setCursor(1);
                         setItemOffset(0);
                     });
             }
@@ -76,17 +81,19 @@ function TaskList({ gapiTasks }) {
     };
     const navigationHandler = ({ keyCode }) => keyCodeMap[keyCode] && keyCodeMap[keyCode]();
 
-    useEffect(function loadData() {
+    useEffect(function initData() {
 
         gapiTasks.tasklists.list()
-            .then(({ result }) => gapiTasks.tasks.list(
-                { tasklist: result.items[0].id }
-            ))
+            .then(({ result }) => {
+
+                setTasklist(result.items[0].title);
+                return gapiTasks.tasks.list({ tasklist: result.items[0].id });
+            })
             .then(({ result }) => {
 
                 setItems(result.items);
             });
-    }, [gapiTasks.tasklists, gapiTasks.tasks]);
+    }, [gapiTasks.tasklists, gapiTasks.tasks, tasklist.title]);
 
     useEffect(function calculateItemMaxLimit() {
 
@@ -121,27 +128,28 @@ function TaskList({ gapiTasks }) {
     }, [navigationDir, cursor, itemMaxLimit, itemOffset]);
 
     return <div css={mainCss} onKeyDown={navigationHandler} tabIndex="0">
-
-        <TaskListPicker
-            ref={listPickerRef}
-            isExpanded={isListPickerExpanded}
-            isHovered={cursor === 0}
-            cursor={cursor}
-            tasklists={items}
-            shouldRender={shouldRender}>
-        </TaskListPicker>
-
-        {!isListPickerExpanded && items.map((item, index) =>
-            shouldRender(index) && <TaskItem
-                key={item.id}
-                title={item.title}
-                due={item.due && new Date(item.due).toISOString().split('T')[0]}
-                notes={item.notes}
-                isHovered={cursor === index + 1}>
-            </TaskItem>
-        )}
-
+        <div css={headingCss} isHovered={cursor === 0}>{
+            isListPickerExpanded ? 'Select a Task List' : tasklist
+        }</div>
+        {isListPickerExpanded
+            ? items.map((item, index) =>
+                shouldRender(index) && <TasklistItem
+                    key={item.id}
+                    title={item.title}
+                    isHovered={index === cursor}>
+                </TasklistItem>
+            )
+            : items.map((item, index) =>
+                shouldRender(index) && <TaskItem
+                    key={item.id}
+                    title={item.title}
+                    due={item.due && new Date(item.due).toISOString().split('T')[0]}
+                    notes={item.notes}
+                    isHovered={index === cursor - 1}>
+                </TaskItem>
+            )
+        }
     </div>;
 }
 
-export default TaskList;
+export default GTasks;

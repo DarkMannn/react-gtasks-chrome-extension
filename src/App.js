@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
-import TaskList from './components/task-list/task-list.js';
+import GTasks from './components/g-tasks/g-tasks.js';
 
 let gapi;
 
@@ -103,7 +103,7 @@ function App() {
         body = <button onClick={signIn}>Authorize</button>
     }
     else {
-        body = <TaskList gapiTasks={gapi.client.tasks}></TaskList>;
+        body = <GTasks gapiTasks={gapi.client.tasks}></GTasks>;
     }
 
     return <div css={mainCss}>
