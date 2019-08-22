@@ -55,8 +55,7 @@ function TaskItem({ title, status, notes, due, isHovered }) {
             <div css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>
             <div css={titleCss} isChecked={isChecked}>{title}</div>
         </div>
-        {isHovered &&
-            <div css={secondRowCss}>
+        {isHovered && <div css={secondRowCss}>
                 {due && <div css={dueCss}>{due}</div>}
                 {notes && <div css={notesCss}>{notes}</div>}
             </div>

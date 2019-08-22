@@ -25,8 +25,8 @@ function GTasks({ gapiTasks }) {
     const [itemMaxLimit, setItemMaxLimit] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
     const [navigationDir, setNavigationDir] = useState('down');
-    const [items, setItems] = useState([]);
-    const [tasklist, setTasklist] = useState('');
+    const [items, setItems] = useState([{ title: 'Loading...', id: '123' }]);
+    const [tasklist, setTasklist] = useState('Loading...');
     const [isListPickerExpanded, setIsListPickerExpanded] = useState(false);
 
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
@@ -128,9 +128,9 @@ function GTasks({ gapiTasks }) {
     }, [navigationDir, cursor, itemMaxLimit, itemOffset]);
 
     return <div css={mainCss} onKeyDown={navigationHandler} tabIndex="0">
-        <div css={headingCss} isHovered={cursor === 0}>{
-            isListPickerExpanded ? 'Select a Task List' : tasklist
-        }</div>
+        <div css={headingCss} isHovered={cursor === 0}>
+            {isListPickerExpanded ? 'Select a Task List' : tasklist}
+        </div>
         {isListPickerExpanded
             ? items.map((item, index) =>
                 shouldRender(index) && <TasklistItem
