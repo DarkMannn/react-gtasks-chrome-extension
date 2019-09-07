@@ -1,45 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 
 const mainCss = css`
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     justify-content: center;
     text-align: left;
     overflow: hidden;
     border-bottom: 1px solid black;
     outline-offset: -3px;
 `;
+const inputCss = css`
+    flex-grow: 1;
+    margin: 5px 10px 5px 10px;
+    padding: 0 5px 0 5px;
+`;
 const titleCss = css`
+    ${inputCss}
     display: flex;
     height: 30px;
     padding-top: 5px;
 `;
 const notesCss = css`
-    ${'' /* display: inline-block;
-    width: 230px; */}
+    ${inputCss}
     word-wrap: break-word;
 `;
-const dateCss = css`
-    width: 230px;
-    word-wrap: break-word;
-    border-top: 1px solid black;
+const dueCss = css`
+    ${inputCss}
 `;
 
-function TaskItemZoomed({ title, status, notes, due }) {
+const makeOnChangeFunction = (setter) =>
+    (event) => {
+
+        setter(event.target.value);
+    };
+
+function TaskItemZoomed({ title: initTitle, notes: initNotes, due: initDue }) {
+
+    const [title, setTitle] = useState(initTitle);
+    const [notes, setNotes] = useState(initNotes);
+    const [due, setDue] = useState(initDue ? new Date(initDue).toISOString().split('T')[0] : '');
+
+    const onTitleChange = makeOnChangeFunction(setTitle);
+    const onNotesChange = makeOnChangeFunction(setNotes);
+    const onDueChange = makeOnChangeFunction(setDue);
 
     return <div css={mainCss}>
-        <div css={titleCss}>
-            <input type="text" name="" id=""/>
-        </div>
-        <div css={notesCss}>
-            <input type="text" name="" id=""/>
-        </div>
-        <div css={dateCss}>
-            <input type="datetime" name="" id=""/>
-        </div>
+        <input css={titleCss} type="text" value={title} onChange={onTitleChange} tabIndex="0"/>
+        <textarea css={notesCss} rows='20' value={notes} onChange={onNotesChange} tabIndex="0"/>
+        <input css={dueCss} type="date" value={due} onChange={onDueChange} tabIndex="0"/>
     </div>;
 }
 

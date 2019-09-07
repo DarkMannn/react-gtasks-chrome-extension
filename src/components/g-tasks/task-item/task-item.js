@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+    useState,
+    useRef
+} from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 
@@ -46,14 +49,47 @@ const notesCss = css`
     border-top: 1px solid black;
 `;
 
-function TaskItem({ title, status, notes, due, isHovered }) {
+function TaskItem({ title: initTitle, status, notes, due, isHovered, isEditingActive, onBlurCallback }) {
 
+    const [title, setTitle] = useState(initTitle);
+    const titleRef = useRef();
     const isChecked = status === 'completed';
+    const onBlur = () => {
+
+        setTitle(titleRef.current.innerText);
+        onBlurCallback();
+    };
+
+    if (isEditingActive) {
+        setTimeout(function setCursorAtTheEnd() {
+
+            titleRef.current.focus();
+
+            const range = document.createRange();
+            const sel = window.getSelection();
+            const childNodesLength = titleRef.current.childNodes.length;
+            const lastNode = titleRef.current.childNodes[childNodesLength - 1];
+
+            range.setStart(lastNode, lastNode.length);
+            range.collapse(true);
+
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }, 0);
+    }
 
     return <div isHovered={isHovered} css={mainCss}>
         <div css={firstRowCss}>
             <div css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>
-            <div css={titleCss} isChecked={isChecked}>{title}</div>
+            <div
+                ref={titleRef}
+                css={titleCss}
+                isChecked={isChecked}
+                contentEditable={isHovered}
+                suppressContentEditableWarning={true}
+                onBlur={onBlur}>
+                {title}
+            </div>
         </div>
         {isHovered && <div css={secondRowCss}>
                 {due && <div css={dueCss}>{due}</div>}
