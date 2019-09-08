@@ -1,7 +1,4 @@
-import React, {
-    useState,
-    useRef
-} from 'react';
+import React, { useRef } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 
@@ -49,15 +46,13 @@ const notesCss = css`
     border-top: 1px solid black;
 `;
 
-function TaskItem({ title: initTitle, status, notes, due, isHovered, isEditingActive, onBlurCallback }) {
+function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlurCallback }) {
 
-    const [title, setTitle] = useState(initTitle);
     const titleRef = useRef();
     const isChecked = status === 'completed';
     const onBlur = () => {
 
-        setTitle(titleRef.current.innerText);
-        onBlurCallback();
+        onBlurCallback(titleRef.current.innerText);
     };
 
     if (isEditingActive) {

@@ -9,8 +9,6 @@ import TasklistItem from './tasklist-item/tasklist-item.js';
 import TaskItem from './task-item/task-item.js';
 import TaskItemZoomed from './task-item-zoomed/task-item-zoomed.js';
 
-const WINDOW = window;
-
 const mainCss = css`
     outline: none;
     border-right: ${({ isAppFocused }) => isAppFocused ? '3px solid gray' : 'none'};
@@ -59,23 +57,39 @@ function GTasks({ gapiTasks }) {
 
             setZoomedItem(result);
         });
+    const updateTask = (tasklist, task, body) => gapiTasks.tasks.update({ tasklist, task }, body)
+        .then(() => loadTasks(tasklist));
+
+    const onBlurCallback = (newTitle) => {
+
+        setIsEditingActive(false);
+
+        const editedTask = items[cursor - 1];
+        editedTask.title = newTitle;
+        updateTask(tasklist.id, editedTask.id, editedTask);
+    };
 
     const keyCodeMap = {
+        '27': () => { // esc
+
+            setIsEditingActive(false);
+        },
         '38': () => { // arrow up
-            if (cursor > 0) {
+
+            if (!isEditingActive && cursor > 0) {
                 setCursor(prevCursor => prevCursor - 1);
                 setNavigationDir('up');
-                setIsEditingActive(false);
             }
         },
         '40': () => { // arrow down
-            if (cursor < items.length - oneIfPickerExpanded) {
+
+            if (!isEditingActive && cursor < items.length - oneIfPickerExpanded) {
                 setCursor(prevCursor => prevCursor + 1);
                 setNavigationDir('down');
-                setIsEditingActive(false);
             }
         },
         '13': (ctrlKeyPressed) => { // enter
+
             if (isListPickerExpanded) {
                 const currentTasklist = items[cursor];
                 loadTasks(currentTasklist.id)
@@ -109,7 +123,7 @@ function GTasks({ gapiTasks }) {
             }
         }
     };
-    WINDOW.onkeydown = ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
+    window.onkeydown = ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
 
         if (keyCode.toString() === '76' && ctrlKeyPressed && shiftKeyPressed) {
             setIsAppFocused(!isAppFocused);
@@ -186,7 +200,7 @@ function GTasks({ gapiTasks }) {
                     notes={item.notes}
                     isHovered={index === cursor - 1}
                     isEditingActive={isEditingActive && index === cursor - 1}
-                    onBlurCallback={() => setIsEditingActive(false)}>
+                    onBlurCallback={onBlurCallback}>
                 </TaskItem>
             )
         )}
