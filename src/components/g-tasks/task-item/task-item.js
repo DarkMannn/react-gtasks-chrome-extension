@@ -65,6 +65,10 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
             const childNodesLength = titleRef.current.childNodes.length;
             const lastNode = titleRef.current.childNodes[childNodesLength - 1];
 
+            if (!lastNode) {
+                return;
+            }
+
             range.setStart(lastNode, lastNode.length);
             range.collapse(true);
 

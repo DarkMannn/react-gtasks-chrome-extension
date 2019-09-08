@@ -15,11 +15,18 @@ const mainCss = css`
     border-left: ${({ isAppFocused }) => isAppFocused ? '3px solid gray' : 'none'};
 `;
 const headingCss = css`
+    height: 30px;
     padding: 15px 0 15px 0;
     border-top: 4px double black;
     border-bottom: 4px double black;
     outline: ${({ isHovered }) => isHovered ? '3px solid gold' : 'none'};
     outline-offset: -3px;
+`;
+const headingHelperCss = css`
+    height: 5px;
+    padding: 0;
+    margin-top: 0;
+    font-size: 10px;
 `;
 
 function GTasks({ gapiTasks }) {
@@ -35,6 +42,7 @@ function GTasks({ gapiTasks }) {
     const [isListPickerExpanded, setIsListPickerExpanded] = useState(false);
     const [isItemExpanded, setIsItemExpanded] = useState(false);
     const [isEditingActive, setIsEditingActive] = useState(false);
+    const [isNextBlurInsertion, setIsNextBlurInsertion] = useState(false);
 
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
     const oneIfPickerNotExpanded = !isListPickerExpanded ? 1 : 0;
@@ -57,6 +65,8 @@ function GTasks({ gapiTasks }) {
 
             setZoomedItem(result);
         });
+    const createTask = (tasklist, body) => gapiTasks.tasks.insert({ tasklist }, body)
+        .then(() => loadTasks(tasklist));
     const updateTask = (tasklist, task, body) => gapiTasks.tasks.update({ tasklist, task }, body)
         .then(() => loadTasks(tasklist));
 
@@ -65,15 +75,23 @@ function GTasks({ gapiTasks }) {
         setIsEditingActive(false);
 
         const editedTask = items[cursor - 1];
+
+        const shouldNotUpdate = editedTask.title === newTitle && !isNextBlurInsertion;
+        if (shouldNotUpdate) {
+            return;
+        }
+
+        if (isNextBlurInsertion) {
+            setIsNextBlurInsertion(false);
+            createTask(tasklist.id, { title: newTitle });
+            return;
+        }
+
         editedTask.title = newTitle;
         updateTask(tasklist.id, editedTask.id, editedTask);
     };
 
     const keyCodeMap = {
-        '27': () => { // esc
-
-            setIsEditingActive(false);
-        },
         '38': () => { // arrow up
 
             if (!isEditingActive && cursor > 0) {
@@ -88,7 +106,7 @@ function GTasks({ gapiTasks }) {
                 setNavigationDir('down');
             }
         },
-        '13': (ctrlKeyPressed) => { // enter
+        '13': ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
 
             if (isListPickerExpanded) {
                 const currentTasklist = items[cursor];
@@ -110,12 +128,18 @@ function GTasks({ gapiTasks }) {
                     });
             }
             else if (cursor > 0) {
-                if (ctrlKeyPressed) {
+                if (shiftKeyPressed) {
                     loadTask(tasklist.id, items[cursor - 1].id)
                         .then(() => {
 
                             setIsItemExpanded(true);
                         });
+                }
+                else if (ctrlKeyPressed) {
+                    setItems([{ title: '' }, ...items]);
+                    setCursor(1);
+                    setIsEditingActive(true);
+                    setIsNextBlurInsertion(true);
                 }
                 else {
                     setIsEditingActive(true);
@@ -130,7 +154,7 @@ function GTasks({ gapiTasks }) {
             return;
         }
         if (isAppFocused && keyCodeMap[keyCode]) {
-            keyCodeMap[keyCode](ctrlKeyPressed);
+            keyCodeMap[keyCode]({ ctrlKeyPressed, shiftKeyPressed});
         }
     }
 
@@ -183,6 +207,9 @@ function GTasks({ gapiTasks }) {
     return <div isAppFocused={isAppFocused} css={mainCss}>
         <div css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
             {isListPickerExpanded ? 'Select a Task List' : tasklist.title}
+            {!isListPickerExpanded && cursor === 0 && (
+                <p css={headingHelperCss}>* press enter to change tasklist*</p>
+            )}
         </div>
         {!isItemExpanded && (isListPickerExpanded
             ? items.map((item, index) =>
@@ -194,7 +221,7 @@ function GTasks({ gapiTasks }) {
             )
             : items.map((item, index) =>
                 shouldRender(index) && <TaskItem
-                    key={item.id}
+                    key={item.id || index}
                     title={item.title}
                     due={item.due && new Date(item.due).toISOString().split('T')[0]}
                     notes={item.notes}
