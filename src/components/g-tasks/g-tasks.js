@@ -43,6 +43,7 @@ function GTasks({ gapiTasks }) {
     const [isItemExpanded, setIsItemExpanded] = useState(false);
     const [isEditingActive, setIsEditingActive] = useState(false);
     const [isNextBlurInsertion, setIsNextBlurInsertion] = useState(false);
+    const [showCompleted, setShowCompleted] = useState(true);
 
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
     const oneIfPickerNotExpanded = !isListPickerExpanded ? 1 : 0;
@@ -55,7 +56,7 @@ function GTasks({ gapiTasks }) {
 
             setItems(result.items);
         });
-    const loadTasks = (tasklist) => gapiTasks.tasks.list({ tasklist })
+    const loadTasks = (tasklist, showCompleted) => gapiTasks.tasks.list({ tasklist, showCompleted })
         .then(({ result }) => {
 
             result.items.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
@@ -196,7 +197,7 @@ function GTasks({ gapiTasks }) {
                 deleteTask(tasklist.id, items[cursor - 1].id);
             }
         },
-        '32': ({ ctrlKeyPressed }) => {
+        '32': ({ ctrlKeyPressed }) => { // space
 
             if (!ctrlKeyPressed) {
                 return;
@@ -213,6 +214,13 @@ function GTasks({ gapiTasks }) {
                 editedTask
             );
 
+        },
+        '72': ({ ctrlKeyPressed, shiftKeyPressed }) => {
+
+            if (ctrlKeyPressed && shiftKeyPressed) {
+                setShowCompleted(!showCompleted);
+                loadTasks(tasklist.id, !showCompleted);
+            }
         }
     };
     window.onkeydown = ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {

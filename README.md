@@ -11,6 +11,6 @@ Todo:
 
 Current:
 - [x] implement reordering
-- [ ] implement switching visibility of completed/active tasks
+- [x] implement switching visibility of completed/active tasks
 - [ ] optimize/cache key events and http requests
 - [ ] clear and refactor the codebase
