@@ -67,11 +67,23 @@ function GTasks({ gapiTasks }) {
             setZoomedItem(result);
         });
     const createTask = (tasklist, body) => gapiTasks.tasks.insert({ tasklist }, body)
-        .then(() => loadTasks(tasklist));
+        .then(() => {
+
+            loadTasks(tasklist);
+        });
+    const moveTask = (tasklist, task, previous) => gapiTasks.tasks.move({ tasklist, task, previous })
+        .then(() => {
+
+            loadTasks(tasklist);
+        });
     const updateTask = (tasklist, task, previous, body) => gapiTasks.tasks.update({ tasklist, task }, body)
-        .then(() => gapiTasks.tasks.move({ tasklist, task, previous }))
-        .then(() => loadTasks(tasklist));
-    const deleteTask = (tasklist, task ) => gapiTasks.tasks.delete({ tasklist, task })
+        .then(() => {
+
+            if (previous) {
+                moveTask(tasklist, task, previous);
+            }
+        });
+    const deleteTask = (tasklist, task) => gapiTasks.tasks.delete({ tasklist, task })
         .then(() => loadTasks(tasklist));
 
     const onBlurCallback = (newTitle) => {
@@ -102,16 +114,38 @@ function GTasks({ gapiTasks }) {
     };
 
     const keyCodeMap = {
-        '38': () => { // arrow up
+        '38': ({ shiftKeyPressed }) => { // arrow up
 
-            if (!isEditingActive && cursor > 0) {
+            if (shiftKeyPressed) {
+
+                const movedTask = items[cursor - 1];
+                const newPreviousTask = items[cursor - 3];
+                moveTask(
+                    tasklist.id,
+                    movedTask.id,
+                    newPreviousTask && newPreviousTask.id
+                );
+            }
+            else if (!isEditingActive && cursor > 0) {
                 setCursor(prevCursor => prevCursor - 1);
                 setNavigationDir('up');
             }
         },
-        '40': () => { // arrow down
+        '40': ({ shiftKeyPressed }) => { // arrow down
 
-            if (!isEditingActive && cursor < items.length - oneIfPickerExpanded) {
+            if (shiftKeyPressed) {
+
+                const movedTask = items[cursor - 1];
+                const newPreviousTask = items[cursor];
+                if (newPreviousTask) {
+                    moveTask(
+                        tasklist.id,
+                        movedTask.id,
+                        newPreviousTask.id
+                    );
+                }
+            }
+            else if (!isEditingActive && cursor < items.length - oneIfPickerExpanded) {
                 setCursor(prevCursor => prevCursor + 1);
                 setNavigationDir('down');
             }
