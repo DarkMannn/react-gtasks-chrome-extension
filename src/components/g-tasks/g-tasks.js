@@ -71,6 +71,8 @@ function GTasks({ gapiTasks }) {
     const updateTask = (tasklist, task, previous, body) => gapiTasks.tasks.update({ tasklist, task }, body)
         .then(() => gapiTasks.tasks.move({ tasklist, task, previous }))
         .then(() => loadTasks(tasklist));
+    const deleteTask = (tasklist, task ) => gapiTasks.tasks.delete({ tasklist, task })
+        .then(() => loadTasks(tasklist));
 
     const onBlurCallback = (newTitle) => {
 
@@ -147,6 +149,12 @@ function GTasks({ gapiTasks }) {
                 else {
                     setIsEditingActive(true);
                 }
+            }
+        },
+        '46': ({ ctrlKeyPressed }) => {
+
+            if (ctrlKeyPressed) {
+                deleteTask(tasklist.id, items[cursor - 1].id);
             }
         }
     };
