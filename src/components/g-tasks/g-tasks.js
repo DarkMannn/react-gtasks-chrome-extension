@@ -58,6 +58,7 @@ function GTasks({ gapiTasks }) {
     const loadTasks = (tasklist) => gapiTasks.tasks.list({ tasklist })
         .then(({ result }) => {
 
+            result.items.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
             setItems(result.items);
         });
     const loadTask = (tasklist, task) => gapiTasks.tasks.get({ tasklist, task })
@@ -67,7 +68,8 @@ function GTasks({ gapiTasks }) {
         });
     const createTask = (tasklist, body) => gapiTasks.tasks.insert({ tasklist }, body)
         .then(() => loadTasks(tasklist));
-    const updateTask = (tasklist, task, body) => gapiTasks.tasks.update({ tasklist, task }, body)
+    const updateTask = (tasklist, task, previous, body) => gapiTasks.tasks.update({ tasklist, task }, body)
+        .then(() => gapiTasks.tasks.move({ tasklist, task, previous }))
         .then(() => loadTasks(tasklist));
 
     const onBlurCallback = (newTitle) => {
@@ -75,6 +77,7 @@ function GTasks({ gapiTasks }) {
         setIsEditingActive(false);
 
         const editedTask = items[cursor - 1];
+        const previousTask = items[cursor - 2];
 
         const shouldNotUpdate = editedTask.title === newTitle && !isNextBlurInsertion;
         if (shouldNotUpdate) {
@@ -88,7 +91,7 @@ function GTasks({ gapiTasks }) {
         }
 
         editedTask.title = newTitle;
-        updateTask(tasklist.id, editedTask.id, editedTask);
+        updateTask(tasklist.id, editedTask.id, previousTask.id, editedTask);
     };
 
     const keyCodeMap = {
@@ -168,6 +171,7 @@ function GTasks({ gapiTasks }) {
             })
             .then(({ result }) => {
 
+                result.items.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
                 setItems(result.items);
             });
     }, [gapiTasks.tasklists, gapiTasks.tasks]);
