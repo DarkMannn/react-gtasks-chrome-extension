@@ -93,7 +93,12 @@ function GTasks({ gapiTasks }) {
         }
 
         editedTask.title = newTitle;
-        updateTask(tasklist.id, editedTask.id, previousTask.id, editedTask);
+        updateTask(
+            tasklist.id,
+            editedTask.id,
+            previousTask && previousTask.id,
+            editedTask
+        );
     };
 
     const keyCodeMap = {
@@ -151,11 +156,29 @@ function GTasks({ gapiTasks }) {
                 }
             }
         },
-        '46': ({ ctrlKeyPressed }) => {
+        '46': ({ ctrlKeyPressed }) => { // del
 
             if (ctrlKeyPressed) {
                 deleteTask(tasklist.id, items[cursor - 1].id);
             }
+        },
+        '32': ({ ctrlKeyPressed }) => {
+
+            if (!ctrlKeyPressed) {
+                return;
+            }
+
+            const editedTask = items[cursor - 1];
+            const previousTask = items[cursor - 2];
+
+            editedTask.status = editedTask.status === 'needsAction' ? 'completed' : 'needsAction';
+            updateTask(
+                tasklist.id,
+                editedTask.id,
+                previousTask && previousTask.id,
+                editedTask
+            );
+
         }
     };
     window.onkeydown = ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
@@ -237,6 +260,7 @@ function GTasks({ gapiTasks }) {
                     title={item.title}
                     due={item.due && new Date(item.due).toISOString().split('T')[0]}
                     notes={item.notes}
+                    status={item.status}
                     isHovered={index === cursor - 1}
                     isEditingActive={isEditingActive && index === cursor - 1}
                     onBlurCallback={onBlurCallback}>

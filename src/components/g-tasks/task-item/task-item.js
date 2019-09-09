@@ -28,12 +28,14 @@ const checkboxCss = css`
     display: inline-block;
     width: 70px;
     text-align: center;
+    color: ${({ isChecked }) => isChecked ? 'grey' : 'black'};
 `;
 const titleCss = css`
     display: inline-block;
     width: 230px;
     word-wrap: break-word;
     text-decoration-line: ${({ isChecked }) => isChecked ? 'line-through' : 'none'};
+    color: ${({ isChecked }) => isChecked ? 'grey' : 'black'};
 `;
 const dueCss = css`
     display: inline-block;
@@ -71,7 +73,6 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
 
             range.setStart(lastNode, lastNode.length);
             range.collapse(true);
-
             sel.removeAllRanges();
             sel.addRange(range);
         }, 0);
@@ -79,7 +80,7 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
 
     return <div isHovered={isHovered} css={mainCss}>
         <div css={firstRowCss}>
-            <div css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>
+            <div isChecked={isChecked} css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>
             <div
                 ref={titleRef}
                 css={titleCss}
