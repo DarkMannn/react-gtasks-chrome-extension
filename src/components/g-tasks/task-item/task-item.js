@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
+import setCursorAtTheEnd from '../../../util/set-cursor-at-the-end.js';
 
 const mainCss = css`
     display: flex;
@@ -10,7 +11,7 @@ const mainCss = css`
     text-align: left;
     overflow: hidden;
     border-bottom: 1px solid black;
-    outline: ${({ isHovered }) => isHovered ? '3px solid gold' : 'none'};
+    outline: ${({ isHovered }) => isHovered ? '3px solid khaki' : 'none'};
     outline-offset: -3px;
 `;
 const firstRowCss = css`
@@ -58,23 +59,10 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
     };
 
     if (isEditingActive) {
-        setTimeout(function setCursorAtTheEnd() {
+        setTimeout(function focusAndSetCursorAtTheEnd() {
 
             titleRef.current.focus();
-
-            const range = document.createRange();
-            const sel = window.getSelection();
-            const childNodesLength = titleRef.current.childNodes.length;
-            const lastNode = titleRef.current.childNodes[childNodesLength - 1];
-
-            if (!lastNode) {
-                return;
-            }
-
-            range.setStart(lastNode, lastNode.length);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
+            setCursorAtTheEnd(titleRef.current);
         }, 0);
     }
 
