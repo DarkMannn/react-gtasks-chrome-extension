@@ -22,3 +22,4 @@ Current:
 Current current:
 - [x] delete unfocused throws
 - [x] empty list throws
+- [ ] space in the middle of edit? other mixed commands?

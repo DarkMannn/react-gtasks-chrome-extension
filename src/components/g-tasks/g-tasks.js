@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
     useState,
     useEffect,
@@ -39,7 +40,7 @@ function GTasks({ gapiTasks }) {
     const [items, setItems] = useState([{ title: 'Loading...', id: '123' }]);
     const [zoomedItem, setZoomedItem] = useState(null);
     const [tasklist, setTasklist] = useState('Loading...');
-    const [isListPickerExpanded, setIsListPickerExpanded] = useState(false);
+    const [isListPickerExpanded, setIsListPickerExpanded] = useState(true);
     const [isItemExpanded, setIsItemExpanded] = useState(false);
     const [isEditingActive, setIsEditingActive] = useState(false);
     const [isNextBlurInsertion, setIsNextBlurInsertion] = useState(false);
@@ -56,7 +57,7 @@ function GTasks({ gapiTasks }) {
 
             setItems(result.items);
         });
-    const loadTasks = (tasklist, showCompleted) => gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })
+    const loadTasks = (tasklist) => gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })
         .then(({ result }) => {
 
             const tasks = result.items || [];
@@ -81,26 +82,26 @@ function GTasks({ gapiTasks }) {
 
         setIsEditingActive(false);
 
-        const editedTask = items[cursor - 1];
-        const previousTask = items[cursor - 2];
-
-        const shouldNotUpdate = editedTask.title === newTitle && !isNextBlurInsertion;
-        if (shouldNotUpdate) {
-            return;
-        }
-
         if (isNextBlurInsertion) {
             setIsNextBlurInsertion(false);
             createTask(tasklist.id, { title: newTitle });
             return;
         }
 
-        editedTask.title = newTitle;
+        const updatedTask = items[cursor - 1];
+        const previousTask = items[cursor - 2];
+
+        const shouldNotUpdate = updatedTask.title === newTitle;
+        if (shouldNotUpdate) {
+            return;
+        }
+
+        updatedTask.title = newTitle;
         updateTask(
             tasklist.id,
-            editedTask.id,
+            updatedTask.id,
             previousTask && previousTask.id,
-            editedTask
+            updatedTask
         );
     };
 
@@ -111,11 +112,7 @@ function GTasks({ gapiTasks }) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
-                moveTask(
-                    tasklist.id,
-                    movedTask.id,
-                    newPreviousTask && newPreviousTask.id
-                )
+                moveTask(tasklist.id, movedTask.id, newPreviousTask && newPreviousTask.id)
                 .then(() => {
 
                     setCursor(prevCursor => prevCursor - 1);
@@ -133,11 +130,7 @@ function GTasks({ gapiTasks }) {
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
                 if (newPreviousTask) {
-                    moveTask(
-                        tasklist.id,
-                        movedTask.id,
-                        newPreviousTask.id
-                    )
+                    moveTask(tasklist.id, movedTask.id, newPreviousTask.id)
                     .then(() => {
 
                         setCursor(prevCursor => prevCursor + 1);
@@ -172,25 +165,22 @@ function GTasks({ gapiTasks }) {
                         });
                     return;
                 }
-                if (cursor > 0 || !items.length) {
-                    if (shiftKeyPressed) {
-                        loadTask(tasklist.id, items[cursor - 1].id)
-                            .then(() => {
+                if (cursor > 0 && shiftKeyPressed) {
+                    loadTask(tasklist.id, items[cursor - 1].id)
+                        .then(() => {
 
-                                setIsItemExpanded(true);
-                            });
-                    }
-                    else if (ctrlKeyPressed) {
-                        setItems([{ title: '' }, ...items]);
-                        setCursor(1);
-                        setIsEditingActive(true);
-                        setIsNextBlurInsertion(true);
-                    }
-                    else {
-                        setIsEditingActive(true);
-                    }
+                            setIsItemExpanded(true);
+                        });
                     return;
                 }
+                if (ctrlKeyPressed) {
+                    setItems([{ title: '' }, ...items]);
+                    setCursor(1);
+                    setIsEditingActive(true);
+                    setIsNextBlurInsertion(true);
+                    return;
+                }
+                setIsEditingActive(true);
             }
         },
         '46': ({ ctrlKeyPressed }) => { // del
@@ -209,15 +199,15 @@ function GTasks({ gapiTasks }) {
                 return;
             }
 
-            const editedTask = items[cursor - 1];
+            const updatedTask = items[cursor - 1];
             const previousTask = items[cursor - 2];
 
-            editedTask.status = editedTask.status === 'needsAction' ? 'completed' : 'needsAction';
+            updatedTask.status = updatedTask.status === 'needsAction' ? 'completed' : 'needsAction';
             updateTask(
                 tasklist.id,
-                editedTask.id,
+                updatedTask.id,
                 previousTask && previousTask.id,
-                editedTask
+                updatedTask
             );
 
         },
@@ -231,7 +221,7 @@ function GTasks({ gapiTasks }) {
     };
     window.onkeydown = ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
 
-        if (keyCode.toString() === '76' && ctrlKeyPressed && shiftKeyPressed) {
+        if (keyCode === 76 && ctrlKeyPressed && shiftKeyPressed) { // l
             setIsAppFocused(!isAppFocused);
         }
         else if (isAppFocused && keyCodeMap[keyCode]) {
@@ -241,51 +231,33 @@ function GTasks({ gapiTasks }) {
 
     useEffect(function initData() {
 
-        gapiTasks.tasklists.list()
-            .then(({ result }) => {
-
-                setTasklist(result.items[0]);
-                return gapiTasks.tasks.list({ tasklist: result.items[0].id });
-            })
-            .then(({ result }) => {
-
-                const tasks = result.items || [];
-                tasks.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
-                setItems(tasks);
-            });
-    }, [gapiTasks.tasklists, gapiTasks.tasks]);
+        loadTasklists();
+    }, []);
 
     useEffect(function calculateItemMaxLimit() {
 
         const upperHeaderHeight = window.innerHeight * 0.1;
         const taskListNameHeight = 68;
         const taskItemHeight = 36;
-        const calculateItemMaxLimit = () => Math.floor(
+        const newItemMaxLimit = Math.floor(
             ((window.innerHeight - upperHeaderHeight - taskListNameHeight) / taskItemHeight) - 1
         );
-
-        window.addEventListener('resize', () => {
-
-            setItemMaxLimit(calculateItemMaxLimit());
-        });
-        setItemMaxLimit(calculateItemMaxLimit());
-    }, []);
+        setItemMaxLimit(newItemMaxLimit);
+        setCursor(0);
+        setItemOffset(0);
+    }, [window.innerHeight]);
 
     useLayoutEffect(function calculateItemOffset() {
 
-        let newItemOffset;
         if ((navigationDir === 'down') && (cursor >= itemOffset + itemMaxLimit + 1)) {
-            newItemOffset = itemOffset + 1;
+            setItemOffset(oldItemOffset => oldItemOffset + 1);
+            return;
         }
-        else if ((navigationDir === 'up') && (cursor === itemOffset - oneIfPickerExpanded) && (itemOffset !== 0)) {
-            newItemOffset = itemOffset - 1;
+        if ((navigationDir === 'up') && (cursor === itemOffset - oneIfPickerExpanded) && (itemOffset !== 0)) {
+            setItemOffset(oldItemOffset => oldItemOffset - 1);
+            return;
         }
-        else {
-            newItemOffset = itemOffset;
-        }
-
-        setItemOffset(newItemOffset);
-    }, [navigationDir, cursor, itemMaxLimit, itemOffset, oneIfPickerExpanded]);
+    }, [cursor]);
 
     return <div isAppFocused={isAppFocused} css={mainCss}>
         <div css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
