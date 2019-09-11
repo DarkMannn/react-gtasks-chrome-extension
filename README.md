@@ -11,9 +11,14 @@ Todo:
 - [ ] implement styling
 - [ ] create instructions
 - [ ] hide api key? https://www.reddit.com/r/webdev/comments/7h9xb6/is_there_a_way_for_me_to_hide_my_google_api_key/
+- [ ] task list CRUD
 
 Current:
 - [x] implement reordering
 - [x] implement switching visibility of completed/active tasks
 - [ ] clear and refactor the codebase
 - [ ] optimize/cache key events and http requests
+
+Current current:
+- [x] delete unfocused throws
+- [x] empty list throws

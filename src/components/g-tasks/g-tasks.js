@@ -48,7 +48,7 @@ function GTasks({ gapiTasks }) {
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
     const oneIfPickerNotExpanded = !isListPickerExpanded ? 1 : 0;
 
-    const shouldRender = (index) => index >= itemOffset - oneIfPickerNotExpanded
+    const shouldRender = (index) => index > itemOffset - 1
         && index <= itemMaxLimit + itemOffset - oneIfPickerNotExpanded;
 
     const loadTasklists = () => gapiTasks.tasklists.list()
@@ -56,11 +56,12 @@ function GTasks({ gapiTasks }) {
 
             setItems(result.items);
         });
-    const loadTasks = (tasklist, showCompleted) => gapiTasks.tasks.list({ tasklist, showCompleted })
+    const loadTasks = (tasklist, showCompleted) => gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })
         .then(({ result }) => {
 
-            result.items.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
-            setItems(result.items);
+            const tasks = result.items || [];
+            tasks.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
+            setItems(tasks);
         });
     const loadTask = (tasklist, task) => gapiTasks.tasks.get({ tasklist, task })
         .then(({ result }) => {
@@ -68,22 +69,11 @@ function GTasks({ gapiTasks }) {
             setZoomedItem(result);
         });
     const createTask = (tasklist, body) => gapiTasks.tasks.insert({ tasklist }, body)
-        .then(() => {
-
-            loadTasks(tasklist);
-        });
+        .then(() => loadTasks(tasklist));
     const moveTask = (tasklist, task, previous) => gapiTasks.tasks.move({ tasklist, task, previous })
-        .then(() => {
-
-            loadTasks(tasklist);
-        });
+        .then(() => loadTasks(tasklist));
     const updateTask = (tasklist, task, previous, body) => gapiTasks.tasks.update({ tasklist, task }, body)
-        .then(() => {
-
-            if (previous) {
-                moveTask(tasklist, task, previous);
-            }
-        });
+        .then(() => previous && moveTask(tasklist, task, previous));
     const deleteTask = (tasklist, task) => gapiTasks.tasks.delete({ tasklist, task })
         .then(() => loadTasks(tasklist));
 
@@ -125,7 +115,11 @@ function GTasks({ gapiTasks }) {
                     tasklist.id,
                     movedTask.id,
                     newPreviousTask && newPreviousTask.id
-                );
+                )
+                .then(() => {
+
+                    setCursor(prevCursor => prevCursor - 1);
+                });
             }
             else if (!isEditingActive && cursor > 0) {
                 setCursor(prevCursor => prevCursor - 1);
@@ -143,7 +137,11 @@ function GTasks({ gapiTasks }) {
                         tasklist.id,
                         movedTask.id,
                         newPreviousTask.id
-                    );
+                    )
+                    .then(() => {
+
+                        setCursor(prevCursor => prevCursor + 1);
+                    });
                 }
             }
             else if (!isEditingActive && cursor < items.length - oneIfPickerExpanded) {
@@ -164,37 +162,45 @@ function GTasks({ gapiTasks }) {
                         setItemOffset(0);
                     });
             }
-            else if (cursor === 0) {
-                loadTasklists()
-                    .then(() => {
-
-                        setIsListPickerExpanded(true);
-                        setCursor(0);
-                    });
-            }
-            else if (cursor > 0) {
-                if (shiftKeyPressed) {
-                    loadTask(tasklist.id, items[cursor - 1].id)
+            else {
+                if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
+                    loadTasklists()
                         .then(() => {
 
-                            setIsItemExpanded(true);
+                            setIsListPickerExpanded(true);
+                            setCursor(0);
                         });
+                    return;
                 }
-                else if (ctrlKeyPressed) {
-                    setItems([{ title: '' }, ...items]);
-                    setCursor(1);
-                    setIsEditingActive(true);
-                    setIsNextBlurInsertion(true);
-                }
-                else {
-                    setIsEditingActive(true);
+                if (cursor > 0 || !items.length) {
+                    if (shiftKeyPressed) {
+                        loadTask(tasklist.id, items[cursor - 1].id)
+                            .then(() => {
+
+                                setIsItemExpanded(true);
+                            });
+                    }
+                    else if (ctrlKeyPressed) {
+                        setItems([{ title: '' }, ...items]);
+                        setCursor(1);
+                        setIsEditingActive(true);
+                        setIsNextBlurInsertion(true);
+                    }
+                    else {
+                        setIsEditingActive(true);
+                    }
+                    return;
                 }
             }
         },
         '46': ({ ctrlKeyPressed }) => { // del
 
             if (ctrlKeyPressed) {
-                deleteTask(tasklist.id, items[cursor - 1].id);
+                deleteTask(tasklist.id, items[cursor - 1].id)
+                    .then(() => {
+
+                        setCursor(0);
+                    });
             }
         },
         '32': ({ ctrlKeyPressed }) => { // space
@@ -215,7 +221,7 @@ function GTasks({ gapiTasks }) {
             );
 
         },
-        '72': ({ ctrlKeyPressed, shiftKeyPressed }) => {
+        '72': ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
 
             if (ctrlKeyPressed && shiftKeyPressed) {
                 setShowCompleted(!showCompleted);
@@ -227,9 +233,8 @@ function GTasks({ gapiTasks }) {
 
         if (keyCode.toString() === '76' && ctrlKeyPressed && shiftKeyPressed) {
             setIsAppFocused(!isAppFocused);
-            return;
         }
-        if (isAppFocused && keyCodeMap[keyCode]) {
+        else if (isAppFocused && keyCodeMap[keyCode]) {
             keyCodeMap[keyCode]({ ctrlKeyPressed, shiftKeyPressed});
         }
     }
@@ -244,15 +249,16 @@ function GTasks({ gapiTasks }) {
             })
             .then(({ result }) => {
 
-                result.items.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
-                setItems(result.items);
+                const tasks = result.items || [];
+                tasks.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
+                setItems(tasks);
             });
     }, [gapiTasks.tasklists, gapiTasks.tasks]);
 
     useEffect(function calculateItemMaxLimit() {
 
         const upperHeaderHeight = window.innerHeight * 0.1;
-        const taskListNameHeight = 63;
+        const taskListNameHeight = 68;
         const taskItemHeight = 36;
         const calculateItemMaxLimit = () => Math.floor(
             ((window.innerHeight - upperHeaderHeight - taskListNameHeight) / taskItemHeight) - 1
@@ -271,7 +277,7 @@ function GTasks({ gapiTasks }) {
         if ((navigationDir === 'down') && (cursor >= itemOffset + itemMaxLimit + 1)) {
             newItemOffset = itemOffset + 1;
         }
-        else if ((navigationDir === 'up') && (itemOffset === cursor) && (itemOffset !== 0)) {
+        else if ((navigationDir === 'up') && (cursor === itemOffset - oneIfPickerExpanded) && (itemOffset !== 0)) {
             newItemOffset = itemOffset - 1;
         }
         else {
@@ -279,7 +285,7 @@ function GTasks({ gapiTasks }) {
         }
 
         setItemOffset(newItemOffset);
-    }, [navigationDir, cursor, itemMaxLimit, itemOffset]);
+    }, [navigationDir, cursor, itemMaxLimit, itemOffset, oneIfPickerExpanded]);
 
     return <div isAppFocused={isAppFocused} css={mainCss}>
         <div css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
