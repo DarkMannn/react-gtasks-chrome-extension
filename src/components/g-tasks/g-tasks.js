@@ -33,17 +33,17 @@ const headingHelperCss = css`
 function GTasks({ gapiTasks }) {
 
     const [cursor, setCursor] = useState(0);
+    const [items, setItems] = useState([{ title: 'Loading...', id: '123' }]);
+    const [tasklist, setTasklist] = useState('Loading...');
+    const [zoomedItem, setZoomedItem] = useState(null);
+    const [isListPickerExpanded, setIsListPickerExpanded] = useState(true);
+    const [isItemExpanded, setIsItemExpanded] = useState(false);
     const [isAppFocused, setIsAppFocused] = useState(false);
+    const [isEditingActive, setIsEditingActive] = useState(false);
+    const [isNextBlurInsertion, setIsNextBlurInsertion] = useState(false);
     const [itemMaxLimit, setItemMaxLimit] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
     const [navigationDir, setNavigationDir] = useState('down');
-    const [items, setItems] = useState([{ title: 'Loading...', id: '123' }]);
-    const [zoomedItem, setZoomedItem] = useState(null);
-    const [tasklist, setTasklist] = useState('Loading...');
-    const [isListPickerExpanded, setIsListPickerExpanded] = useState(true);
-    const [isItemExpanded, setIsItemExpanded] = useState(false);
-    const [isEditingActive, setIsEditingActive] = useState(false);
-    const [isNextBlurInsertion, setIsNextBlurInsertion] = useState(false);
     const [showCompleted, setShowCompleted] = useState(true);
 
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
@@ -259,41 +259,48 @@ function GTasks({ gapiTasks }) {
         }
     }, [cursor]);
 
-    return <div isAppFocused={isAppFocused} css={mainCss}>
-        <div css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
-            {isListPickerExpanded ? 'Select a Task List' : tasklist.title}
-            {!isListPickerExpanded && cursor === 0 && (
-                <p css={headingHelperCss}>* press enter to change tasklist*</p>
-            )}
-        </div>
-        {!isItemExpanded && (isListPickerExpanded
-            ? items.map((item, index) =>
-                shouldRender(index) && <TasklistItem
+    let headerHtml;
+    let itemsHtml;
+    if (isListPickerExpanded) {
+        headerHtml = 'Select a Task List';
+        itemsHtml = items.map((item, index) => shouldRender(index)
+            && <TasklistItem
                     key={item.id}
                     title={item.title}
                     isHovered={index === cursor}>
-                </TasklistItem>
-            )
-            : items.map((item, index) =>
-                shouldRender(index) && <TaskItem
-                    key={item.id || index}
-                    title={item.title}
-                    due={item.due && new Date(item.due).toISOString().split('T')[0]}
-                    notes={item.notes}
-                    status={item.status}
-                    isHovered={index === cursor - 1}
-                    isEditingActive={isEditingActive && index === cursor - 1}
-                    onBlurCallback={onBlurCallback}>
-                </TaskItem>
-            )
-        )}
-        {isItemExpanded &&
-            <TaskItemZoomed
-                title={zoomedItem.title}
-                notes={zoomedItem.notes}
-                due={zoomedItem.due}>
-            </TaskItemZoomed>
-        }
+            </TasklistItem>
+        );
+    }
+    else if (!isItemExpanded) {
+        headerHtml = <>
+            {tasklist.title}
+            {cursor === 0 && <p css={headingHelperCss}>* press enter to change tasklist*</p>}
+        </>;
+        itemsHtml = items.map((item, index) => shouldRender(index)
+            && <TaskItem
+                key={item.id || index}
+                title={item.title}
+                due={item.due && new Date(item.due).toISOString().split('T')[0]}
+                notes={item.notes}
+                status={item.status}
+                isHovered={index === cursor - 1}
+                isEditingActive={isEditingActive && index === cursor - 1}
+                onBlurCallback={onBlurCallback}>
+            </TaskItem>
+        );
+    }
+    else {
+        headerHtml = 'Return to tasks';
+        itemsHtml = <TaskItemZoomed
+            title={zoomedItem.title}
+            notes={zoomedItem.notes}
+            due={zoomedItem.due}>
+        </TaskItemZoomed>;
+    }
+
+    return <div isAppFocused={isAppFocused} css={mainCss}>
+        <div css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>{headerHtml}</div>
+        {itemsHtml}
     </div>;
 }
 
