@@ -113,10 +113,10 @@ function GTasks({ gapiTasks }) {
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
                 moveTask(tasklist.id, movedTask.id, newPreviousTask && newPreviousTask.id)
-                .then(() => {
+                    .then(() => {
 
-                    setCursor(prevCursor => prevCursor - 1);
-                });
+                        setCursor(prevCursor => prevCursor - 1);
+                    });
             }
             else if (!isEditingActive && cursor > 0) {
                 setCursor(prevCursor => prevCursor - 1);
@@ -131,10 +131,10 @@ function GTasks({ gapiTasks }) {
                 const newPreviousTask = items[cursor];
                 if (newPreviousTask) {
                     moveTask(tasklist.id, movedTask.id, newPreviousTask.id)
-                    .then(() => {
+                        .then(() => {
 
-                        setCursor(prevCursor => prevCursor + 1);
-                    });
+                            setCursor(prevCursor => prevCursor + 1);
+                        });
                 }
             }
             else if (!isEditingActive && cursor < items.length - oneIfPickerExpanded) {
@@ -236,16 +236,21 @@ function GTasks({ gapiTasks }) {
 
     useEffect(function calculateItemMaxLimit() {
 
-        const upperHeaderHeight = window.innerHeight * 0.1;
-        const taskListNameHeight = 68;
-        const taskItemHeight = 36;
-        const newItemMaxLimit = Math.floor(
-            ((window.innerHeight - upperHeaderHeight - taskListNameHeight) / taskItemHeight) - 1
-        );
-        setItemMaxLimit(newItemMaxLimit);
-        setCursor(0);
-        setItemOffset(0);
-    }, [window.innerHeight]);
+        const onResize = () => {
+
+            const upperHeaderHeight = window.innerHeight * 0.1;
+            const taskListNameHeight = 68;
+            const taskItemHeight = 36;
+            const newItemMaxLimit = Math.floor(
+                ((window.innerHeight - upperHeaderHeight - taskListNameHeight) / taskItemHeight) - 1
+            );
+            setItemMaxLimit(newItemMaxLimit);
+            setItemOffset(0);
+            setCursor(0);
+        };
+        onResize();
+        window.addEventListener('resize', onResize);
+    }, []);
 
     useLayoutEffect(function calculateItemOffset() {
 

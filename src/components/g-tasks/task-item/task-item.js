@@ -18,6 +18,7 @@ const firstRowCss = css`
     display: flex;
     height: 30px;
     padding-top: 5px;
+    font-size: 1.5vh;
 `;
 const secondRowCss = css`
     display: flex;
