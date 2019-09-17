@@ -266,7 +266,15 @@ function GTasks({ gapiTasks }) {
 
     let headerHtml;
     let itemsHtml;
-    if (isListPickerExpanded) {
+    if (isItemExpanded) {
+        headerHtml = 'Return to tasks';
+        itemsHtml = <TaskItemZoomed
+            title={zoomedItem.title}
+            notes={zoomedItem.notes}
+            due={zoomedItem.due}>
+        </TaskItemZoomed>;
+    }
+    else if (isListPickerExpanded) {
         headerHtml = 'Select a Task List';
         itemsHtml = items.map((item, index) => shouldRender(index)
             && <TasklistItem
@@ -276,7 +284,7 @@ function GTasks({ gapiTasks }) {
             </TasklistItem>
         );
     }
-    else if (!isItemExpanded) {
+    else {
         headerHtml = <>
             {tasklist.title}
             {cursor === 0 && <p css={headingHelperCss}>* press enter to change tasklist*</p>}
@@ -293,14 +301,6 @@ function GTasks({ gapiTasks }) {
                 onBlurCallback={onBlurCallback}>
             </TaskItem>
         );
-    }
-    else {
-        headerHtml = 'Return to tasks';
-        itemsHtml = <TaskItemZoomed
-            title={zoomedItem.title}
-            notes={zoomedItem.notes}
-            due={zoomedItem.due}>
-        </TaskItemZoomed>;
     }
 
     return <div isAppFocused={isAppFocused} css={mainCss}>
