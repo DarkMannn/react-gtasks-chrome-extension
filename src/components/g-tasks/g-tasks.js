@@ -2,10 +2,12 @@
 import React, {
     useState,
     useEffect,
-    useLayoutEffect
+    useLayoutEffect,
+    useMemo
 } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
+import MakeCustomGapiTasks from '../../util/make-custom-gapi-tasks.js';
 import TasklistItem from './tasklist-item/tasklist-item.js';
 import TaskItem from './task-item/task-item.js';
 import TaskItemZoomed from './task-item-zoomed/task-item-zoomed.js';
@@ -49,42 +51,20 @@ function GTasks({ gapiTasks }) {
     const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
     const oneIfPickerNotExpanded = !isListPickerExpanded ? 1 : 0;
 
+    const GapiTasks = useMemo(() => MakeCustomGapiTasks(gapiTasks), [gapiTasks]);
+
     const shouldRender = (index) => index > itemOffset - 1
         && index <= itemMaxLimit + itemOffset - oneIfPickerNotExpanded;
 
-    const loadTasklists = () => gapiTasks.tasklists.list()
-        .then(({ result }) => {
-
-            setItems(result.items);
-        });
-    const loadTasks = (tasklist) => gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })
-        .then(({ result }) => {
-
-            const tasks = result.items || [];
-            tasks.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
-            setItems(tasks);
-        });
-    const loadTask = (tasklist, task) => gapiTasks.tasks.get({ tasklist, task })
-        .then(({ result }) => {
-
-            setZoomedItem(result);
-        });
-    const createTask = (tasklist, body) => gapiTasks.tasks.insert({ tasklist }, body)
-        .then(() => loadTasks(tasklist));
-    const moveTask = (tasklist, task, previous) => gapiTasks.tasks.move({ tasklist, task, previous })
-        .then(() => loadTasks(tasklist));
-    const updateTask = (tasklist, task, previous, body) => gapiTasks.tasks.update({ tasklist, task }, body)
-        .then(() => previous && moveTask(tasklist, task, previous));
-    const deleteTask = (tasklist, task) => gapiTasks.tasks.delete({ tasklist, task })
-        .then(() => loadTasks(tasklist));
-
-    const onBlurCallback = (newTitle) => {
+    const onBlurCallback = async (newTitle) => {
 
         setIsEditingActive(false);
 
         if (isNextBlurInsertion) {
             setIsNextBlurInsertion(false);
-            createTask(tasklist.id, { title: newTitle });
+            await GapiTasks.createTask(tasklist.id, { title: newTitle });
+            const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+            setItems(tasks);
             return;
         }
 
@@ -97,12 +77,16 @@ function GTasks({ gapiTasks }) {
         }
 
         updatedTask.title = newTitle;
-        updateTask(
+        await GapiTasks.updateTask(
             tasklist.id,
             updatedTask.id,
-            previousTask && previousTask.id,
             updatedTask
         );
+        if (previousTask && previousTask.id) {
+            await GapiTasks.moveTask(tasklist.id, updatedTask.id, previousTask && previousTask.id);
+        }
+        const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+        setItems(tasks);
     };
 
     const keyCodeMap = {
@@ -112,8 +96,13 @@ function GTasks({ gapiTasks }) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
-                await moveTask(tasklist.id, movedTask.id, newPreviousTask && newPreviousTask.id);
-                setCursor(prevCursor => prevCursor - 1);
+                const isFirstItem = cursor === 1;
+                if (!isFirstItem) {
+                    await GapiTasks.moveTask(tasklist.id, movedTask.id, newPreviousTask && newPreviousTask.id);
+                    const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+                    setItems(tasks);
+                    setCursor(prevCursor => prevCursor - 1);
+                }
             }
             else if (!isEditingActive && cursor > 0) {
                 setCursor(prevCursor => prevCursor - 1);
@@ -127,7 +116,9 @@ function GTasks({ gapiTasks }) {
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
                 if (newPreviousTask) {
-                    await moveTask(tasklist.id, movedTask.id, newPreviousTask.id);
+                    await GapiTasks.moveTask(tasklist.id, movedTask.id, newPreviousTask.id);
+                    const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+                    setItems(tasks);
                     setCursor(prevCursor => prevCursor + 1);
                 }
             }
@@ -140,7 +131,8 @@ function GTasks({ gapiTasks }) {
 
             if (isListPickerExpanded) {
                 const currentTasklist = items[cursor];
-                await loadTasks(currentTasklist.id);
+                const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
+                setItems(tasks);
                 setTasklist(currentTasklist);
                 setIsListPickerExpanded(false);
                 setCursor(1);
@@ -148,13 +140,15 @@ function GTasks({ gapiTasks }) {
             }
             else {
                 if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
-                    await loadTasklists();
+                    const { items } = await GapiTasks.loadTasklists();
+                    setItems(items);
                     setIsListPickerExpanded(true);
                     setCursor(0);
                     return;
                 }
                 if (cursor > 0 && shiftKeyPressed) {
-                    await loadTask(tasklist.id, items[cursor - 1].id);
+                    const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
+                    setZoomedItem(task);
                     setIsItemExpanded(true);
                     return;
                 }
@@ -171,7 +165,9 @@ function GTasks({ gapiTasks }) {
         '46': async ({ ctrlKeyPressed }) => { // del
 
             if (ctrlKeyPressed) {
-                await deleteTask(tasklist.id, items[cursor - 1].id);
+                await GapiTasks.deleteTask(tasklist.id, items[cursor - 1].id);
+                const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+                setItems(tasks);
                 setCursor(0);
             }
         },
@@ -185,19 +181,23 @@ function GTasks({ gapiTasks }) {
             const previousTask = items[cursor - 2];
 
             updatedTask.status = updatedTask.status === 'needsAction' ? 'completed' : 'needsAction';
-            await updateTask(
+            await GapiTasks.updateTask(
                 tasklist.id,
                 updatedTask.id,
-                previousTask && previousTask.id,
                 updatedTask
             );
-
+            if (previousTask && previousTask.id) {
+                await GapiTasks.moveTask(tasklist.id, updatedTask.id, previousTask && previousTask.id);
+            }
+            const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+            setItems(tasks);
         },
         '72': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
 
             if (ctrlKeyPressed && shiftKeyPressed) {
                 setShowCompleted(!showCompleted);
-                await loadTasks(tasklist.id, !showCompleted);
+                const tasks = await GapiTasks.loadTasks(tasklist.id, !showCompleted);
+                setItems(tasks);
             }
         }
     };
@@ -211,9 +211,13 @@ function GTasks({ gapiTasks }) {
         }
     }
 
-    useEffect(function initData() {
+    useEffect(function () {
 
-        loadTasklists();
+        (async function initData() {
+
+            const { items } = await GapiTasks.loadTasklists();
+            setItems(items);
+        })();
     }, []);
 
     useEffect(function calculateItemMaxLimit() {
