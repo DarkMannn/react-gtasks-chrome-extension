@@ -106,35 +106,29 @@ function GTasks({ gapiTasks }) {
     };
 
     const keyCodeMap = {
-        '38': ({ shiftKeyPressed }) => { // arrow up
+        '38': async ({ shiftKeyPressed }) => { // arrow up
 
             if (shiftKeyPressed) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
-                moveTask(tasklist.id, movedTask.id, newPreviousTask && newPreviousTask.id)
-                    .then(() => {
-
-                        setCursor(prevCursor => prevCursor - 1);
-                    });
+                await moveTask(tasklist.id, movedTask.id, newPreviousTask && newPreviousTask.id);
+                setCursor(prevCursor => prevCursor - 1);
             }
             else if (!isEditingActive && cursor > 0) {
                 setCursor(prevCursor => prevCursor - 1);
                 setNavigationDir('up');
             }
         },
-        '40': ({ shiftKeyPressed }) => { // arrow down
+        '40': async ({ shiftKeyPressed }) => { // arrow down
 
             if (shiftKeyPressed) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
                 if (newPreviousTask) {
-                    moveTask(tasklist.id, movedTask.id, newPreviousTask.id)
-                        .then(() => {
-
-                            setCursor(prevCursor => prevCursor + 1);
-                        });
+                    await moveTask(tasklist.id, movedTask.id, newPreviousTask.id);
+                    setCursor(prevCursor => prevCursor + 1);
                 }
             }
             else if (!isEditingActive && cursor < items.length - oneIfPickerExpanded) {
@@ -142,35 +136,26 @@ function GTasks({ gapiTasks }) {
                 setNavigationDir('down');
             }
         },
-        '13': ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
+        '13': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
 
             if (isListPickerExpanded) {
                 const currentTasklist = items[cursor];
-                loadTasks(currentTasklist.id)
-                    .then(() => {
-
-                        setTasklist(currentTasklist);
-                        setIsListPickerExpanded(false);
-                        setCursor(1);
-                        setItemOffset(0);
-                    });
+                await loadTasks(currentTasklist.id);
+                setTasklist(currentTasklist);
+                setIsListPickerExpanded(false);
+                setCursor(1);
+                setItemOffset(0);
             }
             else {
                 if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
-                    loadTasklists()
-                        .then(() => {
-
-                            setIsListPickerExpanded(true);
-                            setCursor(0);
-                        });
+                    await loadTasklists();
+                    setIsListPickerExpanded(true);
+                    setCursor(0);
                     return;
                 }
                 if (cursor > 0 && shiftKeyPressed) {
-                    loadTask(tasklist.id, items[cursor - 1].id)
-                        .then(() => {
-
-                            setIsItemExpanded(true);
-                        });
+                    await loadTask(tasklist.id, items[cursor - 1].id);
+                    setIsItemExpanded(true);
                     return;
                 }
                 if (ctrlKeyPressed) {
@@ -183,17 +168,14 @@ function GTasks({ gapiTasks }) {
                 setIsEditingActive(true);
             }
         },
-        '46': ({ ctrlKeyPressed }) => { // del
+        '46': async ({ ctrlKeyPressed }) => { // del
 
             if (ctrlKeyPressed) {
-                deleteTask(tasklist.id, items[cursor - 1].id)
-                    .then(() => {
-
-                        setCursor(0);
-                    });
+                await deleteTask(tasklist.id, items[cursor - 1].id);
+                setCursor(0);
             }
         },
-        '32': ({ ctrlKeyPressed }) => { // space
+        '32': async ({ ctrlKeyPressed }) => { // space
 
             if (!ctrlKeyPressed) {
                 return;
@@ -203,7 +185,7 @@ function GTasks({ gapiTasks }) {
             const previousTask = items[cursor - 2];
 
             updatedTask.status = updatedTask.status === 'needsAction' ? 'completed' : 'needsAction';
-            updateTask(
+            await updateTask(
                 tasklist.id,
                 updatedTask.id,
                 previousTask && previousTask.id,
@@ -211,11 +193,11 @@ function GTasks({ gapiTasks }) {
             );
 
         },
-        '72': ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
+        '72': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
 
             if (ctrlKeyPressed && shiftKeyPressed) {
                 setShowCompleted(!showCompleted);
-                loadTasks(tasklist.id, !showCompleted);
+                await loadTasks(tasklist.id, !showCompleted);
             }
         }
     };

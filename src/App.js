@@ -42,31 +42,32 @@ function App() {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [hasErrored, setHasErrored] = useState(false);
 
-    const signIn = () => gapi.auth2.getAuthInstance().signIn()
-        .then(() => {
+    const signIn = async () => {
 
+        try {
+            await gapi.auth2.getAuthInstance().signIn();
             setIsSignedIn(true);
-        })
-        .catch(() => {
-
+        }
+        catch (err) {
             setHasErrored(true);
-        });
+        }
+    };
+    useEffect(function () {
 
-    useEffect(function loadGapiAndSetState() {
+        (async function loadGapiAndSetState() {
 
-        loadGapi()
-            .then((initializedGapi) => {
-
+            try {
+                const initializedGapi = await loadGapi();
                 setIsLoading(false);
                 gapi = initializedGapi;
                 if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
                     setIsSignedIn(true);
                 }
-            })
-            .catch(() => {
-
+            }
+            catch (err) {
                 setHasErrored(true);
-            });
+            }
+        })();
     }, []);
 
     let body;

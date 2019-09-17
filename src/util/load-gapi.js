@@ -13,7 +13,7 @@ const initGapiClient = () => gapi.client.init({
     scope: SCOPES
 });
 
-const loadGapi = () => new Promise((resolve, reject) => {
+const loadGapiScript = () => new Promise((resolve, reject) => {
 
     const script = document.createElement('script');
     script.src = GAPI_URL;
@@ -23,8 +23,13 @@ const loadGapi = () => new Promise((resolve, reject) => {
         gapi.load('client:auth2', { callback: resolve, onerror: reject });
     };
     document.body.appendChild(script);
-})
-.then(initGapiClient)
-.then(() => gapi);
+});
+
+const loadGapi = async () => {
+
+    await loadGapiScript();
+    await initGapiClient();
+    return gapi;
+};
 
 export default loadGapi;
