@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
     useState,
     useEffect,
@@ -36,15 +35,15 @@ function GTasks({ gapiTasks }) {
 
     const [cursor, setCursor] = useState(0);
     const [items, setItems] = useState([{ title: 'Loading...', id: '123' }]);
+    const [itemMaxLimit, setItemMaxLimit] = useState(0);
+    const [itemOffset, setItemOffset] = useState(0);
     const [tasklist, setTasklist] = useState('Loading...');
-    const [zoomedItem, setZoomedItem] = useState(null);
+
     const [isListPickerExpanded, setIsListPickerExpanded] = useState(true);
     const [isItemExpanded, setIsItemExpanded] = useState(false);
     const [isAppFocused, setIsAppFocused] = useState(false);
     const [isEditingActive, setIsEditingActive] = useState(false);
     const [isNextBlurInsertion, setIsNextBlurInsertion] = useState(false);
-    const [itemMaxLimit, setItemMaxLimit] = useState(0);
-    const [itemOffset, setItemOffset] = useState(0);
     const [navigationDir, setNavigationDir] = useState('down');
     const [showCompleted, setShowCompleted] = useState(true);
 
@@ -148,7 +147,7 @@ function GTasks({ gapiTasks }) {
                 }
                 if (cursor > 0 && shiftKeyPressed) {
                     const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
-                    setZoomedItem(task);
+                    setItems([task])
                     setIsItemExpanded(true);
                     return;
                 }
@@ -218,7 +217,7 @@ function GTasks({ gapiTasks }) {
             const { items } = await GapiTasks.loadTasklists();
             setItems(items);
         })();
-    }, []);
+    }, [GapiTasks]);
 
     useEffect(function calculateItemMaxLimit() {
 
@@ -248,11 +247,12 @@ function GTasks({ gapiTasks }) {
             setItemOffset(oldItemOffset => oldItemOffset - 1);
             return;
         }
-    }, [cursor]);
+    }, [cursor, itemMaxLimit, itemOffset, navigationDir, oneIfPickerExpanded]);
 
     let headerHtml;
     let itemsHtml;
     if (isItemExpanded) {
+        const zoomedItem = items[0];
         headerHtml = 'Return to tasks';
         itemsHtml = <TaskItemZoomed
             title={zoomedItem.title}
