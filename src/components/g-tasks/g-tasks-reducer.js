@@ -120,7 +120,6 @@ export function gTasksReducer(state, action) {
             const {
                 navigationDir, cursor, itemOffset, itemMaxLimit, isListPickerExpanded
             } = state;
-            const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
 
             if ((navigationDir === 'down') && (cursor >= itemOffset + itemMaxLimit + 1)) {
                 return {
@@ -130,7 +129,7 @@ export function gTasksReducer(state, action) {
             }
             if (
                 (navigationDir === 'up')
-                && (cursor === itemOffset - oneIfPickerExpanded) && (itemOffset !== 0)
+                && (cursor === itemOffset - (isListPickerExpanded ? 1 : 0)) && (itemOffset !== 0)
             ) {
                 return {
                     ...state,

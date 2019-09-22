@@ -1,7 +1,9 @@
-import React, { useEffect, useLayoutEffect, useReducer, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useReducer, useMemo, useCallback } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 import MakeCustomGapiTasks from '../../util/make-custom-gapi-tasks.js';
+import MakeKeydownListener from './make-keydown-listener.js';
+import MakeOnBlurCallback from './make-on-blur-callback.js';
 import { gTasksReducer, initialState } from './g-tasks-reducer.js';
 import { actionCreators } from './g-tasks-actions.js';
 import TasklistItem from './tasklist-item/tasklist-item.js';
@@ -30,166 +32,32 @@ const headingHelperCss = css`
 
 function GTasks({ gapiTasks }) {
 
-    const [state, dispatch] = useReducer(gTasksReducer, initialState);
-
-    const {
-        cursor,
-        items,
-        itemMaxLimit,
-        itemOffset,
-        tasklist,
-        isListPickerExpanded,
-        isItemExpanded,
-        isAppFocused,
-        isEditingActive,
-        isNextBlurInsertion,
-        showCompleted
-    } = state;
-
-    const oneIfPickerExpanded = isListPickerExpanded ? 1 : 0;
-    const oneIfPickerNotExpanded = !isListPickerExpanded ? 1 : 0;
-
+    const [{
+        cursor, items, itemMaxLimit, itemOffset, tasklist,
+        isListPickerExpanded, isItemExpanded, isAppFocused,
+        isEditingActive, isNextBlurInsertion, showCompleted
+    }, dispatch] = useReducer(gTasksReducer, initialState);
     const GapiTasks = useMemo(() => MakeCustomGapiTasks(gapiTasks), [gapiTasks]);
-
-    const shouldRender = (index) => index > itemOffset - 1
-        && index <= itemMaxLimit + itemOffset - oneIfPickerNotExpanded;
-
-    const onBlurCallback = async (newTitle) => {
-
-        dispatch(actionCreators.toggleIsEditingActive(false));
-
-        if (isNextBlurInsertion) {
-            await GapiTasks.createTask(tasklist.id, { title: newTitle });
-            const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-            dispatch(actionCreators.reloadTasks(tasks));
-            return;
-        }
-
-        const updatedTask = items[cursor - 1];
-        const previousTask = items[cursor - 2];
-
-        const shouldNotUpdate = updatedTask.title === newTitle;
-        if (shouldNotUpdate) {
-            return;
-        }
-
-        updatedTask.title = newTitle;
-        await GapiTasks.updateTask(
-            tasklist.id,
-            updatedTask.id,
-            updatedTask
-        );
-        if (previousTask && previousTask.id) {
-            await GapiTasks.moveTask(tasklist.id, updatedTask.id, previousTask && previousTask.id);
-        }
-        const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-        dispatch(actionCreators.reloadTasks(tasks));
-    };
-
-    const keyCodeMap = {
-        '38': async ({ shiftKeyPressed }) => { // arrow up
-
-            if (shiftKeyPressed) {
-
-                const movedTask = items[cursor - 1];
-                const newPreviousTask = items[cursor - 3];
-                const isFirstItem = cursor === 1;
-                if (!isFirstItem) {
-                    await GapiTasks.moveTask(
-                        tasklist.id,
-                        movedTask.id,
-                        newPreviousTask && newPreviousTask.id
-                    );
-                    const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-                    dispatch(actionCreators.moveUp(tasks));
-                }
-            }
-            else if (!isEditingActive && cursor > 0) {
-                dispatch(actionCreators.scrollUp());
-            }
+    const keydownListener = useMemo(() => MakeKeydownListener(
+        {
+            items, cursor, tasklist, showCompleted, isEditingActive,
+            isListPickerExpanded, isAppFocused
         },
-        '40': async ({ shiftKeyPressed }) => { // arrow down
+        dispatch,
+        GapiTasks
+    ), [
+        GapiTasks, cursor, isAppFocused, isEditingActive,
+        isListPickerExpanded, items, showCompleted, tasklist
+    ]);
+    const onBlurCallback = useCallback(MakeOnBlurCallback(
+        { items, cursor, tasklist, showCompleted, isNextBlurInsertion },
+        dispatch,
+        GapiTasks
+    ), [GapiTasks, items, cursor, tasklist, showCompleted, isNextBlurInsertion]);
 
-            if (shiftKeyPressed) {
+    useEffect(function initData() {
 
-                const movedTask = items[cursor - 1];
-                const newPreviousTask = items[cursor];
-                if (newPreviousTask) {
-                    await GapiTasks.moveTask(tasklist.id, movedTask.id, newPreviousTask.id);
-                    const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-                    dispatch(actionCreators.moveDown(tasks));
-                }
-            }
-            else if (!isEditingActive && cursor < items.length - oneIfPickerExpanded) {
-                dispatch(actionCreators.scrollDown());
-            }
-        },
-        '13': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
-
-            if (isListPickerExpanded) {
-                const currentTasklist = items[cursor];
-                const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
-                dispatch(actionCreators.loadTasks(tasks, currentTasklist));
-            }
-            else {
-                if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
-                    const { items } = await GapiTasks.loadTasklists();
-                    dispatch(actionCreators.loadTasklists(items));
-                    return;
-                }
-                if (cursor > 0 && shiftKeyPressed) {
-                    const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
-                    dispatch(actionCreators.expandTask([task]));
-                    return;
-                }
-                if (ctrlKeyPressed) {
-                    dispatch(actionCreators.createTask(items));
-                    return;
-                }
-                dispatch(actionCreators.editTask());
-            }
-        },
-        '46': async ({ ctrlKeyPressed }) => { // del
-
-            if (ctrlKeyPressed) {
-                await GapiTasks.deleteTask(tasklist.id, items[cursor - 1].id);
-                const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-                dispatch(actionCreators.deleteTask(tasks));
-            }
-        },
-        '32': async ({ ctrlKeyPressed }) => { // space
-
-            if (!ctrlKeyPressed) {
-                return;
-            }
-
-            const updatedTask = items[cursor - 1];
-            const previousTask = items[cursor - 2];
-
-            updatedTask.status = updatedTask.status === 'needsAction' ? 'completed' : 'needsAction';
-            await GapiTasks.updateTask(
-                tasklist.id,
-                updatedTask.id,
-                updatedTask
-            );
-            if (previousTask && previousTask.id) {
-                await GapiTasks.moveTask(tasklist.id, updatedTask.id, previousTask && previousTask.id);
-            }
-            const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-            dispatch(actionCreators.reloadTasks(tasks));
-        },
-        '72': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
-
-            if (ctrlKeyPressed && shiftKeyPressed) {
-                const tasks = await GapiTasks.loadTasks(tasklist.id, !showCompleted);
-                dispatch(actionCreators.toggleShowCompleted(tasks));
-            }
-        }
-    };
-
-    useEffect(function () {
-
-        (async function initData() {
+        (async function() {
 
             const { items } = await GapiTasks.loadTasklists();
             dispatch(actionCreators.loadTasklists(items));
@@ -198,31 +66,21 @@ function GTasks({ gapiTasks }) {
 
     useEffect(function attachKeydownListener() {
 
-        const onKeydown = ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
-
-            if (keyCode === 76 && ctrlKeyPressed && shiftKeyPressed) { // l
-                dispatch(actionCreators.toggleAppFocus());
-            }
-            else if (isAppFocused && keyCodeMap[keyCode]) {
-                keyCodeMap[keyCode]({ ctrlKeyPressed, shiftKeyPressed});
-            }
-        };
-        window.addEventListener('keydown', onKeydown);
-
+        window.addEventListener('keydown', keydownListener);
         return () => {
 
-            window.removeEventListener('keydown', onKeydown);
+            window.removeEventListener('keydown', keydownListener);
         };
-    }, [isAppFocused, keyCodeMap]);
+    }, [keydownListener]);
 
-    useEffect(function attachResizeContentListener() {
+    useEffect(function attachResizeListener() {
 
-        const onResize = () => {
+        const resizeListener = () => {
 
             dispatch(actionCreators.resizeContent(window.innerHeight));
         };
-        onResize();
-        window.addEventListener('resize', onResize);
+        resizeListener();
+        window.addEventListener('resize', resizeListener);
     }, []);
 
     useLayoutEffect(function calculateItemOffset() {
@@ -230,6 +88,8 @@ function GTasks({ gapiTasks }) {
         dispatch(actionCreators.calculateItemOffset());
     }, [cursor]);
 
+    const shouldRender = (index) => index > itemOffset - 1
+        && index <= itemMaxLimit + itemOffset - (isListPickerExpanded ? 0 : 1);
     let headerHtml;
     let itemsHtml;
     if (isItemExpanded) {

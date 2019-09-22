@@ -54,9 +54,9 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
 
     const titleRef = useRef();
     const isChecked = status === 'completed';
-    const onBlur = () => {
+    const onBlur = async () => {
 
-        onBlurCallback(titleRef.current.innerText);
+        await onBlurCallback(titleRef.current.innerText);
     };
 
     if (isEditingActive) {

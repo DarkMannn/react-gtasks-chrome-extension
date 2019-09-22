@@ -5,7 +5,9 @@ const MakeCustomGapiTasks = (gapiTasks) => ({
 
     loadTasks: async (tasklist, showCompleted) => {
 
-        const tasks = (await gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })).result.items || [];
+        const tasks = (
+            await gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })
+        ).result.items || [];
         tasks.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
         return tasks;
     },
