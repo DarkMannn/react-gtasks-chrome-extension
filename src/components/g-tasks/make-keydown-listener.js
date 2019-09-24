@@ -2,8 +2,8 @@ import { actionCreators } from './g-tasks-actions.js';
 
 const MakeKeydownListener = (
     {
-        items, cursor, tasklist, showCompleted, isEditingActive,
-        isListPickerExpanded, isAppFocused
+        isLoading, hasErrored, items, cursor, tasklist, showCompleted,
+        isEditingActive, isListPickerExpanded, isAppFocused
     },
     dispatch,
     GapiTasks
@@ -55,12 +55,14 @@ const MakeKeydownListener = (
         '13': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
 
             if (isListPickerExpanded) {
+                dispatch(actionCreators.toggleIsLoading());
                 const currentTasklist = items[cursor];
                 const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
                 dispatch(actionCreators.loadTasks(tasks, currentTasklist));
                 return;
             }
             if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
+                dispatch(actionCreators.toggleIsLoading());
                 const { items } = await GapiTasks.loadTasklists();
                 dispatch(actionCreators.loadTasklists(items));
                 return;
@@ -123,13 +125,23 @@ const MakeKeydownListener = (
         }
     };
 
-    return ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
+    return async ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
 
+        if (keyCode === 82 && !ctrlKeyPressed && shiftKeyPressed) { // r
+            dispatch(actionCreators.resetState());
+            return;
+        }
         if (keyCode === 76 && ctrlKeyPressed && shiftKeyPressed) { // l
             dispatch(actionCreators.toggleAppFocus());
+            return;
         }
-        else if (isAppFocused && ActionsByKeyCodeHash[keyCode]) {
-            ActionsByKeyCodeHash[keyCode]({ ctrlKeyPressed, shiftKeyPressed});
+        if (isAppFocused && !isLoading && !hasErrored && ActionsByKeyCodeHash[keyCode]) {
+            try {
+                await ActionsByKeyCodeHash[keyCode]({ ctrlKeyPressed, shiftKeyPressed });
+            }
+            catch (err) {
+                dispatch(actionCreators.toggleHasErrored());
+            }
         }
     };
 };

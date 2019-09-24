@@ -1,5 +1,8 @@
 
 export const actionTypes = {
+    resetState: 'RESET_STATE',
+    toggleIsLoading: 'TOGGLE_IS_LOADING',
+    toggleHasErrored: 'TOGGLE_HAS_ERRORED',
     moveUp: 'MOVE_UP',
     moveDown: 'MOVE_DOWN',
     scrollUp: "SCROLL_UP",
@@ -19,6 +22,15 @@ export const actionTypes = {
 }
 
 export const actionCreators = {
+    resetState: () => ({
+        type: actionTypes.resetState
+    }),
+    toggleIsLoading: () => ({
+        type: actionTypes.toggleIsLoading
+    }),
+    toggleHasErrored: () => ({
+        type: actionTypes.toggleHasErrored
+    }),
     moveUp: (items) => ({
         type: actionTypes.moveUp,
         items
@@ -68,9 +80,8 @@ export const actionCreators = {
     toggleAppFocus: () => ({
         type: actionTypes.toggleAppFocus,
     }),
-    toggleIsEditingActive: (isActive) => ({
-        type: actionTypes.toggleIsEditingActive,
-        isEditingActive: (isActive !== undefined) && (isActive ? true : false)
+    toggleIsEditingActive: () => ({
+        type: actionTypes.toggleIsEditingActive
     }),
     resizeContent: (windowHeight) => ({
         type: actionTypes.resizeContent,

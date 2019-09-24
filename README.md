@@ -7,8 +7,9 @@ Todo:
 - [x] implement reordering
 - [x] implement switching visibility of completed/active tasks
 - [x] clear and refactor the codebase
+- [x] implement showing 'loading' and 'error' messages
 - [ ] optimize/cache key events and http requests
-- [ ] implement showing 'loading' and 'error' messages
+- [ ] write better tests
 - [ ] implement modifying single task
 - [ ] optimize css rendering
 - [ ] see if you covered all of the functionalities from original GTask app

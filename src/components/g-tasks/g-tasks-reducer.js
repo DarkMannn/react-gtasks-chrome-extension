@@ -1,6 +1,8 @@
 import { actionTypes } from './g-tasks-actions.js';
 
 export const initialState = {
+    isLoading: true,
+    hasErrored: false,
     cursor: 0,
     items: [{ title: 'Loading...', id: '123' }],
     itemMaxLimit: 0,
@@ -18,6 +20,19 @@ export const initialState = {
 export function gTasksReducer(state, action) {
 
     const actionsHash = {
+        [actionTypes.resetState]: () => ({
+            ...initialState,
+            isAppFocused: true,
+            itemMaxLimit: state.itemMaxLimit
+        }),
+        [actionTypes.toggleIsLoading]: () => ({
+            ...state,
+            isLoading: !state.isLoading
+        }),
+        [actionTypes.toggleHasErrored]: () => ({
+            ...state,
+            hasErrored: !state.hasErrored
+        }),
         [actionTypes.moveUp]: () => ({
             ...state,
             items: action.items,
@@ -67,7 +82,8 @@ export function gTasksReducer(state, action) {
             tasklist: action.tasklist,
             isListPickerExpanded: false,
             cursor: 1,
-            itemOffset: 0
+            itemOffset: 0,
+            isLoading: false
         }),
         [actionTypes.reloadTasks]: () => ({
             ...state,
@@ -79,7 +95,8 @@ export function gTasksReducer(state, action) {
             items: action.items,
             isListPickerExpanded: true,
             cursor: 0,
-            itemOffset: 0
+            itemOffset: 0,
+            isLoading: false
         }),
         [actionTypes.toggleShowCompleted]: () => ({
             ...state,
@@ -92,9 +109,7 @@ export function gTasksReducer(state, action) {
         }),
         [actionTypes.toggleIsEditingActive]: () => ({
             ...state,
-            isEditingActive: action.isEditingActive === undefined
-                ? !state.isEditingActive
-                : action.isEditingActive
+            isEditingActive: !state.isEditingActive
         }),
         [actionTypes.resizeContent]: () => {
 

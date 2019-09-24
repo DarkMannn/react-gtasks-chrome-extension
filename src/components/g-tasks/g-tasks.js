@@ -14,6 +14,8 @@ const mainCss = css`
     outline: none;
     border-right: ${({ isAppFocused }) => isAppFocused ? '3px solid gray' : 'none'};
     border-left: ${({ isAppFocused }) => isAppFocused ? '3px solid gray' : 'none'};
+    opacity: ${({ isLoading }) => isLoading ? 0.6 : 1};
+    background-color: ${({ hasErrored }) => hasErrored ? 'salmon' : 'white'}
 `;
 const headingCss = css`
     height: 30px;
@@ -33,22 +35,22 @@ const headingHelperCss = css`
 function GTasks({ gapiTasks }) {
 
     const [{
-        cursor, items, itemMaxLimit, itemOffset, tasklist,
-        isListPickerExpanded, isItemExpanded, isAppFocused,
-        isEditingActive, isNextBlurInsertion, showCompleted
+        isLoading, hasErrored, cursor, items, itemMaxLimit,
+        itemOffset, tasklist, isListPickerExpanded, isItemExpanded,
+        isAppFocused, isEditingActive, isNextBlurInsertion, showCompleted
     }, dispatch] = useReducer(gTasksReducer, initialState);
     const GapiTasks = useMemo(() => MakeCustomGapiTasks(gapiTasks), [gapiTasks]);
     const keydownListener = useMemo(
         () => MakeKeydownListener(
             {
-                items, cursor, tasklist, showCompleted, isEditingActive,
-                isListPickerExpanded, isAppFocused
+                isLoading, hasErrored, items, cursor, tasklist, showCompleted,
+                isEditingActive, isListPickerExpanded, isAppFocused
             },
             dispatch,
             GapiTasks
         ),
         [
-            GapiTasks, cursor, isAppFocused, isEditingActive,
+            GapiTasks, isLoading, hasErrored, cursor, isAppFocused, isEditingActive,
             isListPickerExpanded, items, showCompleted, tasklist
         ]
     );
@@ -65,10 +67,13 @@ function GTasks({ gapiTasks }) {
 
         (async function() {
 
+            if (hasErrored) {
+                return;
+            }
             const { items } = await GapiTasks.loadTasklists();
             dispatch(actionCreators.loadTasklists(items));
         })();
-    }, [GapiTasks]);
+    }, [GapiTasks, hasErrored]);
 
     useEffect(function attachKeydownListener() {
 
@@ -98,7 +103,11 @@ function GTasks({ gapiTasks }) {
         && index <= itemMaxLimit + itemOffset - (isListPickerExpanded ? 0 : 1);
     let headerHtml;
     let itemsHtml;
-    if (isItemExpanded) {
+    if (hasErrored) {
+        headerHtml = 'An Error Occurred';
+        itemsHtml = 'Press <Shift + R> to restart app'
+    }
+    else if (isItemExpanded) {
         const zoomedItem = items[0];
         headerHtml = 'Return to tasks';
         itemsHtml = <TaskItemZoomed
@@ -111,7 +120,7 @@ function GTasks({ gapiTasks }) {
         headerHtml = 'Select a Task List';
         itemsHtml = items.map((item, index) => shouldRender(index)
             && <TasklistItem
-                    key={item.id}
+                    key={index}
                     title={item.title}
                     isHovered={index === cursor}>
             </TasklistItem>
@@ -124,7 +133,7 @@ function GTasks({ gapiTasks }) {
         </>;
         itemsHtml = items.map((item, index) => shouldRender(index)
             && <TaskItem
-                key={item.id || index}
+                key={index}
                 title={item.title}
                 due={item.due && new Date(item.due).toISOString().split('T')[0]}
                 notes={item.notes}
@@ -136,9 +145,9 @@ function GTasks({ gapiTasks }) {
         );
     }
 
-    return <div isAppFocused={isAppFocused} css={mainCss}>
+    return <div isAppFocused={isAppFocused} isLoading={isLoading} hasErrored={hasErrored} css={mainCss}>
         <div css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>{headerHtml}</div>
-        {itemsHtml}
+        <div>{itemsHtml}</div>
     </div>;
 }
 
