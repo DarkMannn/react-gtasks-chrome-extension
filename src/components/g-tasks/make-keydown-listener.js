@@ -18,15 +18,16 @@ const MakeKeydownListener = (
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
                 const isFirstItem = cursor === 1;
-                if (!isFirstItem) {
-                    await GapiTasks.moveTask(
-                        tasklist.id,
-                        movedTask.id,
-                        newPreviousTask && newPreviousTask.id
-                    );
-                    const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-                    dispatch(actionCreators.moveUp(tasks));
+                if (isFirstItem) {
+                    return;
                 }
+                await GapiTasks.moveTask(
+                    tasklist.id,
+                    movedTask.id,
+                    newPreviousTask && newPreviousTask.id
+                );
+                const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+                dispatch(actionCreators.moveUp(tasks));
             }
             else if (!isEditingActive && cursor > 0) {
                 dispatch(actionCreators.scrollUp());
@@ -39,11 +40,12 @@ const MakeKeydownListener = (
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
-                if (newPreviousTask) {
-                    await GapiTasks.moveTask(tasklist.id, movedTask.id, newPreviousTask.id);
-                    const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-                    dispatch(actionCreators.moveDown(tasks));
+                if (!newPreviousTask) {
+                    return;
                 }
+                await GapiTasks.moveTask(tasklist.id, movedTask.id, newPreviousTask.id);
+                const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+                dispatch(actionCreators.moveDown(tasks));
             }
             else if (!isEditingActive && cursor < items.length - (isListPickerExpanded ? 1 : 0)) {
                 dispatch(actionCreators.scrollDown());
@@ -56,24 +58,23 @@ const MakeKeydownListener = (
                 const currentTasklist = items[cursor];
                 const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
                 dispatch(actionCreators.loadTasks(tasks, currentTasklist));
+                return;
             }
-            else {
-                if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
-                    const { items } = await GapiTasks.loadTasklists();
-                    dispatch(actionCreators.loadTasklists(items));
-                    return;
-                }
-                if (cursor > 0 && shiftKeyPressed) {
-                    const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
-                    dispatch(actionCreators.expandTask([task]));
-                    return;
-                }
-                if (ctrlKeyPressed) {
-                    dispatch(actionCreators.createTask(items));
-                    return;
-                }
-                dispatch(actionCreators.editTask());
+            if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
+                const { items } = await GapiTasks.loadTasklists();
+                dispatch(actionCreators.loadTasklists(items));
+                return;
             }
+            if (cursor > 0 && shiftKeyPressed) {
+                const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
+                dispatch(actionCreators.expandTask([task]));
+                return;
+            }
+            if (ctrlKeyPressed) {
+                dispatch(actionCreators.createTask(items));
+                return;
+            }
+            dispatch(actionCreators.editTask());
         },
 
         '46': async ({ ctrlKeyPressed }) => { // del
