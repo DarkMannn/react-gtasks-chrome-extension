@@ -4,24 +4,17 @@ Todo:
 - [x] implement fetching
 - [x] implement focusing on task-list from any webpage via shortcuts
 - [x] keyboard shortcuts must work on entire window
+- [x] implement reordering
+- [x] implement switching visibility of completed/active tasks
+- [x] clear and refactor the codebase
+- [ ] optimize/cache key events and http requests
 - [ ] implement showing 'loading' and 'error' messages
 - [ ] implement modifying single task
 - [ ] optimize css rendering
 - [ ] see if you covered all of the functionalities from original GTask app
 - [ ] implement styling
 - [ ] create instructions
-- [ ] task list CRUD
-
-Current:
-- [x] implement reordering
-- [x] implement switching visibility of completed/active tasks
-- [ ] clear and refactor the codebase
-- [ ] optimize/cache key events and http requests
-
-Current current:
-- [x] delete unfocused throws
-- [x] empty list throws
-- [ ] space in the middle of edit? other mixed commands?
+- [ ] tasklist CRUD
 
 Refactor hooks:
 - useEffect:
