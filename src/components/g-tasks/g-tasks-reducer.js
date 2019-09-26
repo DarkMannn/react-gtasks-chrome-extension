@@ -74,7 +74,8 @@ export function gTasksReducer(state, action) {
         [actionTypes.expandTask]: () => ({
             ...state,
             items: action.items,
-            isItemExpanded: true
+            isItemExpanded: true,
+            isLoading: false
         }),
         [actionTypes.loadTasks]: () => ({
             ...state,
@@ -100,8 +101,11 @@ export function gTasksReducer(state, action) {
         }),
         [actionTypes.toggleShowCompleted]: () => ({
             ...state,
+            cursor: 0,
+            itemOffset: 0,
             items: action.items,
-            showCompleted: !state.showCompleted
+            showCompleted: !state.showCompleted,
+            isLoading: false
         }),
         [actionTypes.toggleAppFocus]: () => ({
             ...state,

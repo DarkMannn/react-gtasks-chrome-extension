@@ -1,43 +1,48 @@
 import { actionCreators } from './g-tasks-actions.js';
+import * as RequestsEnqueuer from '../../util/requests-enqueuer.js';
 
 const MakeOnBlurCallback = (
-    { items, cursor, tasklist, showCompleted, isNextBlurInsertion },
+    { items, cursor, tasklist, isNextBlurInsertion },
     dispatch,
     GapiTasks
-) => async (newTitle) => {
+) => (newTitle) => {
 
-    try {
-        dispatch(actionCreators.toggleIsEditingActive(false));
+    dispatch(actionCreators.toggleIsEditingActive(false));
 
-        if (isNextBlurInsertion) {
-            await GapiTasks.createTask(tasklist.id, { title: newTitle });
-            const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-            dispatch(actionCreators.reloadTasks(tasks));
-            return;
+    if (isNextBlurInsertion) {
+        try{
+            RequestsEnqueuer.enqueue(async () => {
+
+                const createdTask = (await GapiTasks.createTask(tasklist.id, { title: newTitle })).result;
+                const updatedItems = [createdTask, ...items.slice(1)];
+                dispatch(actionCreators.reloadTasks(updatedItems));
+            });
         }
-
-        const updatedTask = items[cursor - 1];
-        const previousTask = items[cursor - 2];
-
-        const shouldNotUpdate = updatedTask.title === newTitle;
-        if (shouldNotUpdate) {
-            return;
+        catch (err) {
+            dispatch(actionCreators.toggleHasErrored());
         }
-
-        updatedTask.title = newTitle;
-        await GapiTasks.updateTask(
-            tasklist.id,
-            updatedTask.id,
-            updatedTask
-        );
-        if (previousTask && previousTask.id) {
-            await GapiTasks.moveTask(tasklist.id, updatedTask.id, previousTask && previousTask.id);
-        }
-        const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-        dispatch(actionCreators.reloadTasks(tasks));
+        return;
     }
-    catch (err) {
-        dispatch(actionCreators.toggleHasErrored());
+
+    const updatedTask = items[cursor - 1];
+    const previousTask = items[cursor - 2];
+
+    const shouldNotUpdate = updatedTask.title === newTitle;
+    if (shouldNotUpdate) {
+        return;
+    }
+
+    updatedTask.title = newTitle;
+    dispatch(actionCreators.reloadTasks(items));
+    RequestsEnqueuer.enqueue(() => GapiTasks.updateTask(
+        tasklist.id,
+        updatedTask.id,
+        updatedTask
+    ));
+    if (previousTask && previousTask.id) {
+        RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
+            tasklist.id, updatedTask.id, previousTask && previousTask.id
+        ));
     }
 };
 

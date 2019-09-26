@@ -1,11 +1,14 @@
 import React, { useEffect, useLayoutEffect, useReducer, useMemo, useCallback } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
+
+import * as RequestsEnqueuer from '../../util/requests-enqueuer.js';
 import MakeCustomGapiTasks from '../../util/make-custom-gapi-tasks.js';
 import MakeKeydownListener from './make-keydown-listener.js';
 import MakeOnBlurCallback from './make-on-blur-callback.js';
 import { gTasksReducer, initialState } from './g-tasks-reducer.js';
 import { actionCreators } from './g-tasks-actions.js';
+
 import TasklistItem from './tasklist-item/tasklist-item.js';
 import TaskItem from './task-item/task-item.js';
 import TaskItemZoomed from './task-item-zoomed/task-item-zoomed.js';
@@ -56,12 +59,21 @@ function GTasks({ gapiTasks }) {
     );
     const onBlurCallback = useCallback(
         MakeOnBlurCallback(
-            { items, cursor, tasklist, showCompleted, isNextBlurInsertion },
+            { items, cursor, tasklist, isNextBlurInsertion },
             dispatch,
             GapiTasks
         ),
-        [GapiTasks, items, cursor, tasklist, showCompleted, isNextBlurInsertion]
+        [GapiTasks, items, cursor, tasklist, isNextBlurInsertion]
     );
+
+    useEffect(function initRequestsEnqueuer() {
+
+        const onError = () => {
+
+            dispatch(actionCreators.toggleHasErrored());
+        };
+        RequestsEnqueuer.init(onError);
+    }, []);
 
     useEffect(function initData() {
 
@@ -86,11 +98,11 @@ function GTasks({ gapiTasks }) {
 
     useEffect(function attachResizeListener() {
 
+        dispatch(actionCreators.resizeContent(window.innerHeight));
         const resizeListener = () => {
 
             dispatch(actionCreators.resizeContent(window.innerHeight));
         };
-        resizeListener();
         window.addEventListener('resize', resizeListener);
     }, []);
 

@@ -1,4 +1,5 @@
 import { actionCreators } from './g-tasks-actions.js';
+import * as RequestsEnqueuer from '../../util/requests-enqueuer.js';
 
 const MakeKeydownListener = (
     {
@@ -17,17 +18,24 @@ const MakeKeydownListener = (
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
+                const newNextTask = items[cursor - 2];
                 const isFirstItem = cursor === 1;
                 if (isFirstItem) {
                     return;
                 }
-                await GapiTasks.moveTask(
+
+                const tasks = [
+                    ...items.slice(0, cursor - 2),
+                    movedTask,
+                    newNextTask,
+                    ...items.slice(cursor)
+                ];
+                dispatch(actionCreators.moveUp(tasks));
+                RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
                     tasklist.id,
                     movedTask.id,
                     newPreviousTask && newPreviousTask.id
-                );
-                const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-                dispatch(actionCreators.moveUp(tasks));
+                ));
             }
             else if (!isEditingActive && cursor > 0) {
                 dispatch(actionCreators.scrollUp());
@@ -43,9 +51,19 @@ const MakeKeydownListener = (
                 if (!newPreviousTask) {
                     return;
                 }
-                await GapiTasks.moveTask(tasklist.id, movedTask.id, newPreviousTask.id);
-                const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+
+                const tasks = [
+                    ...items.slice(0, cursor - 1),
+                    newPreviousTask,
+                    movedTask,
+                    ...items.slice(cursor + 1)
+                ];
                 dispatch(actionCreators.moveDown(tasks));
+                RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
+                    tasklist.id,
+                    movedTask.id,
+                    newPreviousTask.id
+                ));
             }
             else if (!isEditingActive && cursor < items.length - (isListPickerExpanded ? 1 : 0)) {
                 dispatch(actionCreators.scrollDown());
@@ -57,19 +75,29 @@ const MakeKeydownListener = (
             if (isListPickerExpanded) {
                 dispatch(actionCreators.toggleIsLoading());
                 const currentTasklist = items[cursor];
-                const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
-                dispatch(actionCreators.loadTasks(tasks, currentTasklist));
+                RequestsEnqueuer.enqueue(async () => {
+
+                    const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
+                    dispatch(actionCreators.loadTasks(tasks, currentTasklist));
+                });
                 return;
             }
             if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
                 dispatch(actionCreators.toggleIsLoading());
-                const { items } = await GapiTasks.loadTasklists();
-                dispatch(actionCreators.loadTasklists(items));
+                RequestsEnqueuer.enqueue(async () => {
+
+                    const { items } = await GapiTasks.loadTasklists();
+                    dispatch(actionCreators.loadTasklists(items));
+                });
                 return;
             }
             if (cursor > 0 && shiftKeyPressed) {
-                const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
-                dispatch(actionCreators.expandTask([task]));
+                dispatch(actionCreators.toggleIsLoading());
+                RequestsEnqueuer.enqueue(async () => {
+
+                    const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
+                    dispatch(actionCreators.expandTask([task]));
+                });
                 return;
             }
             if (ctrlKeyPressed) {
@@ -82,9 +110,13 @@ const MakeKeydownListener = (
         '46': async ({ ctrlKeyPressed }) => { // del
 
             if (ctrlKeyPressed) {
-                await GapiTasks.deleteTask(tasklist.id, items[cursor - 1].id);
-                const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-                dispatch(actionCreators.deleteTask(tasks));
+                const updatedItems = items.filter((item, index) => index !== cursor - 1);
+                dispatch(actionCreators.deleteTask(updatedItems));
+                if (items[cursor - 1].id) {
+                    RequestsEnqueuer.enqueue(() => GapiTasks.deleteTask(
+                        tasklist.id, items[cursor - 1].id
+                    ));
+                }
             }
         },
 
@@ -100,32 +132,45 @@ const MakeKeydownListener = (
             updatedTask.status = updatedTask.status === 'needsAction'
                 ? 'completed'
                 : 'needsAction';
-            await GapiTasks.updateTask(
+            dispatch(actionCreators.reloadTasks(items));
+
+            RequestsEnqueuer.enqueue(() => GapiTasks.updateTask(
                 tasklist.id,
                 updatedTask.id,
                 updatedTask
-            );
+            ));
+
             if (previousTask && previousTask.id) {
-                await GapiTasks.moveTask(
+                RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
                     tasklist.id,
                     updatedTask.id,
                     previousTask && previousTask.id
-                );
+                ));
             }
-            const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
-            dispatch(actionCreators.reloadTasks(tasks));
         },
 
         '72': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
 
-            if (ctrlKeyPressed && shiftKeyPressed) {
-                const tasks = await GapiTasks.loadTasks(tasklist.id, !showCompleted);
-                dispatch(actionCreators.toggleShowCompleted(tasks));
+            if (!ctrlKeyPressed && !shiftKeyPressed) {
+                return;
+            }
+
+            if (showCompleted) {
+                const onlyIncompleteTasks = items.filter((item) => item.status !== 'completed');
+                dispatch(actionCreators.toggleShowCompleted(onlyIncompleteTasks));
+            }
+            else {
+                dispatch(actionCreators.toggleIsLoading());
+                RequestsEnqueuer.enqueue(async () => {
+
+                    const tasks = await GapiTasks.loadTasks(tasklist.id, !showCompleted);
+                    dispatch(actionCreators.toggleShowCompleted(tasks));
+                });
             }
         }
     };
 
-    return async ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
+    return ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
 
         if (keyCode === 82 && !ctrlKeyPressed && shiftKeyPressed) { // r
             dispatch(actionCreators.resetState());
@@ -137,7 +182,7 @@ const MakeKeydownListener = (
         }
         if (isAppFocused && !isLoading && !hasErrored && ActionsByKeyCodeHash[keyCode]) {
             try {
-                await ActionsByKeyCodeHash[keyCode]({ ctrlKeyPressed, shiftKeyPressed });
+                ActionsByKeyCodeHash[keyCode]({ ctrlKeyPressed, shiftKeyPressed });
             }
             catch (err) {
                 dispatch(actionCreators.toggleHasErrored());
