@@ -14,7 +14,7 @@ const MakeKeydownListener = (
 
         '38': async ({ shiftKeyPressed }) => { // arrow up
 
-            if (shiftKeyPressed) {
+            if (cursor !== 0 && !isListPickerExpanded && shiftKeyPressed) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
@@ -44,7 +44,7 @@ const MakeKeydownListener = (
 
         '40': async ({ shiftKeyPressed }) => { // arrow down
 
-            if (shiftKeyPressed) {
+            if (cursor !== 0 && isListPickerExpanded && shiftKeyPressed) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
@@ -109,7 +109,7 @@ const MakeKeydownListener = (
 
         '46': async ({ ctrlKeyPressed }) => { // del
 
-            if (ctrlKeyPressed) {
+            if (cursor !== 0 && !isListPickerExpanded && ctrlKeyPressed) {
                 const updatedItems = items.filter((item, index) => index !== cursor - 1);
                 dispatch(actionCreators.deleteTask(updatedItems));
                 if (items[cursor - 1].id) {
@@ -122,7 +122,7 @@ const MakeKeydownListener = (
 
         '32': async ({ ctrlKeyPressed }) => { // space
 
-            if (!ctrlKeyPressed) {
+            if (cursor === 0 || isListPickerExpanded || !ctrlKeyPressed) {
                 return;
             }
 
