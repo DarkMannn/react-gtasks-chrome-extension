@@ -11,10 +11,12 @@ const MakeOnBlurCallback = (
 
     if (isNextBlurInsertion) {
         try{
+            dispatch(actionCreators.toggleIsLoading());
             RequestsEnqueuer.enqueue(async () => {
 
                 const createdTask = (await GapiTasks.createTask(tasklist.id, { title: newTitle })).result;
                 const updatedItems = [createdTask, ...items.slice(1)];
+                dispatch(actionCreators.toggleIsLoading());
                 dispatch(actionCreators.reloadTasks(updatedItems));
             });
         }
