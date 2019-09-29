@@ -56,7 +56,7 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
     const isChecked = status === 'completed';
     const onBlur = async () => {
 
-        await onBlurCallback(titleRef.current.innerText);
+        await onBlurCallback(titleRef.current.textContent);
     };
 
     if (isEditingActive) {
@@ -67,10 +67,16 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
         }, 0);
     }
 
-    return <div isHovered={isHovered} css={mainCss}>
+    return <div data-testid="task-item" isHovered={isHovered} css={mainCss}>
         <div css={firstRowCss}>
-            <div isChecked={isChecked} css={checkboxCss}>{isChecked ? '\u2611' : '\u2610'}</div>
             <div
+                data-testid="checkbox"
+                isChecked={isChecked}
+                css={checkboxCss}>
+                {isChecked ? '\u2611' : '\u2610'}
+            </div>
+            <div
+                data-testid="title"
                 ref={titleRef}
                 css={titleCss}
                 isChecked={isChecked}
@@ -81,8 +87,8 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
             </div>
         </div>
         {isHovered && <div css={secondRowCss}>
-                {due && <div css={dueCss}>{due}</div>}
-                {notes && <div css={notesCss}>{notes}</div>}
+                {due && <div data-testid="due" css={dueCss}>{due}</div>}
+                {notes && <div data-testid="notes" css={notesCss}>{notes}</div>}
             </div>
         }
     </div>;

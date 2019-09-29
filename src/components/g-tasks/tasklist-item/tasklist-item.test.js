@@ -1,13 +1,19 @@
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
 import TasklistItem from './tasklist-item.js';
-import Adapter from 'enzyme-adapter-react-16';
+import { render, waitForElement } from '@testing-library/react';
+import { toHaveTextContent } from '@testing-library/jest-dom';
 
-Enzyme.configure({ adapter: new Adapter() });
+expect.extend({ toHaveTextContent });
 
 describe('TasklistItem component', () => {
+
     it('renders properly', async () => {
-        const wrapper = shallow(<TasklistItem></TasklistItem>);
-        expect(wrapper.find('div')).toBeTruthy();
+
+        const { findByTestId } = render(
+            <TasklistItem title='title' isHovered={true}></TasklistItem>
+        );
+
+        const titleDiv = await waitForElement(() => findByTestId('tasklistItem'));
+        expect(titleDiv).toHaveTextContent('title');
     });
 });

@@ -15,6 +15,7 @@ const tasklistItemCss = css`
 function TasklistItem({ title, isHovered }) {
 
     return <div
+        data-testid='tasklistItem'
         isHovered={isHovered}
         css={tasklistItemCss}>
         <span>{title}</span>
