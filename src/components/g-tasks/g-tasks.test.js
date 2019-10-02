@@ -1,17 +1,34 @@
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import GTasks from './g-tasks.js';
 import TasklistItem from './tasklist-item/tasklist-item.js';
 import TaskItem from './task-item/task-item.js';
+import { render, waitForElement, fireEvent } from '@testing-library/react';
+import { toHaveTextContent } from '@testing-library/jest-dom';
 
-Enzyme.configure({ adapter: new Adapter() });
+expect.extend({ toHaveTextContent });
 
-describe('GTasks component', () => {
-    it('renders properly', async () => {
-        const wrapper = shallow(<GTasks gapiTasks={{ dummyProp: 'dummyValue' }}></GTasks>);
-        expect(wrapper.find('div')).toBeTruthy();
-        expect(wrapper.find(TasklistItem)).toBeTruthy();
-        expect(wrapper.find(TaskItem)).toBeTruthy();
+describe.skip('GTasks component', () => {
+
+    it('renders properly when focused', async () => {
+
+        const { findByTestId } = render(
+            <TaskItem
+                title='title'
+                status="needsAction"
+                due="11-11-2011"
+                notes="notes"
+                isHovered={true}>
+            </TaskItem>
+        );
+
+        const checkboxDiv = await waitForElement(() => findByTestId('checkbox'));
+        const titleDiv = await waitForElement(() => findByTestId('title'));
+        const dueDiv = await waitForElement(() => findByTestId('due'));
+        const notesDiv = await waitForElement(() => findByTestId('notes'));
+
+        expect(checkboxDiv).toHaveTextContent('\u2610');
+        expect(titleDiv).toHaveTextContent('title');
+        expect(dueDiv).toHaveTextContent('11-11-2011');
+        expect(notesDiv).toHaveTextContent('notes');
     });
 });

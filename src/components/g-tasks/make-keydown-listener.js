@@ -44,7 +44,7 @@ const MakeKeydownListener = (
 
         '40': async ({ shiftKeyPressed }) => { // arrow down
 
-            if (cursor !== 0 && isListPickerExpanded && shiftKeyPressed) {
+            if (cursor !== 0 && !isListPickerExpanded && shiftKeyPressed) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];

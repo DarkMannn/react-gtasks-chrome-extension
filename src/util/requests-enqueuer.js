@@ -26,8 +26,8 @@ export const init = (onErrorCb) => {
         return;
     }
     onError = onErrorCb;
-    makeRequest();
     wasInitiated = true;
+    makeRequest();
 };
 
 export const enqueue = (request) => {
