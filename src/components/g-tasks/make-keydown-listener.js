@@ -12,7 +12,7 @@ const MakeKeydownListener = (
 
     const ActionsByKeyCodeHash = {
 
-        '38': async ({ shiftKeyPressed }) => { // arrow up
+        38: async ({ shiftKeyPressed }) => { // arrow up
 
             if (cursor !== 0 && !isListPickerExpanded && shiftKeyPressed) {
 
@@ -46,7 +46,7 @@ const MakeKeydownListener = (
             }
         },
 
-        '40': async ({ shiftKeyPressed }) => { // arrow down
+        40: async ({ shiftKeyPressed }) => { // arrow down
 
             if (cursor !== 0 && !isListPickerExpanded && shiftKeyPressed) {
 
@@ -78,7 +78,7 @@ const MakeKeydownListener = (
             }
         },
 
-        '13': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
+        13: async ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
 
             if (isListPickerExpanded) {
                 dispatch(actionCreators.toggleIsLoading());
@@ -117,7 +117,7 @@ const MakeKeydownListener = (
             }
         },
 
-        '46': async ({ ctrlKeyPressed }) => { // del
+        46: async ({ ctrlKeyPressed }) => { // del
 
             if (cursor !== 0 && !isListPickerExpanded && ctrlKeyPressed) {
                 const updatedItems = items.filter((item, index) => index !== cursor - 1);
@@ -130,7 +130,7 @@ const MakeKeydownListener = (
             }
         },
 
-        '32': async ({ ctrlKeyPressed }) => { // space
+        32: async ({ ctrlKeyPressed }) => { // space
 
             if (cursor === 0 || isListPickerExpanded || !ctrlKeyPressed) {
                 return;
@@ -160,9 +160,9 @@ const MakeKeydownListener = (
             }
         },
 
-        '72': async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
+        72: async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
 
-            if (!ctrlKeyPressed && !shiftKeyPressed) {
+            if (!ctrlKeyPressed && !shiftKeyPressed && isListPickerExpanded) {
                 return;
             }
 

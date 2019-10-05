@@ -44,25 +44,19 @@ function GTasks({ gapiTasks }) {
     }, dispatch] = useReducer(gTasksReducer, initialState);
     const GapiTasks = useMemo(() => MakeCustomGapiTasks(gapiTasks), [gapiTasks]);
     const keydownListener = useMemo(
-        () => MakeKeydownListener(
-            {
-                isLoading, hasErrored, items, cursor, tasklist, showCompleted,
-                isEditingActive, isListPickerExpanded, isAppFocused
-            },
-            dispatch,
-            GapiTasks
-        ),
+        () => MakeKeydownListener({
+            isLoading, hasErrored, items, cursor, tasklist, showCompleted,
+            isEditingActive, isListPickerExpanded, isAppFocused
+        }, dispatch, GapiTasks),
         [
             GapiTasks, isLoading, hasErrored, cursor, isAppFocused, isEditingActive,
             isListPickerExpanded, items, showCompleted, tasklist
         ]
     );
     const onBlurCallback = useCallback(
-        MakeOnBlurCallback(
-            { items, cursor, tasklist, isNextBlurInsertion },
-            dispatch,
-            GapiTasks
-        ),
+        MakeOnBlurCallback({
+            items, cursor, tasklist, isNextBlurInsertion
+        }, dispatch, GapiTasks),
         [GapiTasks, items, cursor, tasklist, isNextBlurInsertion]
     );
 
