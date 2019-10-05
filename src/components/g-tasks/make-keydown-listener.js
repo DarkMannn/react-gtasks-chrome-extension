@@ -142,7 +142,8 @@ const MakeKeydownListener = (
             updatedTask.status = updatedTask.status === 'needsAction'
                 ? 'completed'
                 : 'needsAction';
-            dispatch(actionCreators.reloadTasks(items));
+            const updatedItems = showCompleted ? [...items] : items.filter((item) => item.status === 'needsAction');
+            dispatch(actionCreators.reloadTasks(updatedItems));
 
             RequestsEnqueuer.enqueue(() => GapiTasks.updateTask(
                 tasklist.id,
