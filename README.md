@@ -10,6 +10,7 @@ Todo:
 - [x] implement showing 'loading' and 'error' messages
 - [x] optimize/cache key events and http requests
 - [x] write better tests
+- [x] throttle creation of tasks, so it will be optimistic
 - [ ] see if some requests can be parallelized
 - [ ] performance - too much resetting of listeners (maybe pass state in action fn-s)
 - [ ] reducer actions don't make sense sometimes

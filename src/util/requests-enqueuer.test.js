@@ -20,6 +20,7 @@ describe('RequestsEnqueuer', () => {
 
     it('properly enqueues async functions (requests)', async () => {
 
+        const ids = [];
         const request1 = jest.fn(() => Promise.resolve(1));
         const request2 = jest.fn(() => Promise.resolve(2));
         const request3 = jest.fn(() => Promise.reject(3));
@@ -28,15 +29,19 @@ describe('RequestsEnqueuer', () => {
         expect(setTimeout).toHaveBeenCalledTimes(1);
         for (const req of [request1, request2, request3, request4]) {
 
-            RequestsEnqueuer.enqueue(req);
+            const id = RequestsEnqueuer.enqueue(req);
+            ids.push(id);
             await nextTickAsync();
             jest.runOnlyPendingTimers();
         }
         expect(setTimeout).toHaveBeenCalledTimes(5);
 
         expect(request1.mock.calls.length).toBe(1);
+        expect(request1.mock.calls[0][0]).toBe(ids.shift());
         expect(request2.mock.calls.length).toBe(1);
+        expect(request2.mock.calls[0][0]).toBe(ids.shift());
         expect(request3.mock.calls.length).toBe(1);
+        expect(request3.mock.calls[0][0]).toBe(ids.shift());
         expect(onErrorMock.mock.calls.length).toBe(1);
         expect(request4.mock.calls.length).toBe(0);
     });

@@ -44,12 +44,12 @@ describe('MakeOnBlurCallback', () => {
             jest.runOnlyPendingTimers();
             await nextTickAsync();
 
-            const expectedUpdatedItems = ['createdItem', ...items.slice(1)];
-            expect(dispatch.mock.calls.length).toBe(4);
+            expect(dispatch.mock.calls.length).toBe(3);
             expect(dispatch.mock.calls[0][0]).toStrictEqual(actionCreators.toggleIsEditingActive(false));
-            expect(dispatch.mock.calls[1][0]).toStrictEqual(actionCreators.toggleIsLoading());
-            expect(dispatch.mock.calls[2][0]).toStrictEqual(actionCreators.toggleIsLoading());
-            expect(dispatch.mock.calls[3][0]).toStrictEqual(actionCreators.reloadTasks(expectedUpdatedItems));
+            expect(dispatch.mock.calls[1][0].type).toBe('RELOAD_TASKS');
+            expect(dispatch.mock.calls[1][0].items[0].title).toBe('newTitle');
+            expect(dispatch.mock.calls[2][0].type).toBe('REPLACE_TASK');
+            expect(dispatch.mock.calls[2][0].newTask).toBe('createdItem');
 
             expect(GapiTasks.createTask.mock.calls.length).toBe(1);
             expect(GapiTasks.createTask.mock.calls[0][0]).toBe(tasklist.id);

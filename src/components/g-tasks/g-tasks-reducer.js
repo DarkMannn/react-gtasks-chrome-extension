@@ -86,6 +86,17 @@ export function gTasksReducer(state, action) {
             itemOffset: 0,
             isLoading: false
         }),
+        [actionTypes.replaceTask]: () => {
+
+            const taskIndex = state.items.findIndex((item) => item.id === action.taskId);
+            const updatedItems = state.items.map((item, index) =>
+                index === taskIndex ? action.newTask : item
+            );
+            return {
+                ...state,
+                items: updatedItems
+            };
+        },
         [actionTypes.reloadTasks]: () => ({
             ...state,
             items: action.items,

@@ -49,7 +49,7 @@ describe('MakeKeydownListener', () => {
                     cursor: 4,
                     tasklist: { id: 'fakeTasklistId'},
                     items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
-                        id: index + 1, title: item
+                        id: index + 1, title: item, etag: index + 1
                     })),
                     isListPickerExpanded: false,
                     isAppFocused: true
@@ -107,7 +107,7 @@ describe('MakeKeydownListener', () => {
                     cursor: 2,
                     tasklist: { id: 'fakeTasklistId'},
                     items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
-                        id: index + 1, title: item
+                        id: index + 1, title: item, etag: index + 1
                     })),
                     isListPickerExpanded: false,
                     isAppFocused: true
@@ -355,7 +355,7 @@ describe('MakeKeydownListener', () => {
                     cursor: 2,
                     tasklist: { id: 'fakeTasklistId'},
                     items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
-                        id: index + 1, title: item, status: index === 1 ? 'completed' : 'needsAction'
+                        id: index + 1, title: item, status: index === 1 ? 'completed' : 'needsAction', etag: index + 1
                     })),
                     isListPickerExpanded: false,
                     isAppFocused: true,

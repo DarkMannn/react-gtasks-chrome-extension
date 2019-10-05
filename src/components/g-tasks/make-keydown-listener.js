@@ -30,12 +30,16 @@ const MakeKeydownListener = (
                     newNextTask,
                     ...items.slice(cursor)
                 ];
+
+                const isItemCreatedOnBackend = movedTask.etag;
                 dispatch(actionCreators.moveUp(tasks));
-                RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
-                    tasklist.id,
-                    movedTask.id,
-                    newPreviousTask && newPreviousTask.id
-                ));
+                    if (isItemCreatedOnBackend) {
+                    RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
+                        tasklist.id,
+                        movedTask.id,
+                        newPreviousTask && newPreviousTask.id
+                    ));
+                }
             }
             else if (!isEditingActive && cursor > 0) {
                 dispatch(actionCreators.scrollUp());
@@ -58,12 +62,16 @@ const MakeKeydownListener = (
                     movedTask,
                     ...items.slice(cursor + 1)
                 ];
+
+                const isItemCreatedOnBackend = movedTask.etag;
                 dispatch(actionCreators.moveDown(tasks));
-                RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
-                    tasklist.id,
-                    movedTask.id,
-                    newPreviousTask.id
-                ));
+                if (isItemCreatedOnBackend) {
+                    RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
+                        tasklist.id,
+                        movedTask.id,
+                        newPreviousTask.id
+                    ));
+                }
             }
             else if (!isEditingActive && cursor < items.length - (isListPickerExpanded ? 1 : 0)) {
                 dispatch(actionCreators.scrollDown());
@@ -104,7 +112,9 @@ const MakeKeydownListener = (
                 dispatch(actionCreators.createTask(items));
                 return;
             }
-            dispatch(actionCreators.editTask());
+            if (items[cursor - 1].etag) {
+                dispatch(actionCreators.editTask());
+            }
         },
 
         '46': async ({ ctrlKeyPressed }) => { // del

@@ -11,14 +11,14 @@ const MakeOnBlurCallback = (
 
     // handle creation
     if (isNextBlurInsertion) {
-        dispatch(actionCreators.toggleIsLoading());
-        RequestsEnqueuer.enqueue(async () => {
+        const requestId = RequestsEnqueuer.enqueue(async (requestId) => {
 
             const createdTask = (await GapiTasks.createTask(tasklist.id, { title: newTitle })).result;
-            const updatedItems = [createdTask, ...items.slice(1)];
-            dispatch(actionCreators.toggleIsLoading());
-            dispatch(actionCreators.reloadTasks(updatedItems));
+            dispatch(actionCreators.replaceTask(createdTask, requestId));
         });
+        const temporaryTask = { id: requestId, title: newTitle };
+        const updatedItems = [temporaryTask, ...items.slice(1)];
+        dispatch(actionCreators.reloadTasks(updatedItems));
         return;
     }
 

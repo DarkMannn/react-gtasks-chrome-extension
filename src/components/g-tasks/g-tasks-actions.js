@@ -12,6 +12,7 @@ export const actionTypes = {
     deleteTask: 'DELETE_TASK',
     expandTask: 'EXPAND_TASK',
     loadTasks: 'LOAD_TASKS',
+    replaceTask: 'REPLACE_TASK',
     reloadTasks: 'RELOAD_TASKS',
     loadTasklists: 'LOAD_TASKLISTS',
     toggleShowCompleted: 'TOGGLE_SHOW_COMPLETED',
@@ -64,6 +65,11 @@ export const actionCreators = {
         type: actionTypes.loadTasks,
         items,
         tasklist
+    }),
+    replaceTask: (newTask, taskId) => ({
+        type: actionTypes.replaceTask,
+        newTask,
+        taskId
     }),
     reloadTasks: (items) => ({
         type: actionTypes.reloadTasks,
