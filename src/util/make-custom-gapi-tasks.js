@@ -1,7 +1,7 @@
 
 const MakeCustomGapiTasks = (gapiTasks) => ({
 
-    loadTasklists: async () => (await gapiTasks.tasklists.list()).result,
+    loadTasklists: async () => ((await gapiTasks.tasklists.list()).result || {}).items,
 
     loadTasks: async (tasklist, showCompleted) => {
 

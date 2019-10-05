@@ -469,7 +469,7 @@ describe('MakeKeydownListener', () => {
                     isEditingActive: false
                 };
                 GapiTasks = {
-                    loadTasklists: jest.fn(() => Promise.resolve({ items: ['itemX', 'itemY'] }))
+                    loadTasklists: jest.fn(() => Promise.resolve(['itemX', 'itemY']))
                 };
                 dispatch = MakeTestReducer(initState);
                 keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);

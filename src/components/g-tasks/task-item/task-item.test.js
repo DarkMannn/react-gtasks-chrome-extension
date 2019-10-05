@@ -1,6 +1,6 @@
 import React from 'react';
 import TaskItem from './task-item.js';
-import { render, waitForElement, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { toHaveTextContent } from '@testing-library/jest-dom';
 
 expect.extend({ toHaveTextContent });
@@ -19,10 +19,10 @@ describe('TaskItem component', () => {
             </TaskItem>
         );
 
-        const checkboxDiv = await waitForElement(() => findByTestId('checkbox'));
-        const titleDiv = await waitForElement(() => findByTestId('title'));
-        const dueDiv = await waitForElement(() => findByTestId('due'));
-        const notesDiv = await waitForElement(() => findByTestId('notes'));
+        const checkboxDiv = await findByTestId('checkbox');
+        const titleDiv = await findByTestId('title');
+        const dueDiv = await findByTestId('due');
+        const notesDiv = await findByTestId('notes');
 
         expect(checkboxDiv).toHaveTextContent('\u2610');
         expect(titleDiv).toHaveTextContent('title');
@@ -44,21 +44,21 @@ describe('TaskItem component', () => {
             </TaskItem>
         );
 
-        const checkboxDiv = await waitForElement(() => findByTestId('checkbox'));
+        const checkboxDiv = await findByTestId('checkbox');
         expect(checkboxDiv).toHaveTextContent('\u2610');
 
-        const titleDiv = await waitForElement(() => findByTestId('title'));
+        const titleDiv = await findByTestId('title');
         expect(titleDiv).toHaveTextContent('title');
 
         try {
-            await waitForElement(() => findByTestId('due'));
+            await findByTestId('due');
         }
         catch (err) {
             expect(err.message).toContain('Unable to find an element by: [data-testid="due"]');
         }
 
         try {
-            await waitForElement(() => findByTestId('notes'));
+            await findByTestId('notes');
         }
         catch (err) {
             expect(err.message).toContain('Unable to find an element by: [data-testid="notes"]');
@@ -81,10 +81,10 @@ describe('TaskItem component', () => {
             </TaskItem>
         );
 
-        const checkboxDiv = await waitForElement(() => findByTestId('checkbox'));
-        const titleDiv = await waitForElement(() => findByTestId('title'));
-        const dueDiv = await waitForElement(() => findByTestId('due'));
-        const notesDiv = await waitForElement(() => findByTestId('notes'));
+        const checkboxDiv = await findByTestId('checkbox');
+        const titleDiv = await findByTestId('title');
+        const dueDiv = await findByTestId('due');
+        const notesDiv = await findByTestId('notes');
 
         expect(checkboxDiv).toHaveTextContent('\u2610');
         expect(titleDiv).toHaveTextContent('title');

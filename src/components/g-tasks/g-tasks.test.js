@@ -1,34 +1,207 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import GTasks from './g-tasks.js';
-import TasklistItem from './tasklist-item/tasklist-item.js';
-import TaskItem from './task-item/task-item.js';
-import { render, waitForElement, fireEvent } from '@testing-library/react';
-import { toHaveTextContent } from '@testing-library/jest-dom';
+import { render, fireEvent } from '@testing-library/react';
+import {
+    toHaveTextContent,
+    toBeInTheDocument
+} from '@testing-library/jest-dom';
 
-expect.extend({ toHaveTextContent });
+jest.mock('../../util/make-custom-gapi-tasks.js');
+expect.extend({
+    toHaveTextContent,
+    toBeInTheDocument
+});
 
-describe.skip('GTasks component', () => {
+let findByTestId;
+let findByText;
+let unmount;
+let gapiTasksMock;
 
-    it('renders properly when focused', async () => {
+describe('GTasks component', () => {
 
-        const { findByTestId } = render(
-            <TaskItem
-                title='title'
-                status="needsAction"
-                due="11-11-2011"
-                notes="notes"
-                isHovered={true}>
-            </TaskItem>
-        );
+    beforeEach(async () => {
 
-        const checkboxDiv = await waitForElement(() => findByTestId('checkbox'));
-        const titleDiv = await waitForElement(() => findByTestId('title'));
-        const dueDiv = await waitForElement(() => findByTestId('due'));
-        const notesDiv = await waitForElement(() => findByTestId('notes'));
+        jest.useFakeTimers();
+        gapiTasksMock = {};
+        await act(async () => {
 
-        expect(checkboxDiv).toHaveTextContent('\u2610');
-        expect(titleDiv).toHaveTextContent('title');
-        expect(dueDiv).toHaveTextContent('11-11-2011');
-        expect(notesDiv).toHaveTextContent('notes');
+            ({ findByTestId, findByText, unmount } = render(
+                <GTasks gapiTasks={gapiTasksMock}></GTasks>
+            ));
+        });
+    });
+    afterEach(async () => {
+
+        unmount();
+    });
+
+    it('loads and renders tasklists at the initial render', async () => {
+
+        const titleDiv = await findByTestId('header');
+        expect(titleDiv).toHaveTextContent('Select a Task List');
+
+        const itemsDiv = await findByTestId('items');
+        expect(itemsDiv).toBeInTheDocument();
+
+        for (const num of [0, 1, 2]) {
+            const tasklist = await findByText(`tasklist${num}`);
+            expect(tasklist).toBeInTheDocument();
+        }
+    });
+
+    it('loads tasks from selected tasklist', async () => {
+
+        fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
+        fireEvent.keyDown(document, { keyCode: 13 }); // enter
+        jest.runOnlyPendingTimers();
+
+        const titleDiv = await findByTestId('header');
+        expect(titleDiv).toHaveTextContent('tasklist0');
+
+        const itemsDiv = await findByTestId('items');
+        expect(itemsDiv).toBeInTheDocument();
+
+        for (const num of [0, 1, 2, 3, 4]) {
+            const tasklist = await findByText(`task${num}`);
+            expect(tasklist).toBeInTheDocument();
+        }
+    });
+
+    it('loads tasklist, then tasks, then scrolls up, then loads tasklist again', async () => {
+
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            jest.runOnlyPendingTimers();
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 38 }); // up
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            jest.runOnlyPendingTimers();
+        });
+
+        const titleDiv = await findByTestId('header');
+        expect(titleDiv).toHaveTextContent('Select a Task List');
+
+        const itemsDiv = await findByTestId('items');
+        expect(itemsDiv).toBeInTheDocument();
+
+        for (const num of [0, 1, 2]) {
+            const tasklist = await findByText(`tasklist${num}`);
+            expect(tasklist).toBeInTheDocument();
+        }
+    });
+
+    it('loads tasklist, then tasks, then scrolls down, then deletes a task', async () => {
+
+        expect.assertions(7);
+
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            jest.runOnlyPendingTimers();
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 40 }); // down
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 46, ctrlKey: true }); // del
+            jest.runOnlyPendingTimers();
+        });
+
+        const titleDiv = await findByTestId('header');
+        expect(titleDiv).toHaveTextContent('tasklist0');
+
+        const itemsDiv = await findByTestId('items');
+        expect(itemsDiv).toBeInTheDocument();
+
+        for (const num of [0, 2, 3, 4]) {
+            const tasklist = await findByText(`task${num}`);
+            expect(tasklist).toBeInTheDocument();
+        }
+
+        try {
+            await findByText(`task1`); // deleted task
+        }
+        catch (err) {
+            expect(err.message).toContain('Unable to find an element with the text: task1.');
+        }
+    });
+
+    it('loads tasklist, then tasks, then scrolls down, then deletes a task', async () => {
+
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            jest.runOnlyPendingTimers();
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 40 }); // down
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 32, ctrlKey: true }); // space
+        });
+
+        const titleDiv = await findByTestId('header');
+        expect(titleDiv).toHaveTextContent('tasklist0');
+
+        const itemsDiv = await findByTestId('items');
+        expect(itemsDiv).toBeInTheDocument();
+
+        for (const num of [0, 1, 2, 3, 4]) {
+            const tasklist = await findByText(`task${num}`);
+            expect(tasklist).toBeInTheDocument();
+        }
+
+        // find checked box
+        await findByText('\u2611');
+    });
+
+    it('loads tasklist, then tasks, then scrolls down, then expands a task', async () => {
+
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            jest.runOnlyPendingTimers();
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 40 }); // down
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
+            jest.runOnlyPendingTimers();
+        });
+
+        const titleDiv = await findByTestId('header');
+        expect(titleDiv).toHaveTextContent('Return to tasks');
+
+        // TODO
     });
 });

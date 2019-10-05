@@ -82,7 +82,7 @@ function GTasks({ gapiTasks }) {
             if (hasErrored) {
                 return;
             }
-            const { items } = await GapiTasks.loadTasklists();
+            const items = await GapiTasks.loadTasklists();
             dispatch(actionCreators.loadTasklists(items));
         })();
     }, [GapiTasks, hasErrored]);
@@ -132,9 +132,9 @@ function GTasks({ gapiTasks }) {
         headerHtml = 'Select a Task List';
         itemsHtml = items.map((item, index) => shouldRender(index)
             && <TasklistItem
-                    key={index}
-                    title={item.title}
-                    isHovered={index === cursor}>
+                key={index}
+                title={item.title}
+                isHovered={index === cursor}>
             </TasklistItem>
         );
     }
@@ -158,8 +158,12 @@ function GTasks({ gapiTasks }) {
     }
 
     return <div isAppFocused={isAppFocused} isLoading={isLoading} hasErrored={hasErrored} css={mainCss}>
-        <div css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>{headerHtml}</div>
-        <div>{itemsHtml}</div>
+        <div data-testid="header" css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
+            {headerHtml}
+        </div>
+        <div data-testid="items">
+            {itemsHtml}
+        </div>
     </div>;
 }
 

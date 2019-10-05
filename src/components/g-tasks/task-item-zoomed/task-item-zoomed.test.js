@@ -1,6 +1,6 @@
 import React from 'react';
 import TaskItemZoomed from './task-item-zoomed.js';
-import { render, waitForElement } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { toHaveValue } from '@testing-library/jest-dom';
 
 expect.extend({ toHaveValue });
@@ -20,11 +20,9 @@ describe('TaskItemZoomed component', () => {
             </TaskItemZoomed>
         );
 
-        const titleInput = await waitForElement(() => findAllByDisplayValue('title'));
-        const dueInput = await waitForElement(() =>
-            findAllByDisplayValue(testDueFormated)
-        );
-        const notesInput = await waitForElement(() => findAllByDisplayValue('notes'));
+        const titleInput = await findAllByDisplayValue('title');
+        const dueInput = await findAllByDisplayValue(testDueFormated);
+        const notesInput = await findAllByDisplayValue('notes');
 
         expect(titleInput).toBeDefined();
         expect(dueInput).toBeDefined();

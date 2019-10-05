@@ -86,7 +86,7 @@ const MakeKeydownListener = (
                 dispatch(actionCreators.toggleIsLoading());
                 RequestsEnqueuer.enqueue(async () => {
 
-                    const { items } = await GapiTasks.loadTasklists();
+                    const items = await GapiTasks.loadTasklists();
                     dispatch(actionCreators.loadTasklists(items));
                 });
                 return;
