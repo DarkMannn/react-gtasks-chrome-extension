@@ -12,9 +12,9 @@ Todo:
 - [x] write better tests
 - [x] throttle creation of tasks, so it will be optimistic
 - [x] move completed items at the bottom, lock moving them above, have different color for them
-- [ ] reducer actions don't make sense sometimes // watch for edit/delete/reload task in near future
-- [ ] performance - too much resetting of listeners (maybe pass state in action fn-s)
+- [x] too much resetting of listeners (maybe pass state in action fn-s) - no op
 - [ ] tasklist CRUD
+- [ ] reducer actions don't make sense sometimes // watch for edit/delete/reload task in near future
 - [ ] implement modifying single task
 - [ ] see if you covered all of the functionalities from original GTask app
 - [ ] see if some requests can be parallelized

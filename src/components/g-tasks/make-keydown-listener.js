@@ -2,20 +2,44 @@ import { actionCreators } from './g-tasks-actions.js';
 import * as RequestsEnqueuer from '../../util/requests-enqueuer.js';
 import SortTasks from '../../util/sort-tasks.js';
 
-const MakeKeydownListener = (
-    {
-        isLoading, hasErrored, items, cursor, tasklist, showCompleted,
-        isEditingActive, isListPickerExpanded, isAppFocused
-    },
-    dispatch,
-    GapiTasks
-) => {
+const MakeKeydownListener = ({
+    isLoading, hasErrored, items, cursor, tasklist, showCompleted,
+    isEditingActive, isListPickerExpanded, isAppFocused
+}, dispatch, GapiTasks) => {
 
-    const ActionsByKeyCodeHash = {
+    const TasklistActionsByKeyCodeHash = {
+
+        38: async () => { // arrow up
+
+            if (cursor > 0) {
+                dispatch(actionCreators.scrollUp());
+            }
+        },
+
+        40: async () => { // arrow down
+
+            if (cursor < items.length - 1) {
+                dispatch(actionCreators.scrollDown());
+            }
+        },
+
+        13: async () => { // enter
+
+            dispatch(actionCreators.toggleIsLoading());
+            const currentTasklist = items[cursor];
+            RequestsEnqueuer.enqueue(async () => {
+
+                const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
+                dispatch(actionCreators.loadTasks(SortTasks(tasks), currentTasklist));
+            });
+        }
+    };
+
+    const TaskActionsByKeyCodeHash = {
 
         38: async ({ shiftKeyPressed }) => { // arrow up
 
-            if (cursor !== 0 && !isListPickerExpanded && shiftKeyPressed) {
+            if (cursor !== 0 && shiftKeyPressed) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
@@ -49,7 +73,7 @@ const MakeKeydownListener = (
 
         40: async ({ shiftKeyPressed }) => { // arrow down
 
-            if (cursor !== 0 && !isListPickerExpanded && shiftKeyPressed) {
+            if (cursor !== 0 && shiftKeyPressed) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
@@ -81,16 +105,6 @@ const MakeKeydownListener = (
 
         13: async ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
 
-            if (isListPickerExpanded) {
-                dispatch(actionCreators.toggleIsLoading());
-                const currentTasklist = items[cursor];
-                RequestsEnqueuer.enqueue(async () => {
-
-                    const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
-                    dispatch(actionCreators.loadTasks(SortTasks(tasks), currentTasklist));
-                });
-                return;
-            }
             if (cursor === 0 && !ctrlKeyPressed && !shiftKeyPressed) {
                 dispatch(actionCreators.toggleIsLoading());
                 RequestsEnqueuer.enqueue(async () => {
@@ -120,7 +134,7 @@ const MakeKeydownListener = (
 
         46: async ({ ctrlKeyPressed }) => { // del
 
-            if (cursor !== 0 && !isListPickerExpanded && ctrlKeyPressed) {
+            if (cursor !== 0 && ctrlKeyPressed) {
                 const updatedItems = items.filter((item, index) => index !== cursor - 1);
                 dispatch(actionCreators.deleteTask(updatedItems));
                 if (items[cursor - 1].id) {
@@ -133,7 +147,7 @@ const MakeKeydownListener = (
 
         32: async ({ ctrlKeyPressed }) => { // space
 
-            if (cursor === 0 || isListPickerExpanded || !ctrlKeyPressed) {
+            if (cursor === 0 || !ctrlKeyPressed) {
                 return;
             }
 
@@ -165,7 +179,7 @@ const MakeKeydownListener = (
 
         72: async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
 
-            if (!ctrlKeyPressed && !shiftKeyPressed && isListPickerExpanded) {
+            if (!ctrlKeyPressed && !shiftKeyPressed) {
                 return;
             }
 
@@ -194,13 +208,20 @@ const MakeKeydownListener = (
             dispatch(actionCreators.toggleAppFocus());
             return;
         }
-        if (isAppFocused && !isLoading && !hasErrored && ActionsByKeyCodeHash[keyCode]) {
-            try {
-                ActionsByKeyCodeHash[keyCode]({ ctrlKeyPressed, shiftKeyPressed });
-            }
-            catch (err) {
-                dispatch(actionCreators.toggleHasErrored());
-            }
+        if (!isAppFocused || isLoading || hasErrored) {
+            return;
+        }
+
+        try {
+            const ActiveActionsHash = isListPickerExpanded
+                ? TasklistActionsByKeyCodeHash
+                : TaskActionsByKeyCodeHash;
+            ActiveActionsHash[keyCode] && ActiveActionsHash[keyCode]({
+                ctrlKeyPressed, shiftKeyPressed
+            });
+        }
+        catch (err) {
+            dispatch(actionCreators.toggleHasErrored());
         }
     };
 };
