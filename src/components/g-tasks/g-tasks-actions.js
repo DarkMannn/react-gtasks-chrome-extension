@@ -3,6 +3,9 @@ export const actionTypes = {
     resetState: 'RESET_STATE',
     toggleIsLoading: 'TOGGLE_IS_LOADING',
     toggleHasErrored: 'TOGGLE_HAS_ERRORED',
+    toggleShowCompleted: 'TOGGLE_SHOW_COMPLETED',
+    toggleAppFocus: 'TOGGLE_APP_FOCUS',
+    toggleIsEditingActive: 'TOGGLE_IS_EDITING_ACTIVE',
     moveUp: 'MOVE_UP',
     moveDown: 'MOVE_DOWN',
     scrollUp: "SCROLL_UP",
@@ -15,9 +18,6 @@ export const actionTypes = {
     replaceTask: 'REPLACE_TASK',
     reloadTasks: 'RELOAD_TASKS',
     loadTasklists: 'LOAD_TASKLISTS',
-    toggleShowCompleted: 'TOGGLE_SHOW_COMPLETED',
-    toggleAppFocus: 'TOGGLE_APP_FOCUS',
-    toggleIsEditingActive: 'TOGGLE_IS_EDITING_ACTIVE',
     resizeContent: 'RESIZE_CONTENT',
     calculateItemOffset: 'CALCULATE_ITEM_OFFSET'
 }
@@ -31,6 +31,16 @@ export const actionCreators = {
     }),
     toggleHasErrored: () => ({
         type: actionTypes.toggleHasErrored
+    }),
+    toggleShowCompleted: (items) => ({
+        type: actionTypes.toggleShowCompleted,
+        items
+    }),
+    toggleAppFocus: () => ({
+        type: actionTypes.toggleAppFocus,
+    }),
+    toggleIsEditingActive: () => ({
+        type: actionTypes.toggleIsEditingActive
     }),
     moveUp: (items) => ({
         type: actionTypes.moveUp,
@@ -78,16 +88,6 @@ export const actionCreators = {
     loadTasklists: (items) => ({
         type: actionTypes.loadTasklists,
         items
-    }),
-    toggleShowCompleted: (items) => ({
-        type: actionTypes.toggleShowCompleted,
-        items
-    }),
-    toggleAppFocus: () => ({
-        type: actionTypes.toggleAppFocus,
-    }),
-    toggleIsEditingActive: () => ({
-        type: actionTypes.toggleIsEditingActive
     }),
     resizeContent: (windowHeight) => ({
         type: actionTypes.resizeContent,

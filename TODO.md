@@ -11,7 +11,8 @@ Todo:
 - [x] optimize/cache key events and http requests
 - [x] write better tests
 - [x] throttle creation of tasks, so it will be optimistic
-- [ ] reducer actions don't make sense sometimes
+- [ ] don't discard completed tasks, but move them to the bottom and hide them
+- [ ] reducer actions don't make sense sometimes // watch for edit/delete/reload task in near future
 - [ ] performance - too much resetting of listeners (maybe pass state in action fn-s)
 - [ ] tasklist CRUD
 - [ ] implement modifying single task

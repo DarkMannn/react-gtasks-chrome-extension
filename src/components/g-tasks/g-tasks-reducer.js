@@ -33,6 +33,22 @@ export function gTasksReducer(state, action) {
             ...state,
             hasErrored: !state.hasErrored
         }),
+        [actionTypes.toggleShowCompleted]: () => ({
+            ...state,
+            cursor: 0,
+            itemOffset: 0,
+            items: action.items,
+            showCompleted: !state.showCompleted,
+            isLoading: false
+        }),
+        [actionTypes.toggleAppFocus]: () => ({
+            ...state,
+            isAppFocused: !state.isAppFocused
+        }),
+        [actionTypes.toggleIsEditingActive]: () => ({
+            ...state,
+            isEditingActive: !state.isEditingActive
+        }),
         [actionTypes.moveUp]: () => ({
             ...state,
             items: action.items,
@@ -110,22 +126,6 @@ export function gTasksReducer(state, action) {
             itemOffset: 0,
             isLoading: false
         }),
-        [actionTypes.toggleShowCompleted]: () => ({
-            ...state,
-            cursor: 0,
-            itemOffset: 0,
-            items: action.items,
-            showCompleted: !state.showCompleted,
-            isLoading: false
-        }),
-        [actionTypes.toggleAppFocus]: () => ({
-            ...state,
-            isAppFocused: !state.isAppFocused
-        }),
-        [actionTypes.toggleIsEditingActive]: () => ({
-            ...state,
-            isEditingActive: !state.isEditingActive
-        }),
         [actionTypes.resizeContent]: () => {
 
             const upperHeaderHeight = action.windowHeight * 0.1;
@@ -159,7 +159,8 @@ export function gTasksReducer(state, action) {
             }
             if (
                 (navigationDir === 'up')
-                && (cursor === itemOffset - (isListPickerExpanded ? 1 : 0)) && (itemOffset !== 0)
+                && (cursor === itemOffset - (isListPickerExpanded ? 1 : 0))
+                && (itemOffset !== 0)
             ) {
                 return {
                     ...state,
