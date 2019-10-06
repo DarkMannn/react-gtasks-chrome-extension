@@ -3,14 +3,9 @@ const MakeCustomGapiTasks = (gapiTasks) => ({
 
     loadTasklists: async () => ((await gapiTasks.tasklists.list()).result || {}).items,
 
-    loadTasks: async (tasklist, showCompleted) => {
-
-        const tasks = (
-            await gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })
-        ).result.items || [];
-        tasks.sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position));
-        return tasks;
-    },
+    loadTasks: async (tasklist, showCompleted) => (
+        (await gapiTasks.tasks.list({ tasklist, showCompleted, maxResults: 100 })).result || {}
+    ).items,
 
     loadTask: async (tasklist, task) => (await gapiTasks.tasks.get({ tasklist, task })).result,
 

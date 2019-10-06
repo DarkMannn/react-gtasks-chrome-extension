@@ -11,7 +11,11 @@ const mainCss = css`
     text-align: left;
     overflow: hidden;
     border-bottom: 1px solid black;
-    outline: ${({ isHovered }) => isHovered ? '3px solid khaki' : 'none'};
+    outline: ${({ isHovered, isChecked }) =>
+        !isHovered ? 'none'
+        : isChecked ? '3px solid grey'
+        : '3px solid darkblue'
+    };
     outline-offset: -3px;
 `;
 const firstRowCss = css`
@@ -67,7 +71,7 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
         }, 0);
     }
 
-    return <div data-testid="task-item" isHovered={isHovered} css={mainCss}>
+    return <div data-testid="task-item" isHovered={isHovered} isChecked={isChecked} css={mainCss}>
         <div css={firstRowCss}>
             <div
                 data-testid="checkbox"

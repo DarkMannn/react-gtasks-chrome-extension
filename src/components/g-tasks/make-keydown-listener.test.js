@@ -221,7 +221,7 @@ describe('MakeKeydownListener', () => {
                 keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
             });
 
-            it('toggles active item as completed/needsAction', async () => {
+            it('toggles active item as completed/needsAction, sorts items', async () => {
 
                 let newState;
 
@@ -234,10 +234,10 @@ describe('MakeKeydownListener', () => {
                 newState = dispatch.mock.results[0].value;
                 expect(newState.cursor).toBe(2);
                 expect(newState.items.map((item) => item.title)).toStrictEqual([
-                    'item0', 'item1', 'item2', 'item3', 'item4'
+                    'item0', 'item2', 'item3', 'item4', 'item1'
                 ]);
                 expect(newState.items.map((item) => item.status)).toStrictEqual([
-                    'needsAction', 'completed', 'needsAction', 'needsAction', 'needsAction'
+                    'needsAction', 'needsAction', 'needsAction', 'needsAction', 'completed'
                 ]);
 
                 expect(GapiTasks.updateTask.mock.calls.length).toBe(1);
@@ -259,7 +259,7 @@ describe('MakeKeydownListener', () => {
                 newState = dispatch.mock.results[0].value;
                 expect(newState.cursor).toBe(2);
                 expect(newState.items.map((item) => item.title)).toStrictEqual([
-                    'item0', 'item1', 'item2', 'item3', 'item4'
+                    'item0', 'item2', 'item3', 'item4', 'item1'
                 ]);
                 expect(newState.items.map((item) => item.status)).toStrictEqual([
                     'needsAction', 'needsAction', 'needsAction', 'needsAction', 'needsAction'
@@ -345,7 +345,7 @@ describe('MakeKeydownListener', () => {
 
         describe('Key 13 - enter', () => {
 
-            it('edits a task', async () => {
+            it('edits a task if it is not completed', async () => {
 
                 keyCode = 13;
                 initState = {
@@ -355,7 +355,7 @@ describe('MakeKeydownListener', () => {
                     cursor: 2,
                     tasklist: { id: 'fakeTasklistId'},
                     items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
-                        id: index + 1, title: item, status: index === 1 ? 'completed' : 'needsAction', etag: index + 1
+                        id: index + 1, title: item, status: 'needsAction', etag: index + 1
                     })),
                     isListPickerExpanded: false,
                     isAppFocused: true,
@@ -370,6 +370,30 @@ describe('MakeKeydownListener', () => {
                 const newState = dispatch.mock.results[0].value;
                 expect(newState.cursor).toBe(2);
                 expect(newState.isEditingActive).toBe(true);
+            });
+
+            it('does not edit a task if it is completed', async () => {
+
+                keyCode = 13;
+                initState = {
+                    ...initialState,
+                    isLoading: false,
+                    itemMaxLimit: 8,
+                    cursor: 2,
+                    tasklist: { id: 'fakeTasklistId'},
+                    items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
+                        id: index + 1, title: item, status: 'completed', etag: index + 1
+                    })),
+                    isListPickerExpanded: false,
+                    isAppFocused: true,
+                    isEditingActive: false
+                };
+                dispatch = MakeTestReducer(initState);
+                keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
+
+                keydownListener({ keyCode });
+
+                expect(dispatch.mock.calls.length).toBe(0);
             });
 
             it('expands a task', async () => {

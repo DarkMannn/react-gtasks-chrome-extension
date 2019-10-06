@@ -1,5 +1,6 @@
 import { actionCreators } from './g-tasks-actions.js';
 import * as RequestsEnqueuer from '../../util/requests-enqueuer.js';
+import SortTasks from '../../util/sort-tasks.js';
 
 const MakeKeydownListener = (
     {
@@ -20,7 +21,7 @@ const MakeKeydownListener = (
                 const newPreviousTask = items[cursor - 3];
                 const newNextTask = items[cursor - 2];
                 const isFirstItem = cursor === 1;
-                if (isFirstItem) {
+                if (isFirstItem || movedTask.status === 'completed') {
                     return;
                 }
 
@@ -33,7 +34,7 @@ const MakeKeydownListener = (
 
                 const isItemCreatedOnBackend = movedTask.etag;
                 dispatch(actionCreators.moveUp(tasks));
-                    if (isItemCreatedOnBackend) {
+                if (isItemCreatedOnBackend) {
                     RequestsEnqueuer.enqueue(() => GapiTasks.moveTask(
                         tasklist.id,
                         movedTask.id,
@@ -52,7 +53,7 @@ const MakeKeydownListener = (
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
-                if (!newPreviousTask) {
+                if (!newPreviousTask || movedTask.status === 'completed') {
                     return;
                 }
 
@@ -86,7 +87,7 @@ const MakeKeydownListener = (
                 RequestsEnqueuer.enqueue(async () => {
 
                     const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
-                    dispatch(actionCreators.loadTasks(tasks, currentTasklist));
+                    dispatch(actionCreators.loadTasks(SortTasks(tasks), currentTasklist));
                 });
                 return;
             }
@@ -112,7 +113,7 @@ const MakeKeydownListener = (
                 dispatch(actionCreators.createTask(items));
                 return;
             }
-            if (items[cursor - 1].etag) {
+            if (items[cursor - 1].etag && items[cursor - 1].status === 'needsAction') {
                 dispatch(actionCreators.editTask());
             }
         },
@@ -142,7 +143,9 @@ const MakeKeydownListener = (
             updatedTask.status = updatedTask.status === 'needsAction'
                 ? 'completed'
                 : 'needsAction';
-            const updatedItems = showCompleted ? [...items] : items.filter((item) => item.status === 'needsAction');
+            const updatedItems = showCompleted
+                ? SortTasks(items)
+                : items.filter((item) => item.status === 'needsAction');
             dispatch(actionCreators.reloadTasks(updatedItems));
 
             RequestsEnqueuer.enqueue(() => GapiTasks.updateTask(
@@ -175,7 +178,7 @@ const MakeKeydownListener = (
                 RequestsEnqueuer.enqueue(async () => {
 
                     const tasks = await GapiTasks.loadTasks(tasklist.id, !showCompleted);
-                    dispatch(actionCreators.toggleShowCompleted(tasks));
+                    dispatch(actionCreators.toggleShowCompleted(SortTasks(tasks)));
                 });
             }
         }

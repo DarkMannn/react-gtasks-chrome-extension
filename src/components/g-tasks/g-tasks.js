@@ -25,7 +25,7 @@ const headingCss = css`
     padding: 15px 0 15px 0;
     border-top: 4px double black;
     border-bottom: 4px double black;
-    outline: ${({ isHovered }) => isHovered ? '3px solid khaki' : 'none'};
+    outline: ${({ isHovered }) => isHovered ? '3px solid darkblue' : 'none'};
     outline-offset: -3px;
 `;
 const headingHelperCss = css`
