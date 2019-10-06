@@ -8,7 +8,10 @@ const tasklistItemCss = css`
     height: ${({ isHovered }) => isHovered ? '60px' : '30px'};
     padding: 3px 0 2px 50px;
     border-bottom: 1px solid black;
-    outline: ${({ isHovered }) => isHovered ? '3px solid cadetblue' : 'none'};
+    box-shadow: ${({ isHovered }) => !isHovered
+        ? 'none'
+        : '0 -3px 0 0 cadetblue, 0 2px 0 0 cadetblue'
+    };
     outline-offset: -3px;
 `;
 

@@ -11,10 +11,10 @@ const mainCss = css`
     text-align: left;
     overflow: hidden;
     border-bottom: 1px solid black;
-    outline: ${({ isHovered, isChecked }) =>
+    box-shadow: ${({ isHovered, isChecked }) =>
         !isHovered ? 'none'
-        : isChecked ? '3px solid grey'
-        : '3px solid darkblue'
+        : isChecked ? '0 -3px 0 0 grey, 0 2px 0 0 grey'
+        : '0 -3px 0 0 darkblue, 0 2px 0 0 darkblue'
     };
     outline-offset: -3px;
 `;
