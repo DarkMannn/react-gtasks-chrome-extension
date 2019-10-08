@@ -55,9 +55,9 @@ function GTasks({ gapiTasks }) {
     );
     const onBlurCallback = useCallback(
         MakeOnBlurCallback({
-            items, cursor, tasklist, isNextBlurInsertion
+            items, cursor, tasklist, isNextBlurInsertion, isListPickerExpanded
         }, dispatch, GapiTasks),
-        [GapiTasks, items, cursor, tasklist, isNextBlurInsertion]
+        [GapiTasks, items, cursor, tasklist, isNextBlurInsertion, isListPickerExpanded]
     );
 
     useEffect(function initRequestsEnqueuer() {
@@ -128,7 +128,9 @@ function GTasks({ gapiTasks }) {
             && <TasklistItem
                 key={index}
                 title={item.title}
-                isHovered={index === cursor}>
+                isHovered={index === cursor}
+                isEditingActive={isEditingActive && index === cursor}
+                onBlurCallback={onBlurCallback}>
             </TasklistItem>
         );
     }

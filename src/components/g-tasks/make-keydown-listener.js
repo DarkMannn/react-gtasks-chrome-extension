@@ -23,15 +23,32 @@ const MakeKeydownListener = ({
             }
         },
 
-        13: async () => { // enter
+        13: async ({ ctrlKeyPressed, shiftKeyPressed }) => { // enter
 
-            dispatch(actionCreators.toggleIsLoading());
-            const currentTasklist = items[cursor];
-            RequestsEnqueuer.enqueue(async () => {
+            if (shiftKeyPressed) {
+                dispatch(actionCreators.toggleIsLoading());
+                const currentTasklist = items[cursor];
+                RequestsEnqueuer.enqueue(async () => {
 
-                const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
-                dispatch(actionCreators.loadTasks(SortTasks(tasks), currentTasklist));
-            });
+                    const tasks = await GapiTasks.loadTasks(currentTasklist.id, showCompleted);
+                    dispatch(actionCreators.loadTasks(SortTasks(tasks), currentTasklist));
+                });
+                return;
+            }
+            if (ctrlKeyPressed) {
+                dispatch(actionCreators.insertItem());
+                return;
+            }
+            dispatch(actionCreators.editItem());
+        },
+
+        46: async ({ ctrlKeyPressed }) => { // del
+
+            if (ctrlKeyPressed) {
+                const updatedItems = items.filter((item, index) => index !== cursor);
+                dispatch(actionCreators.deleteItem(updatedItems));
+                RequestsEnqueuer.enqueue(() => GapiTasks.deleteTasklist(items[cursor].id));
+            }
         }
     };
 
@@ -124,11 +141,11 @@ const MakeKeydownListener = ({
                 return;
             }
             if (ctrlKeyPressed) {
-                dispatch(actionCreators.createTask(items));
+                dispatch(actionCreators.insertItem());
                 return;
             }
             if (items[cursor - 1].etag && items[cursor - 1].status === 'needsAction') {
-                dispatch(actionCreators.editTask());
+                dispatch(actionCreators.editItem());
             }
         },
 
@@ -136,7 +153,7 @@ const MakeKeydownListener = ({
 
             if (cursor !== 0 && ctrlKeyPressed) {
                 const updatedItems = items.filter((item, index) => index !== cursor - 1);
-                dispatch(actionCreators.deleteTask(updatedItems));
+                dispatch(actionCreators.deleteItem(updatedItems));
                 if (items[cursor - 1].id) {
                     RequestsEnqueuer.enqueue(() => GapiTasks.deleteTask(
                         tasklist.id, items[cursor - 1].id
@@ -160,7 +177,7 @@ const MakeKeydownListener = ({
             const updatedItems = showCompleted
                 ? SortTasks(items)
                 : items.filter((item) => item.status === 'needsAction');
-            dispatch(actionCreators.reloadTasks(updatedItems));
+            dispatch(actionCreators.reloadItems(updatedItems));
 
             RequestsEnqueuer.enqueue(() => GapiTasks.updateTask(
                 tasklist.id,

@@ -71,18 +71,23 @@ export function gTasksReducer(state, action) {
             cursor: state.cursor + 1,
             navigationDir: 'down'
         }),
-        [actionTypes.createTask]: () => ({
+        [actionTypes.insertItem]: () => ({
             ...state,
-            items: [{ title: '' }, ...action.items],
+            items: [{ title: '' }, ...state.items],
             isEditingActive: true,
             isNextBlurInsertion: true,
-            cursor: 1
+            cursor: state.isListPickerExpanded ? 0 : 1
         }),
-        [actionTypes.editTask]: () => ({
+        [actionTypes.reloadItems]: () => ({
+            ...state,
+            items: action.items,
+            isNextBlurInsertion: false
+        }),
+        [actionTypes.editItem]: () => ({
             ...state,
             isEditingActive: true
         }),
-        [actionTypes.deleteTask]: () => ({
+        [actionTypes.deleteItem]: () => ({
             ...state,
             items: action.items,
             cursor: 0
@@ -113,11 +118,6 @@ export function gTasksReducer(state, action) {
                 items: updatedItems
             };
         },
-        [actionTypes.reloadTasks]: () => ({
-            ...state,
-            items: action.items,
-            isNextBlurInsertion: false
-        }),
         [actionTypes.loadTasklists]: () => ({
             ...state,
             items: action.items,

@@ -50,10 +50,43 @@ describe('GTasks component', () => {
         }
     });
 
+    it('loads tasklist, then deletes a tasklist', async () => {
+
+        expect.assertions(5);
+
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 46, ctrlKey: true }); // del
+            jest.runOnlyPendingTimers();
+        });
+
+        const titleDiv = await findByTestId('header');
+        expect(titleDiv).toHaveTextContent('Select a Task List');
+
+        const itemsDiv = await findByTestId('items');
+        expect(itemsDiv).toBeInTheDocument();
+
+        for (const num of [1, 2]) {
+            const tasklist = await findByText(`tasklist${num}`);
+            expect(tasklist).toBeInTheDocument();
+        }
+
+        try {
+            await findByText(`tasklist0`); // deleted tasklist
+        }
+        catch (err) {
+            expect(err.message).toContain('Unable to find an element with the text: tasklist0.');
+        }
+    });
+
     it('loads tasks from selected tasklist', async () => {
 
         fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
-        fireEvent.keyDown(document, { keyCode: 13 }); // enter
+        fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
         jest.runOnlyPendingTimers();
 
         const titleDiv = await findByTestId('header');
@@ -76,7 +109,7 @@ describe('GTasks component', () => {
         });
         await act(async () => {
 
-            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
             jest.runOnlyPendingTimers();
         });
         await act(async () => {
@@ -111,7 +144,7 @@ describe('GTasks component', () => {
         });
         await act(async () => {
 
-            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
             jest.runOnlyPendingTimers();
         });
         await act(async () => {
@@ -143,7 +176,7 @@ describe('GTasks component', () => {
         }
     });
 
-    it('loads tasklist, then tasks, then scrolls down, then deletes a task', async () => {
+    it('loads tasklist, then tasks, then scrolls down, then completes a task', async () => {
 
         await act(async () => {
 
@@ -151,7 +184,7 @@ describe('GTasks component', () => {
         });
         await act(async () => {
 
-            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
             jest.runOnlyPendingTimers();
         });
         await act(async () => {
@@ -186,7 +219,7 @@ describe('GTasks component', () => {
         });
         await act(async () => {
 
-            fireEvent.keyDown(document, { keyCode: 13 }); // enter
+            fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
             jest.runOnlyPendingTimers();
         });
         await act(async () => {

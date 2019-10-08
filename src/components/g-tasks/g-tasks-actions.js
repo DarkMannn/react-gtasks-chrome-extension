@@ -10,13 +10,13 @@ export const actionTypes = {
     moveDown: 'MOVE_DOWN',
     scrollUp: "SCROLL_UP",
     scrollDown: "SCROLL_DOWN",
-    createTask: 'CREATE_TASK',
-    editTask: 'EDIT_TASK',
-    deleteTask: 'DELETE_TASK',
+    insertItem: 'INSERT_ITEM',
+    reloadItems: 'RELOAD_ITEMS',
+    editItem: 'EDIT_ITEM',
+    deleteItem: 'DELETE_ITEM',
     expandTask: 'EXPAND_TASK',
     loadTasks: 'LOAD_TASKS',
     replaceTask: 'REPLACE_TASK',
-    reloadTasks: 'RELOAD_TASKS',
     loadTasklists: 'LOAD_TASKLISTS',
     resizeContent: 'RESIZE_CONTENT',
     calculateItemOffset: 'CALCULATE_ITEM_OFFSET'
@@ -56,16 +56,19 @@ export const actionCreators = {
     scrollDown: () => ({
         type: actionTypes.scrollDown
     }),
-    createTask: (items) => ({
-        type: actionTypes.createTask,
+    insertItem: () => ({
+        type: actionTypes.insertItem
+    }),
+    reloadItems: (items) => ({
+        type: actionTypes.reloadItems,
         items
     }),
-    deleteTask: (items) => ({
-        type: actionTypes.deleteTask,
-        items
+    editItem: () => ({
+        type: actionTypes.editItem
     }),
-    editTask: () => ({
-        type: actionTypes.editTask
+    deleteItem: (items) => ({
+        type: actionTypes.deleteItem,
+        items
     }),
     expandTask: (items) => ({
         type: actionTypes.expandTask,
@@ -80,10 +83,6 @@ export const actionCreators = {
         type: actionTypes.replaceTask,
         newTask,
         taskId
-    }),
-    reloadTasks: (items) => ({
-        type: actionTypes.reloadTasks,
-        items
     }),
     loadTasklists: (items) => ({
         type: actionTypes.loadTasklists,

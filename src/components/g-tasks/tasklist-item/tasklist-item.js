@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
+import setCursorAtTheEnd from '../../../util/set-cursor-at-the-end.js';
 
 const tasklistItemCss = css`
     display: flexbox;
@@ -15,13 +16,33 @@ const tasklistItemCss = css`
     outline-offset: -3px;
 `;
 
-function TasklistItem({ title, isHovered }) {
+function TasklistItem({ title, isHovered, isEditingActive, onBlurCallback }) {
+
+    const titleRef = useRef();
+    const onBlur = async () => {
+
+        await onBlurCallback(titleRef.current.textContent);
+    };
+
+    if (isEditingActive) {
+        setTimeout(function focusAndSetCursorAtTheEnd() {
+
+            titleRef.current.focus();
+            setCursorAtTheEnd(titleRef.current);
+        }, 0);
+    }
 
     return <div
         data-testid='tasklistItem'
         isHovered={isHovered}
         css={tasklistItemCss}>
-        <span>{title}</span>
+            <div
+                ref={titleRef}
+                contentEditable={isHovered}
+                suppressContentEditableWarning={true}
+                onBlur={onBlur}>
+                {title}
+            </div>
     </div>;
 }
 
