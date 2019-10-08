@@ -141,7 +141,7 @@ describe('MakeKeydownListener', () => {
 
                     expect(dispatch.mock.calls.length).toBe(1);
                     const newState = dispatch.mock.results[0].value;
-                    expect(newState.cursor).toBe(0);
+                    expect(newState.cursor).toBe(initState.cursor - 1);
                     expect(newState.items.map((item) => item.title)).toStrictEqual([
                         'item0', 'item2', 'item3', 'item4'
                     ]);
@@ -436,7 +436,7 @@ describe('MakeKeydownListener', () => {
 
                     expect(dispatch.mock.calls.length).toBe(1);
                     const newState = dispatch.mock.results[0].value;
-                    expect(newState.cursor).toBe(0);
+                    expect(newState.cursor).toBe(initState.cursor - 1);
                     expect(newState.items.map((item) => item.title)).toStrictEqual([
                         'item0', 'item2', 'item3', 'item4'
                     ]);

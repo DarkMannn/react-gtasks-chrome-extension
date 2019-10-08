@@ -81,16 +81,12 @@ export function gTasksReducer(state, action) {
         [actionTypes.reloadItems]: () => ({
             ...state,
             items: action.items,
+            ...Number.isInteger(action.newCursor) && { cursor: action.newCursor },
             isNextBlurInsertion: false
         }),
         [actionTypes.editItem]: () => ({
             ...state,
             isEditingActive: true
-        }),
-        [actionTypes.deleteItem]: () => ({
-            ...state,
-            items: action.items,
-            cursor: 0
         }),
         [actionTypes.expandTask]: () => ({
             ...state,

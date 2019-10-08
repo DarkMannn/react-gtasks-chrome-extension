@@ -14,10 +14,10 @@ Todo:
 - [x] move completed items at the bottom, lock moving them above, have different color for them
 - [x] too much resetting of listeners - maybe pass state in action fn-s => no op
 - [x] tasklist CRUD
-  - [ ] make reusable hook
-  - [ ] pass as few params in dispatch (only index in delete)
+- [x] make reusable hook in task and tasklist => no op
+- [x] pass as few params in dispatch
+- [x] reducer actions don't make sense sometimes, watch for edit/delete/reload task
 - [ ] too much reseting of listeners - maybe have lazy getters
-- [ ] reducer actions don't make sense sometimes // watch for edit/delete/reload task in near future
 - [ ] implement modifying single task
 - [ ] see if you covered all of the functionalities from original GTask app
 - [ ] see if some requests can be parallelized

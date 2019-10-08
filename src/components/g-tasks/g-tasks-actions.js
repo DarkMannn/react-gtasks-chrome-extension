@@ -13,7 +13,6 @@ export const actionTypes = {
     insertItem: 'INSERT_ITEM',
     reloadItems: 'RELOAD_ITEMS',
     editItem: 'EDIT_ITEM',
-    deleteItem: 'DELETE_ITEM',
     expandTask: 'EXPAND_TASK',
     loadTasks: 'LOAD_TASKS',
     replaceTask: 'REPLACE_TASK',
@@ -59,16 +58,13 @@ export const actionCreators = {
     insertItem: () => ({
         type: actionTypes.insertItem
     }),
-    reloadItems: (items) => ({
+    reloadItems: (items, newCursor) => ({
         type: actionTypes.reloadItems,
-        items
+        items,
+        newCursor
     }),
     editItem: () => ({
         type: actionTypes.editItem
-    }),
-    deleteItem: (items) => ({
-        type: actionTypes.deleteItem,
-        items
     }),
     expandTask: (items) => ({
         type: actionTypes.expandTask,

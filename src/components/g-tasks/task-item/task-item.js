@@ -56,8 +56,9 @@ const notesCss = css`
 
 function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlurCallback }) {
 
-    const titleRef = useRef();
     const isChecked = status === 'completed';
+
+    const titleRef = useRef();
     const onBlur = async () => {
 
         await onBlurCallback(titleRef.current.textContent);

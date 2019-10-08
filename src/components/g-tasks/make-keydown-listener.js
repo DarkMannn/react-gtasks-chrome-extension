@@ -46,7 +46,7 @@ const MakeKeydownListener = ({
 
             if (ctrlKeyPressed) {
                 const updatedItems = items.filter((item, index) => index !== cursor);
-                dispatch(actionCreators.deleteItem(updatedItems));
+                dispatch(actionCreators.reloadItems(updatedItems, cursor - 1));
                 RequestsEnqueuer.enqueue(() => GapiTasks.deleteTasklist(items[cursor].id));
             }
         }
@@ -153,7 +153,7 @@ const MakeKeydownListener = ({
 
             if (cursor !== 0 && ctrlKeyPressed) {
                 const updatedItems = items.filter((item, index) => index !== cursor - 1);
-                dispatch(actionCreators.deleteItem(updatedItems));
+                dispatch(actionCreators.reloadItems(updatedItems, cursor - 1));
                 if (items[cursor - 1].id) {
                     RequestsEnqueuer.enqueue(() => GapiTasks.deleteTask(
                         tasklist.id, items[cursor - 1].id
