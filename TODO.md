@@ -17,7 +17,7 @@ Todo:
 - [x] make reusable hook in task and tasklist => no op
 - [x] pass as few params in dispatch
 - [x] reducer actions don't make sense sometimes, watch for edit/delete/reload task
-- [ ] too much reseting of listeners - maybe have lazy getters
+- [x] too much reseting of listeners - maybe have lazy getters => no op
 - [ ] implement modifying single task
 - [ ] see if you covered all of the functionalities from original GTask app
 - [ ] see if some requests can be parallelized

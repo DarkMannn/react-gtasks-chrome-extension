@@ -37,28 +37,23 @@ const headingHelperCss = css`
 
 function GTasks({ gapiTasks }) {
 
-    const [{
+    const [state, dispatch] = useReducer(gTasksReducer, initialState);
+    const {
         isLoading, hasErrored, cursor, items, itemMaxLimit,
         itemOffset, tasklist, isListPickerExpanded, isItemExpanded,
-        isAppFocused, isEditingActive, isNextBlurInsertion, showCompleted
-    }, dispatch] = useReducer(gTasksReducer, initialState);
+        isAppFocused, isEditingActive, isNextBlurInsertion
+    } = state;
+
     const GapiTasks = useMemo(() => MakeCustomGapiTasks(gapiTasks), [gapiTasks]);
-    const keydownListener = useMemo(
-        () => MakeKeydownListener({
-            isLoading, hasErrored, items, cursor, tasklist, showCompleted,
-            isEditingActive, isListPickerExpanded, isAppFocused
-        }, dispatch, GapiTasks),
-        [
-            GapiTasks, isLoading, hasErrored, cursor, isAppFocused, isEditingActive,
-            isListPickerExpanded, items, showCompleted, tasklist
-        ]
-    );
+
     const onBlurCallback = useCallback(
         MakeOnBlurCallback({
             items, cursor, tasklist, isNextBlurInsertion, isListPickerExpanded
         }, dispatch, GapiTasks),
         [GapiTasks, items, cursor, tasklist, isNextBlurInsertion, isListPickerExpanded]
     );
+
+    const keydownListener = MakeKeydownListener(state, dispatch, GapiTasks);
 
     useEffect(function initRequestsEnqueuer() {
 
