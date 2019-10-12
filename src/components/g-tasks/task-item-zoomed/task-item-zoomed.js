@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 import useFocusAndSetCursor from '../../hooks/use-focus-and-set-cursor.js';
@@ -59,11 +59,18 @@ function TaskItemZoomed({
     const condition = isEditingActive && inputs[cursor - 1];
     useFocusAndSetCursor(activeRef, condition);
 
+    useEffect(function setDefaultDateIfNotExisting() {
+
+        if (activeProp === 'due' && !activeRef.current.value && isEditingActive) {
+            setDue(new Date(Date.now()).toISOString().split('T')[0]);
+        }
+    }, [activeProp, activeRef, isEditingActive]);
+
     const [onTitleChange, onNotesChange, onDueChange] =
         [setTitle, setNotes, setDue].map(makeOnChangeFunction);
     const onBlur = () => {
 
-        const formattedRefValue = cursor === 3
+        const formattedRefValue = activeProp === 'due'
             ? new Date(activeRef.current.value).toISOString()
             : activeRef.current.value
         onBlurCallback({ [activeProp]: formattedRefValue });

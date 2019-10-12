@@ -19,10 +19,14 @@ Todo:
 - [x] reducer actions don't make sense sometimes, watch for edit/delete/reload task
 - [x] too much reseting of listeners - maybe have lazy getters => no op
 - [x] implement modifying single task
-- [ ] see if you covered all of the functionalities from original GTask app
+- [x] see if you covered all of the functionalities from original GTask app
+- [ ] implement deletion of date
+- [ ] error handling
+- [ ] race conditions (ex. switch page when the request is still pending)
 - [ ] see if some requests can be parallelized
 - [ ] optimize css rendering
 - [ ] implement styling
+- [ ] make it to be a chrome extension
 - [ ] create instructions
 
 Refactor hooks:
