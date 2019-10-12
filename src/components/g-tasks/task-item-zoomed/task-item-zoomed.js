@@ -1,9 +1,7 @@
-import React, {
-    useState, useEffect, useRef
-} from 'react';
+import React, { useState, useRef } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
-import setCursorAtTheEnd from '../../../util/set-cursor-at-the-end.js';
+import useFocusAndSetCursor from '../../hooks/use-focus-and-set-cursor.js';
 
 const mainCss = css`
     display: flex;
@@ -52,46 +50,35 @@ function TaskItemZoomed({
     const [notes, setNotes] = useState(initNotes);
     const [due, setDue] = useState(initDue ? new Date(initDue).toISOString().split('T')[0] : '');
 
-    const titleRef = useRef(null);
-    const notesRef = useRef(null);
-    const dueRef = useRef(null);
-    const inputs = [titleRef, notesRef, dueRef];
-
-    useEffect(function focusOneInput() {
-
-        if (isEditingActive && inputs[cursor - 1]) {
-            inputs[cursor - 1].current.focus();
-            setCursorAtTheEnd(inputs[cursor - 1].current);
-        }
-    }, [cursor, inputs, isEditingActive]);
+    const inputs = [
+        { prop: 'title', ref: useRef(null) },
+        { prop: 'notes', ref: useRef(null) },
+        { prop: 'due', ref: useRef(null) }
+    ];
+    const { prop: activeProp, ref: activeRef } = inputs[cursor - 1] || {};
+    const condition = isEditingActive && inputs[cursor - 1];
+    useFocusAndSetCursor(activeRef, condition);
 
     const [onTitleChange, onNotesChange, onDueChange] =
         [setTitle, setNotes, setDue].map(makeOnChangeFunction);
     const onBlur = () => {
 
-        const propertyByInputIndex = () =>
-            cursor === 1 ? 'title'
-            : cursor === 2 ? 'notes'
-            : cursor === 3 ? 'due'
-            : null;
-        const valueByInputIndex = () => cursor === 3
-            ? new Date(inputs[cursor - 1].current.value).toISOString()
-            : inputs[cursor - 1].current.value
-
-        onBlurCallback({ [propertyByInputIndex()]: valueByInputIndex() });
+        const formattedRefValue = cursor === 3
+            ? new Date(activeRef.current.value).toISOString()
+            : activeRef.current.value
+        onBlurCallback({ [activeProp]: formattedRefValue });
     };
-
     return <div css={mainCss}>
         <input
-            ref={titleRef} css={titleCss} type="text" tabIndex="-1" isHovered={cursor === 1}
+            ref={inputs[0].ref} css={titleCss} type="text" tabIndex="-1" isHovered={cursor === 1}
             id='title' value={title} onChange={onTitleChange} onBlur={onBlur}
         />
         <textarea
-            ref={notesRef} css={notesCss} rows='20' tabIndex="-1" isHovered={cursor === 2}
+            ref={inputs[1].ref} css={notesCss} rows='20' tabIndex="-1" isHovered={cursor === 2}
             id='notes' value={notes} onChange={onNotesChange} onBlur={onBlur}
         />
         <input
-            ref={dueRef} css={dueCss} type="date" tabIndex="-1" isHovered={cursor === 3}
+            ref={inputs[2].ref} css={dueCss} type="date" tabIndex="-1" isHovered={cursor === 3}
             id='due' value={due} onChange={onDueChange} onBlur={onBlur}
         />
     </div>;

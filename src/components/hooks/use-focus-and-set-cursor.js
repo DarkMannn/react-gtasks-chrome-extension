@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 
 const setCursorAtTheEnd = (node) => {
 
@@ -23,4 +24,15 @@ const setCursorAtTheEnd = (node) => {
     sel.addRange(range);
 };
 
-export default setCursorAtTheEnd;
+const useFocusAndSetCursor = (elRef, condition) => {
+
+    useEffect(function focusAndSetCursor() {
+
+        if (condition) {
+            elRef.current.focus();
+            setCursorAtTheEnd(elRef.current);
+        }
+    }, [elRef, condition]);
+};
+
+export default useFocusAndSetCursor;

@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
-import setCursorAtTheEnd from '../../../util/set-cursor-at-the-end.js';
+import useFocusAndSetCursor from '../../hooks/use-focus-and-set-cursor.js';
 
 const mainCss = css`
     display: flex;
@@ -56,21 +56,14 @@ const notesCss = css`
 
 function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlurCallback }) {
 
+    const titleRef = useRef(null);
+    useFocusAndSetCursor(titleRef, isEditingActive);
+
     const isChecked = status === 'completed';
     const onBlur = async () => {
 
         await onBlurCallback(titleRef.current.textContent);
     };
-
-    const titleRef = useRef(null);
-    useEffect(function focusAndSetCursorAtTheEnd() {
-
-        if (isEditingActive) {
-            titleRef.current.focus();
-            setCursorAtTheEnd(titleRef.current);
-        }
-    }, [isEditingActive]);
-
     return <div data-testid="task-item" isHovered={isHovered} isChecked={isChecked} css={mainCss}>
         <div css={firstRowCss}>
             <div
