@@ -18,7 +18,7 @@ Todo:
 - [x] pass as few params in dispatch
 - [x] reducer actions don't make sense sometimes, watch for edit/delete/reload task
 - [x] too much reseting of listeners - maybe have lazy getters => no op
-- [ ] implement modifying single task
+- [x] implement modifying single task
 - [ ] see if you covered all of the functionalities from original GTask app
 - [ ] see if some requests can be parallelized
 - [ ] optimize css rendering

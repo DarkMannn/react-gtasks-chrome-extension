@@ -1,4 +1,6 @@
-import React, { useEffect, useLayoutEffect, useReducer, useMemo, useCallback } from 'react';
+import React, {
+    useEffect, useLayoutEffect, useReducer, useMemo, useCallback
+} from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 
@@ -39,8 +41,8 @@ function GTasks({ gapiTasks }) {
 
     const [state, dispatch] = useReducer(gTasksReducer, initialState);
     const {
-        isLoading, hasErrored, cursor, items, itemMaxLimit,
-        itemOffset, tasklist, isListPickerExpanded, isItemExpanded,
+        isLoading, hasErrored, cursor, items, tasklist, task,
+        itemMaxLimit, itemOffset, isListPickerExpanded, isTaskExpanded,
         isAppFocused, isEditingActive, isNextBlurInsertion
     } = state;
 
@@ -48,9 +50,13 @@ function GTasks({ gapiTasks }) {
 
     const onBlurCallback = useCallback(
         MakeOnBlurCallback({
-            items, cursor, tasklist, isNextBlurInsertion, isListPickerExpanded
+            items, cursor, tasklist, task,
+            isNextBlurInsertion, isListPickerExpanded, isTaskExpanded
         }, dispatch, GapiTasks),
-        [GapiTasks, items, cursor, tasklist, isNextBlurInsertion, isListPickerExpanded]
+        [
+            GapiTasks, items, cursor, tasklist, task,
+            isNextBlurInsertion, isListPickerExpanded, isTaskExpanded
+        ]
     );
 
     const keydownListener = MakeKeydownListener(state, dispatch, GapiTasks);
@@ -108,13 +114,15 @@ function GTasks({ gapiTasks }) {
         headerHtml = 'An Error Occurred';
         itemsHtml = 'Press <Shift + R> to restart app'
     }
-    else if (isItemExpanded) {
-        const zoomedItem = items[0];
+    else if (isTaskExpanded) {
         headerHtml = 'Return to tasks';
         itemsHtml = <TaskItemZoomed
-            title={zoomedItem.title}
-            notes={zoomedItem.notes}
-            due={zoomedItem.due}>
+            title={task.title}
+            notes={task.notes}
+            due={task.due}
+            cursor={cursor}
+            isEditingActive={isEditingActive}
+            onBlurCallback={onBlurCallback}>
         </TaskItemZoomed>;
     }
     else if (isListPickerExpanded) {

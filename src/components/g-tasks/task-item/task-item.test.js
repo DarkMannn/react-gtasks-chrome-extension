@@ -7,6 +7,20 @@ expect.extend({ toHaveTextContent });
 
 describe('TaskItem component', () => {
 
+    beforeAll(async () => {
+
+        window.getSelection = () => ({
+            removeAllRanges: () => {},
+            addRange: () => {}
+        });
+
+        global.document.createRange = () => ({
+            setStart: () => {},
+            setEnd: () => {},
+            collapse: () => {}
+        });
+    });
+
     it('renders properly when focused', async () => {
 
         const { findByTestId } = render(

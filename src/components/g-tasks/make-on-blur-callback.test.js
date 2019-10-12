@@ -7,6 +7,7 @@ const nextTickAsync = () => new Promise((resolve) => process.nextTick(resolve));
 describe('MakeOnBlurCallback', () => {
 
     let items;
+    let task;
     let tasklist;
     let cursor;
     let dispatch;
@@ -107,6 +108,57 @@ describe('MakeOnBlurCallback', () => {
                 expect(dispatch.mock.calls[1][0]).toStrictEqual(actionCreators.reloadItems(expectedUpdatedItems));
 
                 expect(GapiTasks.updateTasklist.mock.calls.length).toBe(1);
+            });
+        });
+    });
+
+    describe('Task is active', () => {
+
+        describe('Testing task update', () => {
+
+            beforeAll(async () => {
+
+                const items = [{ title: 'title' }, { notes: 'notes' }, { due: 'due' }];
+                cursor = 1;
+                dispatch = jest.fn();
+                GapiTasks = {
+                    updateTask: jest.fn(() => Promise.resolve({}))
+                };
+                task = items.reduce((task, item) => ({ ...task, ...item }), {});
+                tasklist = { id: 'someId' };
+                onBlurCallback = MakeOnBlurCallback({
+                    items, task, tasklist, cursor, isTaskExpanded: true,
+                    isNextBlurInsertion: false, isListPickerExpanded: false
+                }, dispatch, GapiTasks);
+            });
+            afterEach(async () => {
+
+                dispatch.mockClear();
+            });
+
+            it('does not update a task because there were no changes', async () => {
+
+                onBlurCallback({ title: 'title' }); // unchanged name is passed
+                jest.runOnlyPendingTimers();
+                await nextTickAsync();
+
+                expect(dispatch.mock.calls.length).toBe(1);
+                expect(dispatch.mock.calls[0][0]).toStrictEqual(actionCreators.toggleIsEditingActive(false));
+
+                expect(GapiTasks.updateTask.mock.calls.length).toBe(0);
+            });
+
+            it('runs callback successfully but skips updating because item has not changed', async () => {
+
+                onBlurCallback({ title: 'newTitle' });
+                jest.runOnlyPendingTimers();
+                await nextTickAsync();
+
+                expect(dispatch.mock.calls.length).toBe(2);
+                expect(dispatch.mock.calls[0][0]).toStrictEqual(actionCreators.toggleIsEditingActive(false));
+                expect(dispatch.mock.calls[1][0]).toStrictEqual(actionCreators.expandTask({}));
+
+                expect(GapiTasks.updateTask.mock.calls.length).toBe(1);
             });
         });
     });

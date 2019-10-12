@@ -15,6 +15,7 @@ expect.extend({
 
 let findByTestId;
 let findByText;
+let findByDisplayValue;
 let unmount;
 let gapiTasksMock;
 
@@ -26,7 +27,7 @@ describe('GTasks component', () => {
         gapiTasksMock = {};
         await act(async () => {
 
-            ({ findByTestId, findByText, unmount } = render(
+            ({ findByTestId, findByText, findByDisplayValue, unmount } = render(
                 <GTasks gapiTasks={gapiTasksMock}></GTasks>
             ));
         });
@@ -141,6 +142,7 @@ describe('GTasks component', () => {
         await act(async () => {
 
             fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
+            jest.runOnlyPendingTimers();
         });
         await act(async () => {
 
@@ -150,6 +152,7 @@ describe('GTasks component', () => {
         await act(async () => {
 
             fireEvent.keyDown(document, { keyCode: 40 }); // down
+            jest.runOnlyPendingTimers();
         });
         await act(async () => {
 
@@ -235,6 +238,8 @@ describe('GTasks component', () => {
         const titleDiv = await findByTestId('header');
         expect(titleDiv).toHaveTextContent('Return to tasks');
 
-        // TODO
+        await findByDisplayValue('title');
+        await findByDisplayValue('notes');
+        await findByDisplayValue('2011-11-11');
     });
 });

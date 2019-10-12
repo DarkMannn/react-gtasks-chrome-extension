@@ -7,6 +7,20 @@ expect.extend({ toHaveTextContent });
 
 describe('TasklistItem component', () => {
 
+    beforeAll(async () => {
+
+        window.getSelection = () => ({
+            removeAllRanges: () => {},
+            addRange: () => {}
+        });
+
+        global.document.createRange = () => ({
+            setStart: () => {},
+            setEnd: () => {},
+            collapse: () => {}
+        });
+    });
+
     it('renders properly', async () => {
 
         const { findByTestId, findByText } = render(

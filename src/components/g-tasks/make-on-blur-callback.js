@@ -1,12 +1,11 @@
 import { actionCreators } from './g-tasks-actions.js';
 import * as RequestsEnqueuer from '../../util/requests-enqueuer.js';
 
-const MakeOnBlurCallback = (
-    { items, cursor, tasklist, isNextBlurInsertion, isListPickerExpanded },
-    dispatch,
-    GapiTasks
-) => isListPickerExpanded
-    ? (newTitle) => { // tasklist callback
+const MakeOnBlurCallback = ({
+    items, cursor, tasklist, task,
+    isNextBlurInsertion, isListPickerExpanded, isTaskExpanded
+}, dispatch, GapiTasks) =>
+    isListPickerExpanded ? (newTitle) => { // tasklist callback
 
         dispatch(actionCreators.toggleIsEditingActive(false));
 
@@ -35,7 +34,25 @@ const MakeOnBlurCallback = (
             updatedTasklist.id, updatedTasklist
         ));
     }
-    : (newTitle) => { // task callback
+    : isTaskExpanded ? (changedTaskProps) => { // zoomed task callback
+
+        RequestsEnqueuer.enqueue(async () => {
+
+            dispatch(actionCreators.toggleIsEditingActive(false));
+
+            const shouldUpdate = Object.keys(changedTaskProps).some(
+                (key) => task[key] !== changedTaskProps[key]
+            );
+            if (!shouldUpdate) {
+                return;
+            }
+            const updatedTask = await GapiTasks.updateTask(
+                tasklist.id, task.id, { ...task, ...changedTaskProps }
+            );
+            dispatch(actionCreators.expandTask(updatedTask));
+        });
+    }
+    : (newTitle) => { // tasks callback
 
         dispatch(actionCreators.toggleIsEditingActive(false));
 

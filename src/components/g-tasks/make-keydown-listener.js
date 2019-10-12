@@ -4,21 +4,21 @@ import SortTasks from '../../util/sort-tasks.js';
 
 const MakeKeydownListener = ({
     isLoading, hasErrored, items, cursor, tasklist, showCompleted,
-    isEditingActive, isListPickerExpanded, isAppFocused
+    isEditingActive, isListPickerExpanded, isTaskExpanded, isAppFocused
 }, dispatch, GapiTasks) => {
 
     const TasklistActionsByKeyCodeHash = {
 
         38: async () => { // arrow up
 
-            if (cursor > 0) {
+            if (!isEditingActive && cursor > 0) {
                 dispatch(actionCreators.scrollUp());
             }
         },
 
         40: async () => { // arrow down
 
-            if (cursor < items.length - 1) {
+            if (!isEditingActive && cursor < items.length - 1) {
                 dispatch(actionCreators.scrollDown());
             }
         },
@@ -54,9 +54,41 @@ const MakeKeydownListener = ({
 
     const TaskActionsByKeyCodeHash = {
 
+        38: async () => { // arrow up
+
+            if (!isEditingActive && cursor > 0) {
+                dispatch(actionCreators.scrollUp());
+            }
+        },
+
+        40: async () => { // arrow down
+
+            if (!isEditingActive && cursor < items.length) {
+                dispatch(actionCreators.scrollDown());
+            }
+        },
+
+        13: async () => { // enter
+
+            if (cursor === 0) {
+                dispatch(actionCreators.toggleIsLoading());
+                RequestsEnqueuer.enqueue(async () => {
+
+                    const tasks = await GapiTasks.loadTasks(tasklist.id, showCompleted);
+                    dispatch(actionCreators.loadTasks(SortTasks(tasks), tasklist));
+                });
+            }
+            else {
+                dispatch(actionCreators.editItem());
+            }
+        }
+    };
+
+    const TasksActionsByKeyCodeHash = {
+
         38: async ({ shiftKeyPressed }) => { // arrow up
 
-            if (cursor !== 0 && shiftKeyPressed) {
+            if (shiftKeyPressed && cursor > 0 ) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor - 3];
@@ -90,7 +122,7 @@ const MakeKeydownListener = ({
 
         40: async ({ shiftKeyPressed }) => { // arrow down
 
-            if (cursor !== 0 && shiftKeyPressed) {
+            if (shiftKeyPressed && cursor !== 0) {
 
                 const movedTask = items[cursor - 1];
                 const newPreviousTask = items[cursor];
@@ -131,12 +163,12 @@ const MakeKeydownListener = ({
                 });
                 return;
             }
-            if (cursor > 0 && shiftKeyPressed) {
+            if (cursor > 0 && shiftKeyPressed  && items[cursor - 1].status === 'needsAction') {
                 dispatch(actionCreators.toggleIsLoading());
                 RequestsEnqueuer.enqueue(async () => {
 
                     const task = await GapiTasks.loadTask(tasklist.id, items[cursor - 1].id);
-                    dispatch(actionCreators.expandTask([task]));
+                    dispatch(actionCreators.expandTask(task));
                 });
                 return;
             }
@@ -230,9 +262,10 @@ const MakeKeydownListener = ({
         }
 
         try {
-            const ActiveActionsHash = isListPickerExpanded
-                ? TasklistActionsByKeyCodeHash
-                : TaskActionsByKeyCodeHash;
+            const ActiveActionsHash =
+                isListPickerExpanded ? TasklistActionsByKeyCodeHash
+                : isTaskExpanded ? TaskActionsByKeyCodeHash
+                : TasksActionsByKeyCodeHash;
             ActiveActionsHash[keyCode] && ActiveActionsHash[keyCode]({
                 ctrlKeyPressed, shiftKeyPressed
             });

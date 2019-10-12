@@ -66,9 +66,9 @@ export const actionCreators = {
     editItem: () => ({
         type: actionTypes.editItem
     }),
-    expandTask: (items) => ({
+    expandTask: (task) => ({
         type: actionTypes.expandTask,
-        items
+        task
     }),
     loadTasks: (items, tasklist) => ({
         type: actionTypes.loadTasks,

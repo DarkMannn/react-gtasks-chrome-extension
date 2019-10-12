@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 import setCursorAtTheEnd from '../../../util/set-cursor-at-the-end.js';
@@ -18,19 +18,19 @@ const tasklistItemCss = css`
 
 function TasklistItem({ title, isHovered, isEditingActive, onBlurCallback }) {
 
-    const titleRef = useRef();
+    const titleRef = useRef(null);
     const onBlur = async () => {
 
         await onBlurCallback(titleRef.current.textContent);
     };
 
-    if (isEditingActive) {
-        setTimeout(function focusAndSetCursorAtTheEnd() {
+    useEffect(function focusAndSetCursorAtTheEnd() {
 
+        if (isEditingActive) {
             titleRef.current.focus();
             setCursorAtTheEnd(titleRef.current);
-        }, 0);
-    }
+        }
+    }, [isEditingActive]);
 
     return <div
         data-testid='tasklistItem'

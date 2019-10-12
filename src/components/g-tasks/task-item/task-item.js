@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 import setCursorAtTheEnd from '../../../util/set-cursor-at-the-end.js';
@@ -57,20 +57,19 @@ const notesCss = css`
 function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlurCallback }) {
 
     const isChecked = status === 'completed';
-
-    const titleRef = useRef();
     const onBlur = async () => {
 
         await onBlurCallback(titleRef.current.textContent);
     };
 
-    if (isEditingActive) {
-        setTimeout(function focusAndSetCursorAtTheEnd() {
+    const titleRef = useRef(null);
+    useEffect(function focusAndSetCursorAtTheEnd() {
 
+        if (isEditingActive) {
             titleRef.current.focus();
             setCursorAtTheEnd(titleRef.current);
-        }, 0);
-    }
+        }
+    }, [isEditingActive]);
 
     return <div data-testid="task-item" isHovered={isHovered} isChecked={isChecked} css={mainCss}>
         <div css={firstRowCss}>
@@ -91,10 +90,11 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
                 {title}
             </div>
         </div>
-        {isHovered && <div css={secondRowCss}>
-                {due && <div data-testid="due" css={dueCss}>{due}</div>}
-                {notes && <div data-testid="notes" css={notesCss}>{notes}</div>}
-            </div>
+        {isHovered && (due || notes) &&
+        <div css={secondRowCss}>
+            <div data-testid="due" css={dueCss}>{due}</div>
+            <div data-testid="notes" css={notesCss}>{notes}</div>
+        </div>
         }
     </div>;
 }

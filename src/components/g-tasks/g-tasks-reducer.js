@@ -8,10 +8,11 @@ export const initialState = {
     itemMaxLimit: 0,
     itemOffset: 0,
     tasklist: 'Loading...',
+    task: {},
     navigationDir: 'down',
     showCompleted: true,
     isListPickerExpanded: true,
-    isItemExpanded: false,
+    isTaskExpanded: false,
     isAppFocused: false,
     isEditingActive: false,
     isNextBlurInsertion: false
@@ -90,15 +91,23 @@ export function gTasksReducer(state, action) {
         }),
         [actionTypes.expandTask]: () => ({
             ...state,
-            items: action.items,
-            isItemExpanded: true,
-            isLoading: false
+            task: action.task,
+            items: [
+                { title: action.task.title },
+                { notes: action.task.notes },
+                { due: action.task.due }
+            ],
+            isTaskExpanded: true,
+            isLoading: false,
+            cursor: state.isTaskExpanded ? state.cursor : 1
         }),
         [actionTypes.loadTasks]: () => ({
             ...state,
             items: action.items,
             tasklist: action.tasklist,
+            task: {},
             isListPickerExpanded: false,
+            isTaskExpanded: false,
             cursor: 1,
             itemOffset: 0,
             isLoading: false

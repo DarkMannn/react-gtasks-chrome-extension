@@ -286,6 +286,151 @@ describe('MakeKeydownListener', () => {
             });
         });
 
+        describe('Task is active', () => {
+
+            describe('Key 38 - arrow up', () => {
+
+                beforeEach(async () => {
+
+                    keyCode = 38;
+                    initState = {
+                        ...initialState,
+                        isLoading: false,
+                        itemMaxLimit: 8,
+                        cursor: 3,
+                        tasklist: { id: 'fakeTasklistId'},
+                        items: ['item0', 'item1', 'item2'].map((item, index) => ({
+                            id: index + 1, title: item
+                        })),
+                        isListPickerExpanded: false,
+                        isTaskExpanded: true,
+                        isAppFocused: true
+                    };
+                    dispatch = MakeTestReducer(initState);
+                    GapiTasks = {};
+                    keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
+                });
+
+                it('scrolls one row above', async () => {
+
+                    keydownListener({ keyCode });
+
+                    expect(dispatch.mock.calls.length).toBe(1);
+                    const newState = dispatch.mock.results[0].value;
+                    expect(newState.cursor).toBe(2);
+                    expect(newState.navigationDir).toBe('up');
+                    expect(newState.items.map((item) => item.title)).toStrictEqual([
+                        'item0', 'item1', 'item2'
+                    ]);
+                });
+            });
+
+            describe('Key 40 - arrow down', () => {
+
+                beforeEach(async () => {
+
+                    keyCode = 40;
+                    initState = {
+                        ...initialState,
+                        isLoading: false,
+                        itemMaxLimit: 8,
+                        cursor: 2,
+                        tasklist: { id: 'fakeTasklistId'},
+                        items: ['item0', 'item1', 'item2'].map((item, index) => ({
+                            id: index + 1, title: item
+                        })),
+                        isListPickerExpanded: false,
+                        isTaskExpanded: true,
+                        isAppFocused: true
+                    };
+                    dispatch = MakeTestReducer(initState);
+                    GapiTasks = {};
+                    keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
+                });
+
+                it('scrolls one row above', async () => {
+
+                    keydownListener({ keyCode });
+
+                    expect(dispatch.mock.calls.length).toBe(1);
+                    const newState = dispatch.mock.results[0].value;
+                    expect(newState.cursor).toBe(3);
+                    expect(newState.navigationDir).toBe('down');
+                    expect(newState.items.map((item) => item.title)).toStrictEqual([
+                        'item0', 'item1', 'item2'
+                    ]);
+                });
+            });
+
+            describe('Key 13 - enter', () => {
+
+                it('updates the task', async () => {
+
+                    keyCode = 13;
+                    initState = {
+                        ...initialState,
+                        isLoading: false,
+                        itemMaxLimit: 8,
+                        cursor: 2,
+                        tasklist: { id: 'fakeTasklistId'},
+                        items: ['title', 'notes', 'due'].map((item) => ({ [item]: item })),
+                        isListPickerExpanded: false,
+                        isTaskExpanded: true,
+                        isAppFocused: true
+                    };
+                    dispatch = MakeTestReducer(initState);
+                    keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
+
+                    keydownListener({ keyCode });
+
+                    expect(dispatch.mock.calls.length).toBe(1);
+                    const newState = dispatch.mock.results[0].value;
+                    expect(newState.cursor).toBe(2);
+                    expect(newState.isEditingActive).toBe(true);
+                });
+
+                it('loads all tasks', async () => {
+
+                    keyCode = 13;
+                    initState = {
+                        ...initialState,
+                        isLoading: false,
+                        itemMaxLimit: 8,
+                        cursor: 0, // cursor must be 0
+                        tasklist: { id: 'fakeTasklistId'},
+                        items: ['title', 'notes', 'due'].map((item) => ({ [item]: item })),
+                        isListPickerExpanded: false,
+                        isTaskExpanded: true,
+                        isAppFocused: true
+                    };
+                    GapiTasks = {
+                        loadTasks: jest.fn(() => Promise.resolve(['itemX', 'itemY']))
+                    };
+                    dispatch = MakeTestReducer(initState);
+                    keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
+
+                    keydownListener({ keyCode });
+                    jest.runOnlyPendingTimers();
+                    await nextTickAsync();
+
+                    expect(dispatch.mock.calls.length).toBe(2);
+
+                    const middleState = dispatch.mock.results[0].value;
+                    expect(middleState.cursor).toBe(0);
+                    expect(middleState.isLoading).toBe(true);
+
+                    const newState = dispatch.mock.results[1].value;
+                    expect(newState.cursor).toBe(1);
+                    expect(newState.items).toStrictEqual(['itemX', 'itemY']);
+
+                    const showCompleted = true;
+                    expect(GapiTasks.loadTasks.mock.calls.length).toBe(1);
+                    expect(GapiTasks.loadTasks.mock.calls[0][0]).toBe(initState.tasklist.id);
+                    expect(GapiTasks.loadTasks.mock.calls[0][1]).toBe(showCompleted);
+                });
+            });
+        });
+
         describe('Tasks are active', () => {
 
             describe('Key 38 - arrow up', () => {
@@ -685,7 +830,7 @@ describe('MakeKeydownListener', () => {
                         cursor: 2,
                         tasklist: { id: 'fakeTasklistId'},
                         items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
-                            id: index + 1, title: item, status: index === 1 ? 'completed' : 'needsAction'
+                            id: index + 1, title: item, status: 'needsAction'
                         })),
                         isListPickerExpanded: false,
                         isAppFocused: true,
@@ -708,8 +853,8 @@ describe('MakeKeydownListener', () => {
                     expect(middleState.isLoading).toBe(true);
 
                     const newState = dispatch.mock.results[1].value;
-                    expect(newState.cursor).toBe(2);
-                    expect(newState.items).toStrictEqual([{ title: 'x' }]);
+                    expect(newState.cursor).toBe(1);
+                    expect(newState.isTaskExpanded).toBeTruthy();
 
                     expect(GapiTasks.loadTask.mock.calls.length).toBe(1);
                 });
