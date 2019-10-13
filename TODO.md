@@ -20,9 +20,9 @@ Todo:
 - [x] too much reseting of listeners - maybe have lazy getters => no op
 - [x] implement modifying single task
 - [x] see if you covered all of the functionalities from original GTask app
-- [ ] implement deletion of date
+- [x] race conditions (ex. switch page when the request is still pending)
+- [x] implement deletion of date
 - [ ] error handling
-- [ ] race conditions (ex. switch page when the request is still pending)
 - [ ] see if some requests can be parallelized
 - [ ] optimize css rendering
 - [ ] implement styling

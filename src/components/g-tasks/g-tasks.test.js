@@ -214,7 +214,7 @@ describe('GTasks component', () => {
         await findByText('\u2611');
     });
 
-    it('loads tasklist, then tasks, then scrolls down, then expands a task', async () => {
+    it('loads tasklist, then tasks, then scrolls down, then expands a task, then deletes due input', async () => {
 
         await act(async () => {
 
@@ -241,5 +241,23 @@ describe('GTasks component', () => {
         await findByDisplayValue('title');
         await findByDisplayValue('notes');
         await findByDisplayValue('2011-11-11');
+
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 40 }); // down
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 40 }); // down
+        });
+        await act(async () => {
+
+            fireEvent.keyDown(document, { keyCode: 46, ctrlKey: true }); // del
+            jest.runOnlyPendingTimers();
+        });
+
+        await findByDisplayValue('title');
+        await findByDisplayValue('notes');
+        await findByDisplayValue('');
     });
 });

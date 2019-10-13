@@ -49,6 +49,7 @@ function TaskItemZoomed({
     const [title, setTitle] = useState(initTitle);
     const [notes, setNotes] = useState(initNotes);
     const [due, setDue] = useState(initDue ? new Date(initDue).toISOString().split('T')[0] : '');
+    const [shouldNullifyDue, setShouldNullifyDue] = useState(false);
 
     const inputs = [
         { prop: 'title', ref: useRef(null) },
@@ -65,6 +66,21 @@ function TaskItemZoomed({
             setDue(new Date(Date.now()).toISOString().split('T')[0]);
         }
     }, [activeProp, activeRef, isEditingActive]);
+
+    useEffect(function nullifyDueIfDeleted() {
+
+        if (cursor !== 3 || initDue !== null || isEditingActive || due === '') {
+            return;
+        }
+
+        if (shouldNullifyDue) {
+            setShouldNullifyDue(false);
+            setDue('');
+        }
+        else {
+            setShouldNullifyDue(true);
+        }
+    }, [cursor, due, initDue, shouldNullifyDue, isEditingActive]);
 
     const [onTitleChange, onNotesChange, onDueChange] =
         [setTitle, setNotes, setDue].map(makeOnChangeFunction);

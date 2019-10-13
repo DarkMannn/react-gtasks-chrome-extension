@@ -3,7 +3,7 @@ import * as RequestsEnqueuer from '../../util/requests-enqueuer.js';
 import SortTasks from '../../util/sort-tasks.js';
 
 const MakeKeydownListener = ({
-    isLoading, hasErrored, items, cursor, tasklist, showCompleted,
+    isLoading, hasErrored, items, cursor, tasklist, task, showCompleted,
     isEditingActive, isListPickerExpanded, isTaskExpanded, isAppFocused
 }, dispatch, GapiTasks) => {
 
@@ -80,6 +80,16 @@ const MakeKeydownListener = ({
             }
             else {
                 dispatch(actionCreators.editItem());
+            }
+        },
+
+        46: async ({ ctrlKeyPressed }) => { // del
+
+            if (ctrlKeyPressed && cursor === 3) {
+                dispatch(actionCreators.expandTask({ ...task, due: null }));
+                RequestsEnqueuer.enqueue(() => GapiTasks.updateTask(
+                    tasklist.id, task.id, { ...task, due: null }
+                ));
             }
         }
     };
