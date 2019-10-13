@@ -46,10 +46,11 @@ const MakeOnBlurCallback = ({
             if (!shouldUpdate) {
                 return;
             }
-            const updatedTask = await GapiTasks.updateTask(
+
+            dispatch(actionCreators.expandTask({ ...task, ...changedTaskProps }));
+            await GapiTasks.updateTask(
                 tasklist.id, task.id, { ...task, ...changedTaskProps }
             );
-            dispatch(actionCreators.expandTask(updatedTask));
         });
     }
     : (newTitle) => { // tasks callback

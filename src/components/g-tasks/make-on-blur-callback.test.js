@@ -154,9 +154,11 @@ describe('MakeOnBlurCallback', () => {
                 jest.runOnlyPendingTimers();
                 await nextTickAsync();
 
+                const expectedNewTask = { ...task, title: 'newTitle' };
+
                 expect(dispatch.mock.calls.length).toBe(2);
                 expect(dispatch.mock.calls[0][0]).toStrictEqual(actionCreators.toggleIsEditingActive(false));
-                expect(dispatch.mock.calls[1][0]).toStrictEqual(actionCreators.expandTask({}));
+                expect(dispatch.mock.calls[1][0]).toStrictEqual(actionCreators.expandTask(expectedNewTask));
 
                 expect(GapiTasks.updateTask.mock.calls.length).toBe(1);
             });
