@@ -36,6 +36,36 @@ const headingHelperCss = css`
     margin-top: 0;
     font-size: 10px;
 `;
+const arrowDivCss = css`
+    border-bottom: 1px solid black;
+    height: 25px;
+    width: 100%;
+    background-color: white;
+`;
+const upArrowDivCss = css`
+    ${arrowDivCss}
+`;
+const downArrowDivCss = css`
+    ${arrowDivCss}
+    border-top: 1px solid black;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+`;
+const arrowSignCss = css`
+    border: ${({ canScroll }) => canScroll ? 'solid black' : 'solid lightgray'};
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+`;
+const upArrowSignCss = css`
+    ${arrowSignCss}
+    transform: rotate(-135deg);
+`;
+const downArrowSignCss = css`
+    ${arrowSignCss}
+    transform: rotate(45deg) translateY(-5px);
+`;
 
 function GTasks({ gapiTasks }) {
 
@@ -150,6 +180,7 @@ function GTasks({ gapiTasks }) {
                 notes={item.notes}
                 status={item.status}
                 isHovered={index === cursor - 1}
+                isOnTopFaded={index === 0 && cursor === 0}
                 isEditingActive={isEditingActive && index === cursor - 1}
                 onBlurCallback={onBlurCallback}>
             </TaskItem>
@@ -160,8 +191,17 @@ function GTasks({ gapiTasks }) {
         <div data-testid="header" css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
             {headerHtml}
         </div>
+        <div css={upArrowDivCss}>
+            <span canScroll={itemOffset} css={upArrowSignCss}></span>
+        </div>
         <div data-testid="items">
             {itemsHtml}
+        </div>
+        <div css={downArrowDivCss}>
+            <span
+                canScroll={!(itemOffset + itemMaxLimit === items.length || items.length < itemMaxLimit)}
+                css={downArrowSignCss}>
+            </span>
         </div>
     </div>;
 }

@@ -22,10 +22,18 @@ Todo:
 - [x] see if you covered all of the functionalities from original GTask app
 - [x] race conditions (ex. switch page when the request is still pending)
 - [x] implement deletion of date
-- [ ] error handling
-- [ ] see if some requests can be parallelized
-- [ ] optimize css rendering
+- [x] error handling => no op
+- [x] optimize css rendering => no op - did not get too many classes warning for 'styled-components' lib
 - [ ] implement styling
+  - [x] make always one item expanded, even if it does not have additional info
+  - [x] make bottom arrow in constant place
+  - [ ] make arrows faded if scrolling is disabled
+  - [ ] change the background-color of the bottom space
+  - [ ] make splash screen
+  - [ ] handle text overflow
+  - [ ] coloring
+  - [ ] make the items be flex-items
+- [ ] bug: shift + enter on 'get back to tasklist' button
 - [ ] make it to be a chrome extension
 - [ ] create instructions
 

@@ -135,10 +135,10 @@ export function gTasksReducer(state, action) {
 
             const upperHeaderHeight = action.windowHeight * 0.1;
             const taskListNameHeight = 68;
-            const taskItemHeight = 36;
-            const availableHeightForTasks = action.windowHeight
-                - upperHeaderHeight
-                - taskListNameHeight;
+            const taskItemHeight = 34;
+            const twoArrowDivHeight = 26 + 27;
+            const availableHeightForTasks =
+                action.windowHeight - upperHeaderHeight - taskListNameHeight - twoArrowDivHeight;
             const newItemMaxLimit = Math.floor(
                 (availableHeightForTasks / taskItemHeight) - 1
             );

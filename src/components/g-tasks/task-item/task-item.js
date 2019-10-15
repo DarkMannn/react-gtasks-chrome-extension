@@ -6,22 +6,25 @@ import useFocusAndSetCursor from '../../hooks/use-focus-and-set-cursor.js';
 const mainCss = css`
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     justify-content: center;
     text-align: left;
     overflow: hidden;
     border-bottom: 1px solid black;
-    box-shadow: ${({ isHovered, isChecked }) =>
-        !isHovered ? 'none'
-        : isChecked ? '0 -3px 0 0 grey, 0 2px 0 0 grey'
-        : '0 -3px 0 0 darkblue, 0 2px 0 0 darkblue'
+    box-shadow: ${({ isHovered, isOnTopFaded, isChecked }) =>
+        (isOnTopFaded || (isHovered && isChecked)) ? '0 -3px 0 0 grey, 0 2px 0 0 grey'
+        : isHovered ? '0 -3px 0 0 darkblue, 0 2px 0 0 darkblue'
+        : 'none'
     };
     outline-offset: -3px;
 `;
 const firstRowCss = css`
     display: flex;
-    height: 30px;
-    padding-top: 5px;
+    align-items: center;
+    height: ${({ isHovered, secondRowHidden }) => (isHovered && secondRowHidden) ? '60px' : '30px'};
+    padding: ${({ isHovered, secondRowHidden }) => (!isHovered || secondRowHidden)
+        ? '2px 0 2px 0'
+        : '0'
+    };
     font-size: 1.5vh;
 `;
 const secondRowCss = css`
@@ -54,7 +57,9 @@ const notesCss = css`
     border-top: 1px solid black;
 `;
 
-function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlurCallback }) {
+function TaskItem({
+    title, status, notes, due, isHovered, isOnTopFaded, isEditingActive, onBlurCallback
+}) {
 
     const titleRef = useRef(null);
     useFocusAndSetCursor(titleRef, isEditingActive);
@@ -64,8 +69,13 @@ function TaskItem({ title, status, notes, due, isHovered, isEditingActive, onBlu
 
         await onBlurCallback(titleRef.current.textContent);
     };
-    return <div data-testid="task-item" isHovered={isHovered} isChecked={isChecked} css={mainCss}>
-        <div css={firstRowCss}>
+    return <div
+        data-testid="task-item"
+        isHovered={isHovered}
+        isOnTopFaded={isOnTopFaded}
+        isChecked={isChecked}
+        css={mainCss}>
+        <div isHovered={isHovered || isOnTopFaded} secondRowHidden={!due && !notes} css={firstRowCss}>
             <div
                 data-testid="checkbox"
                 isChecked={isChecked}
