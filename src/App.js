@@ -21,19 +21,19 @@ const mainCss = css`
 const headerCss = css`
     background-color: #282c34;
     width: 100%;
-    height: 10vh;
+    height: 95px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 2.5vh;
+    font-size: 24px;
 `;
 const bodyCss = css`
     width: 100%;
     height: 100%;
     color: #282c34;
-    font-size: 2vh;
+    font-size: 19px;
 `;
 
 function App() {

@@ -1,4 +1,4 @@
-Todo:
+MVP:
 - [x] implement navigating
 - [x] implement scrolling
 - [x] implement fetching
@@ -27,25 +27,17 @@ Todo:
 - [ ] implement styling
   - [x] make always one item expanded, even if it does not have additional info
   - [x] make bottom arrow in constant place
-  - [ ] make arrows faded if scrolling is disabled
-  - [ ] change the background-color of the bottom space
-  - [ ] make splash screen
-  - [ ] handle text overflow
+  - [x] make arrows faded if scrolling is disabled
+  - [x] make font size absolute
+  - [x] handle text overflow
   - [ ] coloring
-  - [ ] make the items be flex-items
 - [ ] bug: shift + enter on 'get back to tasklist' button
 - [ ] make it to be a chrome extension
 - [ ] create instructions
 
-Refactor hooks:
-- useEffect:
-  - fetch inside useEffect
-  - if you have a function as a dependency:
-    - try to move it outside function component
-    - try to make it a pure function and put it outside useEffect
-    - use useCallback and put it inside useEffect
-  - look if you need to cancel the actions if outdated
-  - check if you have stale values inside useEffect:
-    - use functional setState() update
-    - use useReducer()
-    - use useRef()
+Backlog:
+  - [ ] make the items be flex-items, and the bottom arrow to fill the empty space
+  - [ ] make splash screen
+  - [ ] make title horizontally scrollable by arrow keys
+  - [ ] checkbox moves a little to the left when title is long string without whitespace
+  - [ ] use monospace font for titles, insert your font

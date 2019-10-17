@@ -8,7 +8,6 @@ const mainCss = css`
     flex-direction: column;
     justify-content: center;
     text-align: left;
-    overflow: hidden;
     border-bottom: 1px solid black;
     box-shadow: ${({ isHovered, isOnTopFaded, isChecked }) =>
         (isOnTopFaded || (isHovered && isChecked)) ? '0 -3px 0 0 grey, 0 2px 0 0 grey'
@@ -20,18 +19,24 @@ const mainCss = css`
 const firstRowCss = css`
     display: flex;
     align-items: center;
-    height: ${({ isHovered, secondRowHidden }) => (isHovered && secondRowHidden) ? '60px' : '30px'};
+    height: ${({ isHovered, secondRowHidden }) =>
+        !isHovered ? '30px'
+        : secondRowHidden ? '60px'
+        : '35px'
+    };
     padding: ${({ isHovered, secondRowHidden }) => (!isHovered || secondRowHidden)
         ? '2px 0 2px 0'
         : '0'
     };
-    font-size: 1.5vh;
+    font-size: 14px;
+    overflow: hidden;
 `;
 const secondRowCss = css`
     display: flex;
-    height: 30px;
+    height: 25px;
     padding-bottom: 5px;
-    font-size: 1.2vh;
+    font-size: 10px;
+    overflow: hidden;
 `;
 const checkboxCss = css`
     display: inline-block;
@@ -42,18 +47,23 @@ const checkboxCss = css`
 const titleCss = css`
     display: inline-block;
     width: 230px;
-    word-wrap: break-word;
+    ${({ isEditingActive }) => isEditingActive && `
+        overflow: hidden;
+        white-space: nowrap;
+    `}
     text-decoration-line: ${({ isChecked }) => isChecked ? 'line-through' : 'none'};
     color: ${({ isChecked }) => isChecked ? 'grey' : 'black'};
 `;
 const dueCss = css`
     display: inline-block;
+    padding-top: 4px;
     width: 70px;
     text-align: center;
 `;
 const notesCss = css`
+    display: inline-block;
+    padding-top: 2px;
     width: 230px;
-    word-wrap: break-word;
     border-top: 1px solid black;
 `;
 
@@ -65,6 +75,12 @@ function TaskItem({
     useFocusAndSetCursor(titleRef, isEditingActive);
 
     const isChecked = status === 'completed';
+    const truncatedTitle =
+        isEditingActive ? title
+        : !isHovered || (due || notes) ? title.substring(0, 27)
+        : title.substring(0, 57);
+    const optionalThreeDots = !isEditingActive && title.length > 27 ? '...' : '';
+    const formatedTitle = `${truncatedTitle}${optionalThreeDots}`;
     const onBlur = async () => {
 
         await onBlurCallback(titleRef.current.textContent);
@@ -88,9 +104,10 @@ function TaskItem({
                 css={titleCss}
                 isChecked={isChecked}
                 contentEditable={isHovered}
+                isEditingActive={isEditingActive}
                 suppressContentEditableWarning={true}
                 onBlur={onBlur}>
-                {title}
+                {formatedTitle}
             </div>
         </div>
         {isHovered && (due || notes) &&

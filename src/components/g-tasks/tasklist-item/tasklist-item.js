@@ -14,6 +14,11 @@ const tasklistItemCss = css`
         : '0 -3px 0 0 cadetblue, 0 2px 0 0 cadetblue'
     };
     outline-offset: -3px;
+    text-align: left;
+    ${({ isEditingActive }) => isEditingActive && `
+        overflow: hidden;
+        white-space: nowrap;
+    `}
 `;
 
 function TasklistItem({ title, isHovered, isEditingActive, onBlurCallback }) {
@@ -21,6 +26,11 @@ function TasklistItem({ title, isHovered, isEditingActive, onBlurCallback }) {
     const titleRef = useRef(null);
     useFocusAndSetCursor(titleRef, isEditingActive);
 
+    const truncatedTitle = isEditingActive
+        ? title
+        : title.substring(0, 22);
+    const optionalThreeDots = !isEditingActive && title.length > 22 ? '...' : '';
+    const formatedTitle = `${truncatedTitle}${optionalThreeDots}`;
     const onBlur = async () => {
 
         await onBlurCallback(titleRef.current.textContent);
@@ -34,7 +44,7 @@ function TasklistItem({ title, isHovered, isEditingActive, onBlurCallback }) {
                 contentEditable={isHovered}
                 suppressContentEditableWarning={true}
                 onBlur={onBlur}>
-                {title}
+                {formatedTitle}
             </div>
     </div>;
 }

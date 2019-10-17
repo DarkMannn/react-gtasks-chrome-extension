@@ -191,18 +191,22 @@ function GTasks({ gapiTasks }) {
         <div data-testid="header" css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
             {headerHtml}
         </div>
+        {!isTaskExpanded &&
         <div css={upArrowDivCss}>
             <span canScroll={itemOffset} css={upArrowSignCss}></span>
         </div>
+        }
         <div data-testid="items">
             {itemsHtml}
         </div>
+        {!isTaskExpanded &&
         <div css={downArrowDivCss}>
             <span
                 canScroll={!(itemOffset + itemMaxLimit === items.length || items.length < itemMaxLimit)}
                 css={downArrowSignCss}>
             </span>
         </div>
+        }
     </div>;
 }
 

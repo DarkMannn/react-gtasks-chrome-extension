@@ -133,7 +133,7 @@ export function gTasksReducer(state, action) {
         }),
         [actionTypes.resizeContent]: () => {
 
-            const upperHeaderHeight = action.windowHeight * 0.1;
+            const upperHeaderHeight = 95;
             const taskListNameHeight = 68;
             const taskItemHeight = 34;
             const twoArrowDivHeight = 26 + 27;
