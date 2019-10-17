@@ -186,21 +186,23 @@ const MakeKeydownListener = ({
                 dispatch(actionCreators.insertItem());
                 return;
             }
-            if (items[cursor - 1].etag && items[cursor - 1].status === 'needsAction') {
+            if (
+                items[cursor - 1]
+                && items[cursor - 1].etag
+                && items[cursor - 1].status === 'needsAction'
+            ) {
                 dispatch(actionCreators.editItem());
             }
         },
 
         46: async ({ ctrlKeyPressed }) => { // del
 
-            if (cursor !== 0 && ctrlKeyPressed) {
-                const updatedItems = items.filter((item, index) => index !== cursor - 1);
+            if (cursor !== 0 && ctrlKeyPressed && items[cursor - 1].etag) {
+                const updatedItems = items.filter((_, index) => index !== cursor - 1);
                 dispatch(actionCreators.reloadItems(updatedItems, cursor - 1));
-                if (items[cursor - 1].id) {
-                    RequestsEnqueuer.enqueue(() => GapiTasks.deleteTask(
-                        tasklist.id, items[cursor - 1].id
-                    ));
-                }
+                RequestsEnqueuer.enqueue(() => GapiTasks.deleteTask(
+                    tasklist.id, items[cursor - 1].id
+                ));
             }
         },
 

@@ -31,7 +31,8 @@ MVP:
   - [x] make font size absolute
   - [x] handle text overflow
   - [ ] coloring
-- [ ] bug: shift + enter on 'get back to tasklist' button
+- [x] bug: shift + enter on 'get back to tasklist' button
+- [x] bug: deleting the not yet created task throws
 - [ ] make it to be a chrome extension
 - [ ] create instructions
 
@@ -41,3 +42,4 @@ Backlog:
   - [ ] make title horizontally scrollable by arrow keys
   - [ ] checkbox moves a little to the left when title is long string without whitespace
   - [ ] use monospace font for titles, insert your font
+  - [ ] show the user when delete task action cannot be done because of ongoing request
