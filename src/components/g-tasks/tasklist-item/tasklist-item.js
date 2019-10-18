@@ -13,12 +13,13 @@ const tasklistItemCss = css`
         ? 'none'
         : '0 -3px 0 0 cadetblue, 0 2px 0 0 cadetblue'
     };
+    transition: box-shadow 0.15s linear 0s;
     outline-offset: -3px;
     text-align: left;
     ${({ isEditingActive }) => isEditingActive && `
         overflow: hidden;
         white-space: nowrap;
-    `}
+    `};
 `;
 
 function TasklistItem({ title, isHovered, isEditingActive, onBlurCallback }) {

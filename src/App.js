@@ -32,7 +32,7 @@ const headerCss = css`
 const bodyCss = css`
     width: 100%;
     height: 100%;
-    color: #282c34;
+    color: black;
     font-size: 19px;
 `;
 

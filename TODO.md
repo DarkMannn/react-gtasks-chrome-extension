@@ -30,11 +30,12 @@ MVP:
   - [x] make arrows faded if scrolling is disabled
   - [x] make font size absolute
   - [x] handle text overflow
-  - [ ] coloring
+  - [x] coloring
+  - [x] minimal transitions
 - [x] bug: shift + enter on 'get back to tasklist' button
 - [x] bug: deleting the not yet created task throws
-- [ ] make it to be a chrome extension
 - [ ] create instructions
+- [ ] make it to be a chrome extension
 
 Backlog:
   - [ ] make the items be flex-items, and the bottom arrow to fill the empty space

@@ -19,8 +19,9 @@ const inputCss = css`
     padding: 0 5px 0 5px;
     box-shadow: ${({ isHovered }) => !isHovered
         ? 'none'
-        : '0 -3px 0 0 salmon, 0 2px 0 0 salmon'
+        : '0 -3px 0 0 cadetblue, 0 2px 0 0 cadetblue'
     };
+    transition: box-shadow 0.15s linear 0s;
 `;
 const titleCss = css`
     ${inputCss}

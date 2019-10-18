@@ -17,18 +17,17 @@ import TaskItemZoomed from './task-item-zoomed/task-item-zoomed.js';
 
 const mainCss = css`
     outline: none;
-    border-right: ${({ isAppFocused }) => isAppFocused ? '3px solid gray' : 'none'};
-    border-left: ${({ isAppFocused }) => isAppFocused ? '3px solid gray' : 'none'};
-    opacity: ${({ isLoading }) => isLoading ? 0.6 : 1};
-    background-color: ${({ hasErrored }) => hasErrored ? 'salmon' : 'white'}
+    opacity: ${({ isLoading, isAppFocused }) => isLoading || !isAppFocused ? 0.6 : 1};
+    background-color: ${({ hasErrored }) => hasErrored ? 'salmon' : 'white'};
+    transition: background-color, opacity 0.15s linear 0s;
 `;
 const headingCss = css`
     height: 30px;
     padding: 15px 0 15px 0;
     border-top: 4px double black;
     border-bottom: 4px double black;
-    outline: ${({ isHovered }) => isHovered ? '3px solid darkblue' : 'none'};
-    outline-offset: -3px;
+    background-color: ${({ isHovered }) => isHovered ? 'cadetblue' : 'white'};
+    transition: background-color 0.15s linear 0s;
 `;
 const headingHelperCss = css`
     height: 5px;
@@ -54,6 +53,7 @@ const downArrowDivCss = css`
 `;
 const arrowSignCss = css`
     border: ${({ canScroll }) => canScroll ? 'solid black' : 'solid lightgray'};
+    transition: border 0.15s linear 0s;
     border-width: 0 3px 3px 0;
     display: inline-block;
     padding: 3px;

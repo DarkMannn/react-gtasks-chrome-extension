@@ -10,10 +10,11 @@ const mainCss = css`
     text-align: left;
     border-bottom: 1px solid black;
     box-shadow: ${({ isHovered, isOnTopFaded, isChecked }) =>
-        (isOnTopFaded || (isHovered && isChecked)) ? '0 -3px 0 0 grey, 0 2px 0 0 grey'
-        : isHovered ? '0 -3px 0 0 darkblue, 0 2px 0 0 darkblue'
+        (isOnTopFaded || (isHovered && isChecked)) ? '0 -3px 0 0 lightgrey, 0 2px 0 0 lightgrey'
+        : isHovered ? '0 -3px 0 0 cadetblue, 0 2px 0 0 cadetblue'
         : 'none'
     };
+    transition: box-shadow 0.15s linear 0s;
     outline-offset: -3px;
 `;
 const firstRowCss = css`
@@ -42,7 +43,7 @@ const checkboxCss = css`
     display: inline-block;
     width: 70px;
     text-align: center;
-    color: ${({ isChecked }) => isChecked ? 'grey' : 'black'};
+    color: ${({ isChecked }) => isChecked ? 'lightgrey' : 'black'};
 `;
 const titleCss = css`
     display: inline-block;
@@ -52,7 +53,7 @@ const titleCss = css`
         white-space: nowrap;
     `}
     text-decoration-line: ${({ isChecked }) => isChecked ? 'line-through' : 'none'};
-    color: ${({ isChecked }) => isChecked ? 'grey' : 'black'};
+    color: ${({ isChecked }) => isChecked ? 'lightgrey' : 'black'};
 `;
 const dueCss = css`
     display: inline-block;

@@ -16,7 +16,6 @@ expect.extend({
 let findByTestId;
 let findByText;
 let findByDisplayValue;
-let unmount;
 let gapiTasksMock;
 
 describe('GTasks component', () => {
@@ -27,14 +26,10 @@ describe('GTasks component', () => {
         gapiTasksMock = {};
         await act(async () => {
 
-            ({ findByTestId, findByText, findByDisplayValue, unmount } = render(
+            ({ findByTestId, findByText, findByDisplayValue } = render(
                 <GTasks gapiTasks={gapiTasksMock}></GTasks>
             ));
         });
-    });
-    afterEach(async () => {
-
-        unmount();
     });
 
     it('loads and renders tasklists at the initial render', async () => {

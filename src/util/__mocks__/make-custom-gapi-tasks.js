@@ -12,7 +12,9 @@ const MakeCustomGapiTasks = (gapiTasks) => ({
     deleteTasklist: () => {},
 
     loadTasks: async () => Promise.resolve(
-        ['task0', 'task1', 'task2', 'task3', 'task4'].map((task) => ({ title: task, status: 'needsAction' }))
+        ['task0', 'task1', 'task2', 'task3', 'task4'].map((task) => ({
+            title: task, status: 'needsAction', etag: 't'
+        }))
     ),
 
     loadTask: async () => Promise.resolve({
