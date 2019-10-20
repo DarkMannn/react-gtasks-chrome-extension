@@ -58,7 +58,7 @@ const tasksKeybindings = [
     ['shift + enter', 'expand task'],
     ['ctrl + del', 'delete task'],
     ['ctrl + space', 'complete task'],
-    ['ctrl + shift + H', 'toogle completed']
+    ['ctrl + shift + H', 'hide completed']
 ];
 const taskKeybindings = [
     ...generalKeybindings,
