@@ -22,7 +22,7 @@ const firstRowCss = css`
     align-items: center;
     height: ${({ isHovered, secondRowHidden }) =>
         !isHovered ? '30px'
-        : secondRowHidden ? '60px'
+        : secondRowHidden ? '61px'
         : '35px'
     };
     padding: ${({ isHovered, secondRowHidden }) => (!isHovered || secondRowHidden)

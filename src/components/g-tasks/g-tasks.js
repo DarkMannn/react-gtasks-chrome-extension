@@ -14,6 +14,7 @@ import { actionCreators } from './g-tasks-actions.js';
 import TasklistItem from './tasklist-item/tasklist-item.js';
 import TaskItem from './task-item/task-item.js';
 import TaskItemZoomed from './task-item-zoomed/task-item-zoomed.js';
+import Instructions from './instructions/instructions.js';
 
 const mainCss = css`
     outline: none;
@@ -48,7 +49,11 @@ const downArrowDivCss = css`
     ${arrowDivCss}
     border-top: 1px solid black;
     position: absolute;
-    bottom: 0;
+    bottom: ${({ showFor }) =>
+        showFor === 'tasklist' ? '100px'
+        : showFor === 'tasks' ? '136px'
+        : '64px'
+    };
     left: 0;
 `;
 const arrowSignCss = css`
@@ -70,14 +75,18 @@ const downArrowSignCss = css`
 function GTasks({ gapiTasks }) {
 
     const [state, dispatch] = useReducer(gTasksReducer, initialState);
+
     const {
         isLoading, hasErrored, cursor, items, tasklist, task,
         itemMaxLimit, itemOffset, isListPickerExpanded, isTaskExpanded,
         isAppFocused, isEditingActive, isNextBlurInsertion
     } = state;
+    const showFor =
+        isListPickerExpanded ? 'tasklist'
+        : isTaskExpanded ? 'task'
+        : 'tasks';
 
     const GapiTasks = useMemo(() => MakeCustomGapiTasks(gapiTasks), [gapiTasks]);
-
     const onBlurCallback = useCallback(
         MakeOnBlurCallback({
             items, cursor, tasklist, task,
@@ -88,8 +97,12 @@ function GTasks({ gapiTasks }) {
             isNextBlurInsertion, isListPickerExpanded, isTaskExpanded
         ]
     );
-
     const keydownListener = MakeKeydownListener(state, dispatch, GapiTasks);
+    const resizeListener = (keepCursor) => {
+
+        dispatch(actionCreators.resizeContent(window.innerHeight, keepCursor));
+    };
+
 
     useEffect(function initRequestsEnqueuer() {
 
@@ -123,13 +136,14 @@ function GTasks({ gapiTasks }) {
 
     useEffect(function attachResizeListener() {
 
-        dispatch(actionCreators.resizeContent(window.innerHeight));
-        const resizeListener = () => {
-
-            dispatch(actionCreators.resizeContent(window.innerHeight));
-        };
         window.addEventListener('resize', resizeListener);
     }, []);
+
+    useEffect(function invokeResizeListener() {
+
+        const keepCursor = true;
+        resizeListener(keepCursor);
+    }, [showFor]);
 
     useLayoutEffect(function calculateItemOffset() {
 
@@ -145,7 +159,10 @@ function GTasks({ gapiTasks }) {
         itemsHtml = 'Press <Shift + R> to restart app'
     }
     else if (isTaskExpanded) {
-        headerHtml = 'Return to tasks';
+        headerHtml = <>
+            Tasklist: {tasklist.title}
+            {cursor === 0 && <p css={headingHelperCss}>* press &lt;enter&gt; to return to tasks *</p>}
+        </>;
         itemsHtml = <TaskItemZoomed
             title={task.title}
             notes={task.notes}
@@ -156,7 +173,7 @@ function GTasks({ gapiTasks }) {
         </TaskItemZoomed>;
     }
     else if (isListPickerExpanded) {
-        headerHtml = 'Select a Task List';
+        headerHtml = 'Select a Tasklist';
         itemsHtml = items.map((item, index) => shouldRender(index)
             && <TasklistItem
                 key={index}
@@ -169,8 +186,8 @@ function GTasks({ gapiTasks }) {
     }
     else {
         headerHtml = <>
-            {tasklist.title}
-            {cursor === 0 && <p css={headingHelperCss}>* press enter to change tasklist*</p>}
+            Tasklist: {tasklist.title}
+            {cursor === 0 && <p css={headingHelperCss}>* press &lt;enter&gt; to change tasklist *</p>}
         </>;
         itemsHtml = items.map((item, index) => shouldRender(index)
             && <TaskItem
@@ -200,13 +217,14 @@ function GTasks({ gapiTasks }) {
             {itemsHtml}
         </div>
         {!isTaskExpanded &&
-        <div css={downArrowDivCss}>
+        <div showFor={showFor} css={downArrowDivCss}>
             <span
                 canScroll={!(itemOffset + itemMaxLimit === items.length || items.length < itemMaxLimit)}
                 css={downArrowSignCss}>
             </span>
         </div>
         }
+        <Instructions showFor={showFor}></Instructions>
     </div>;
 }
 

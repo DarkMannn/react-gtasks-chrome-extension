@@ -35,7 +35,7 @@ describe('GTasks component', () => {
     it('loads and renders tasklists at the initial render', async () => {
 
         const titleDiv = await findByTestId('header');
-        expect(titleDiv).toHaveTextContent('Select a Task List');
+        expect(titleDiv).toHaveTextContent('Select a Tasklist');
 
         const itemsDiv = await findByTestId('items');
         expect(itemsDiv).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('GTasks component', () => {
         });
 
         const titleDiv = await findByTestId('header');
-        expect(titleDiv).toHaveTextContent('Select a Task List');
+        expect(titleDiv).toHaveTextContent('Select a Tasklist');
 
         const itemsDiv = await findByTestId('items');
         expect(itemsDiv).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe('GTasks component', () => {
         });
 
         const titleDiv = await findByTestId('header');
-        expect(titleDiv).toHaveTextContent('Select a Task List');
+        expect(titleDiv).toHaveTextContent('Select a Tasklist');
 
         const itemsDiv = await findByTestId('items');
         expect(itemsDiv).toBeInTheDocument();
@@ -231,7 +231,7 @@ describe('GTasks component', () => {
         });
 
         const titleDiv = await findByTestId('header');
-        expect(titleDiv).toHaveTextContent('Return to tasks');
+        expect(titleDiv).toHaveTextContent('Tasklist: tasklist0');
 
         await findByDisplayValue('title');
         await findByDisplayValue('notes');

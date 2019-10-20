@@ -84,9 +84,10 @@ export const actionCreators = {
         type: actionTypes.loadTasklists,
         items
     }),
-    resizeContent: (windowHeight) => ({
+    resizeContent: (windowHeight, keepCursor = false) => ({
         type: actionTypes.resizeContent,
-        windowHeight
+        windowHeight,
+        keepCursor
     }),
     calculateItemOffset: () => ({
         type: actionTypes.calculateItemOffset

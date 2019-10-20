@@ -137,8 +137,15 @@ export function gTasksReducer(state, action) {
             const taskListNameHeight = 68;
             const taskItemHeight = 34;
             const twoArrowDivHeight = 26 + 27;
-            const availableHeightForTasks =
-                action.windowHeight - upperHeaderHeight - taskListNameHeight - twoArrowDivHeight;
+            const instructions =
+                state.isListPickerExpanded ? 100
+                : state.isTaskExpanded ? 64
+                : 136;
+            const availableHeightForTasks = action.windowHeight
+                - upperHeaderHeight
+                - taskListNameHeight
+                - twoArrowDivHeight
+                - instructions;
             const newItemMaxLimit = Math.floor(
                 (availableHeightForTasks / taskItemHeight) - 1
             );
@@ -147,7 +154,7 @@ export function gTasksReducer(state, action) {
                 ...state,
                 itemMaxLimit: newItemMaxLimit,
                 itemOffset: 0,
-                cursor: 0
+                cursor: action.keepCursor ? state.cursor : 0
             };
         },
         [actionTypes.calculateItemOffset]: () => {

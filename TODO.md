@@ -24,7 +24,7 @@ MVP:
 - [x] implement deletion of date
 - [x] error handling => no op
 - [x] optimize css rendering => no op - did not get too many classes warning for 'styled-components' lib
-- [ ] implement styling
+- [x] implement styling
   - [x] make always one item expanded, even if it does not have additional info
   - [x] make bottom arrow in constant place
   - [x] make arrows faded if scrolling is disabled
@@ -34,7 +34,7 @@ MVP:
   - [x] minimal transitions
 - [x] bug: shift + enter on 'get back to tasklist' button
 - [x] bug: deleting the not yet created task throws
-- [ ] create instructions
+- [x] create instructions
 - [ ] make it to be a chrome extension
 
 Backlog:

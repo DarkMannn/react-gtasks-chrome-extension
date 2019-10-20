@@ -261,7 +261,7 @@ const MakeKeydownListener = ({
 
     return ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
 
-        if (keyCode === 82 && !ctrlKeyPressed && shiftKeyPressed) { // r
+        if (keyCode === 82 && !ctrlKeyPressed && shiftKeyPressed && hasErrored) { // r
             dispatch(actionCreators.resetState());
             return;
         }
