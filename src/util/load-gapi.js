@@ -6,7 +6,7 @@ const SCOPES = 'https://www.googleapis.com/auth/tasks';
 
 let gapi;
 
-const loadGapiScript = () => new Promise((resolve, reject) => {
+const _loadGapiScript = () => new Promise((resolve, reject) => {
 
     const script = document.createElement('script');
     script.src = GAPI_URL;
@@ -18,7 +18,7 @@ const loadGapiScript = () => new Promise((resolve, reject) => {
     document.body.appendChild(script);
 });
 
-const initGapiClient = () => gapi.client.init({
+const _initGapiClient = () => gapi.client.init({
     apiKey: API_KEY,
     clientId: CLIENT_ID,
     discoveryDocs: DISCOVERY_DOCS,
@@ -27,8 +27,8 @@ const initGapiClient = () => gapi.client.init({
 
 const loadGapi = async () => {
 
-    await loadGapiScript();
-    await initGapiClient();
+    await _loadGapiScript();
+    await _initGapiClient();
     return gapi;
 };
 

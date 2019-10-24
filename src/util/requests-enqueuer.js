@@ -4,8 +4,8 @@ const requestObjects = [];
 let wasInitiated = false;
 let onError;
 
-const generateRandomId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
-async function makeRequest() {
+const _generateRandomId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
+async function _makeRequest() {
 
     while (requestObjects.length) {
         const { request: nextRequest, id } = requestObjects.shift();
@@ -17,7 +17,7 @@ async function makeRequest() {
             onError();
         }
     }
-    setTimeout(makeRequest, 100);
+    setTimeout(_makeRequest, 100);
 };
 
 export const init = (onErrorCb) => {
@@ -27,12 +27,12 @@ export const init = (onErrorCb) => {
     }
     onError = onErrorCb;
     wasInitiated = true;
-    makeRequest();
+    _makeRequest();
 };
 
 export const enqueue = (request) => {
 
-    const id = generateRandomId();
+    const id = _generateRandomId();
     requestObjects.push({ request, id });
     return id;
 };
