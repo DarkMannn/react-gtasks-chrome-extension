@@ -10,12 +10,14 @@ const _loadGapiScript = () => new Promise((resolve, reject) => {
 
     const script = document.createElement('script');
     script.src = GAPI_URL;
+    script.async = true;
+    script.defer = true;
     script.onload = () => {
 
         gapi = window.gapi;
         gapi.load('client:auth2', { callback: resolve, onerror: reject });
     };
-    document.body.appendChild(script);
+    document.head.appendChild(script);
 });
 
 const _initGapiClient = () => gapi.client.init({
