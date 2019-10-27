@@ -24,7 +24,7 @@ const mainCss = css`
 `;
 const headingCss = css`
     height: 30px;
-    padding: 15px 0 15px 0;
+    padding: 5px 0 15px 0;
     border-top: 4px double black;
     border-bottom: 4px double black;
     background-color: ${({ isHovered }) => isHovered ? 'cadetblue' : 'white'};

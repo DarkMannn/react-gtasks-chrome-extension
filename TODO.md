@@ -40,7 +40,7 @@ MVP:
   - [x] handle new way to make g-api requests (specific to chrome extensions)
   - [x] handle all of the manifest.json/package.json details
   - [x] remove locking/unlocking of GTasks
-  - [ ] decide and set popup width/height
+  - [x] decide and set popup width/height
   - [ ] ask permission for extension
   - [ ] pay fee
   - [ ] wrap everything

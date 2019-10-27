@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "G-Tasks Popup",
+    "name": "Google Tasks Popup",
     "author": "DarkMannn",
     "version": "1.0.0",
     "description": "Google Tasks extension for keyboard users",
@@ -20,7 +20,7 @@
     },
     "browser_action": {
         "default_popup": "index.html",
-        "default_title": "Open G-Tasks Popup"
+        "default_title": "Open Google Tasks Popup"
     },
     "commands": {
         "_execute_browser_action": {

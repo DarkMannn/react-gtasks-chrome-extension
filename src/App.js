@@ -16,7 +16,7 @@ const mainCss = css`
 const headerCss = css`
     background-color: #282c34;
     width: 100%;
-    height: 95px;
+    height: 33px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -64,7 +64,7 @@ function App() {
     }
 
     return <div css={mainCss}>
-        <header css={headerCss}>Google Tasks Power Mode</header>
+        <header css={headerCss}>Google Tasks Popup</header>
         <div css={bodyCss}>{body}</div>
     </div>;
 }
