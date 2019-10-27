@@ -13,7 +13,6 @@ export const initialState = {
     showCompleted: true,
     isListPickerExpanded: true,
     isTaskExpanded: false,
-    isAppFocused: false,
     isEditingActive: false,
     isNextBlurInsertion: false
 }
@@ -23,7 +22,6 @@ export function gTasksReducer(state, action) {
     const actionsHash = {
         [actionTypes.resetState]: () => ({
             ...initialState,
-            isAppFocused: true,
             itemMaxLimit: state.itemMaxLimit
         }),
         [actionTypes.toggleIsLoading]: () => ({
@@ -41,10 +39,6 @@ export function gTasksReducer(state, action) {
             items: action.items,
             showCompleted: !state.showCompleted,
             isLoading: false
-        }),
-        [actionTypes.toggleAppFocus]: () => ({
-            ...state,
-            isAppFocused: !state.isAppFocused
         }),
         [actionTypes.toggleIsEditingActive]: () => ({
             ...state,

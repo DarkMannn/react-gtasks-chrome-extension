@@ -18,7 +18,7 @@ import Instructions from './instructions/instructions.js';
 
 const mainCss = css`
     outline: none;
-    opacity: ${({ isLoading, isAppFocused }) => isLoading || !isAppFocused ? 0.6 : 1};
+    opacity: ${({ isLoading }) => isLoading ? 0.6 : 1};
     background-color: ${({ hasErrored }) => hasErrored ? 'salmon' : 'white'};
     transition: background-color, opacity 0.15s linear 0s;
 `;
@@ -78,8 +78,8 @@ function GTasks({ gapiTasks }) {
 
     const {
         isLoading, hasErrored, cursor, items, tasklist, task,
-        itemMaxLimit, itemOffset, isListPickerExpanded, isTaskExpanded,
-        isAppFocused, isEditingActive, isNextBlurInsertion
+        itemMaxLimit, itemOffset, isListPickerExpanded,
+        isTaskExpanded, isEditingActive, isNextBlurInsertion
     } = state;
     const showFor =
         isListPickerExpanded ? 'tasklist'
@@ -204,7 +204,7 @@ function GTasks({ gapiTasks }) {
         );
     }
 
-    return <div isAppFocused={isAppFocused} isLoading={isLoading} hasErrored={hasErrored} css={mainCss}>
+    return <div isLoading={isLoading} hasErrored={hasErrored} css={mainCss}>
         <div data-testid="header" css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
             {headerHtml}
         </div>

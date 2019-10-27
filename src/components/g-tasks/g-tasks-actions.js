@@ -4,7 +4,6 @@ export const actionTypes = {
     toggleIsLoading: 'TOGGLE_IS_LOADING',
     toggleHasErrored: 'TOGGLE_HAS_ERRORED',
     toggleShowCompleted: 'TOGGLE_SHOW_COMPLETED',
-    toggleAppFocus: 'TOGGLE_APP_FOCUS',
     toggleIsEditingActive: 'TOGGLE_IS_EDITING_ACTIVE',
     moveUp: 'MOVE_UP',
     moveDown: 'MOVE_DOWN',
@@ -34,9 +33,6 @@ export const actionCreators = {
     toggleShowCompleted: (items) => ({
         type: actionTypes.toggleShowCompleted,
         items
-    }),
-    toggleAppFocus: () => ({
-        type: actionTypes.toggleAppFocus,
     }),
     toggleIsEditingActive: () => ({
         type: actionTypes.toggleIsEditingActive

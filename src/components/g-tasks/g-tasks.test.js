@@ -52,10 +52,6 @@ describe('GTasks component', () => {
 
         await act(async () => {
 
-            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
-        });
-        await act(async () => {
-
             fireEvent.keyDown(document, { keyCode: 46, ctrlKey: true }); // del
             jest.runOnlyPendingTimers();
         });
@@ -81,7 +77,6 @@ describe('GTasks component', () => {
 
     it('loads tasks from selected tasklist', async () => {
 
-        fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
         fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
         jest.runOnlyPendingTimers();
 
@@ -99,10 +94,6 @@ describe('GTasks component', () => {
 
     it('loads tasklist, then tasks, then scrolls up, then loads tasklist again', async () => {
 
-        await act(async () => {
-
-            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
-        });
         await act(async () => {
 
             fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
@@ -134,11 +125,6 @@ describe('GTasks component', () => {
 
         expect.assertions(7);
 
-        await act(async () => {
-
-            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
-            jest.runOnlyPendingTimers();
-        });
         await act(async () => {
 
             fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
@@ -178,10 +164,6 @@ describe('GTasks component', () => {
 
         await act(async () => {
 
-            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
-        });
-        await act(async () => {
-
             fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter
             jest.runOnlyPendingTimers();
         });
@@ -211,10 +193,6 @@ describe('GTasks component', () => {
 
     it('loads tasklist, then tasks, then scrolls down, then expands a task, then deletes due input', async () => {
 
-        await act(async () => {
-
-            fireEvent.keyDown(document, { keyCode: 76, ctrlKey: true, shiftKey: true }); // l
-        });
         await act(async () => {
 
             fireEvent.keyDown(document, { keyCode: 13, shiftKey: true }); // enter

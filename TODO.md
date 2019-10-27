@@ -38,8 +38,9 @@ MVP:
 - [ ] make it to be a chrome extension
   - [x] handle new way to authenticate (specific to chrome extensions)
   - [x] handle new way to make g-api requests (specific to chrome extensions)
-  - [ ] fix tests
-  - [ ] handle all of the manifest.json/package.json details
+  - [x] handle all of the manifest.json/package.json details
+  - [x] remove locking/unlocking of GTasks
+  - [ ] decide and set popup width/height
   - [ ] ask permission for extension
   - [ ] pay fee
   - [ ] wrap everything
