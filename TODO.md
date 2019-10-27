@@ -36,6 +36,13 @@ MVP:
 - [x] bug: deleting the not yet created task throws
 - [x] create instructions
 - [ ] make it to be a chrome extension
+  - [x] handle new way to authenticate (specific to chrome extensions)
+  - [x] handle new way to make g-api requests (specific to chrome extensions)
+  - [ ] fix tests
+  - [ ] handle all of the manifest.json/package.json details
+  - [ ] ask permission for extension
+  - [ ] pay fee
+  - [ ] wrap everything
 
 Backlog:
   - [ ] make the items be flex-items, and the bottom arrow to fill the empty space
