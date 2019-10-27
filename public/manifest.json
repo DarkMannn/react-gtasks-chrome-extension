@@ -22,5 +22,15 @@
         "default_popup": "index.html",
         "default_title": "Open G-Tasks Popup"
     },
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "windows": "Ctrl+Shift+K",
+                "mac": "Command+Shift+K",
+                "chromeos": "Ctrl+Shift+K",
+                "linux": "Ctrl+Shift+K"
+            }
+        }
+    },
     "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'"
 }

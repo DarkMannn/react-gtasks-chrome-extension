@@ -38,7 +38,7 @@ const instructionCss = css`
 `;
 
 const generalKeybindings = [
-    ['ctrl + alt + L', 'focus app'],
+    ['ctrl+shift+K', 'focus app'],
     ['↑', 'scroll up'],
     ['↓', 'scroll down']
 ];
