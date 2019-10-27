@@ -1,9 +1,9 @@
 {
     "manifest_version": 2,
-    "name": "GTasks",
+    "name": "G-Tasks Popup",
     "author": "DarkMannn",
     "version": "1.0.0",
-    "description": "Google Tasks extension for power users",
+    "description": "Google Tasks extension for keyboard users",
     "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnboW7oK0gUzqQepC2t9P0SbLr+ZK8ZfO+cDQ0T3V9A4sbhSAhhnY4W0ymhP3AhACLN1DZHNoDfsQMVn9tvJxBErZVswwRx5kQjwI3tMxkfSiu7AqLjxrT645bnUYjCe2DUSBd6WdENZUnW6SCm52k/AFnGoTIRBZ5CLhhLFOwgSpKj2lcM4Wu0KX9y6uVhGghoOZ3TTqqNxAeDxK4dGEjYCBcbqRvxq56qhJaaEkQ9jyegDYKYfKFdoTJ9zpxA+J57aaS16xhhI1i5Hi2L4V9Mn/Mtm0U8oGHoCnVYiYmZJz0jwrgIGxoMYOzTY6LwWP+AOuz1hSy/lasMKOG4WCPwIDAQAB",
     "oauth2": {
         "client_id": "128290994570-7ot1lghfc5r90pqgutsevaliou717c0j.apps.googleusercontent.com",
