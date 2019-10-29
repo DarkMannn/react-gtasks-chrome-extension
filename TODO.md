@@ -41,6 +41,7 @@ MVP:
   - [x] handle all of the manifest.json/package.json details
   - [x] remove locking/unlocking of GTasks
   - [x] decide and set popup width/height
+  - [x] prevent default for escape key
   - [ ] ask permission for extension
   - [ ] pay fee
   - [ ] wrap everything
@@ -52,3 +53,4 @@ Backlog:
   - [ ] checkbox moves a little to the left when title is long string without whitespace
   - [ ] use monospace font for titles, insert your font
   - [ ] show the user when delete task action cannot be done because of ongoing request
+  - [ ] make instructions toggleable

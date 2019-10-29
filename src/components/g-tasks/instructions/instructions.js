@@ -32,13 +32,14 @@ const instructionCss = css`
     height: 30px;
     width: 65px;
     padding: 2px;
-    font-size: 11px;
+    font-size: 10px;
     text-align: center;
     overflow: hidden;
 `;
 
+const isMac = navigator.appVersion.includes("Mac");
 const generalKeybindings = [
-    ['ctrl+shift+K', 'focus app'],
+    [`${isMac ? '⌘' : 'ctrl'}+shift+K`, 'toggle popup'],
     ['↑', 'scroll up'],
     ['↓', 'scroll down']
 ];
@@ -55,7 +56,7 @@ const tasksKeybindings = [
     ['shift + ↓', 'move down'],
     ['enter', 'edit task'],
     ['ctrl + enter', 'create task'],
-    ['shift + enter', 'expand task'],
+    ['shift+enter', 'expand task'],
     ['ctrl + del', 'delete task'],
     ['ctrl + space', 'complete task'],
     ['ctrl + shift + H', 'hide completed']

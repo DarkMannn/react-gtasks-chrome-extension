@@ -103,7 +103,6 @@ function GTasks({ gapiTasks }) {
         dispatch(actionCreators.resizeContent(window.innerHeight, keepCursor));
     };
 
-
     useEffect(function initRequestsEnqueuer() {
 
         const onError = () => {
