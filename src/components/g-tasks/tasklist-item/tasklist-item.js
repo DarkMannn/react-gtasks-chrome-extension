@@ -6,8 +6,8 @@ import useFocusAndSetCursor from '../../hooks/use-focus-and-set-cursor.js';
 const tasklistItemCss = css`
     display: flexbox;
     align-items: center;
-    height: ${({ isHovered }) => isHovered ? '60px' : '30px'};
-    padding: 3px 0 2px 50px;
+    height: ${({ isHovered }) => isHovered ? '60px' : '30.5px'};
+    padding: 2px 0 2px 50px;
     border-bottom: 1px solid black;
     box-shadow: ${({ isHovered }) => !isHovered
         ? 'none'

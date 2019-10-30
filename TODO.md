@@ -36,6 +36,16 @@ MVP:
 - [x] bug: deleting the not yet created task throws
 - [x] create instructions
 - [ ] make it to be a chrome extension
+  - [x] handle new way to authenticate (specific to chrome extensions)
+  - [x] handle new way to make g-api requests (specific to chrome extensions)
+  - [x] handle all of the manifest.json/package.json details
+  - [x] remove locking/unlocking of GTasks
+  - [x] decide and set popup width/height
+  - [x] prevent default for escape key
+  - [x] cache the selected tasklist
+  - [ ] ask permission for extension
+  - [ ] pay fee
+  - [ ] wrap everything
 
 Backlog:
   - [ ] make the items be flex-items, and the bottom arrow to fill the empty space
@@ -44,3 +54,4 @@ Backlog:
   - [ ] checkbox moves a little to the left when title is long string without whitespace
   - [ ] use monospace font for titles, insert your font
   - [ ] show the user when delete task action cannot be done because of ongoing request
+  - [ ] make instructions toggleable

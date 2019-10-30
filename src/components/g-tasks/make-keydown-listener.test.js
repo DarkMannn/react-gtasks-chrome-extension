@@ -248,42 +248,6 @@ describe('MakeKeydownListener', () => {
                     expect(GapiTasks.loadTasks.mock.calls[0][1]).toBe(showCompleted);
                 });
             });
-
-            describe('Key 76 - l', () => {
-
-                beforeEach(async () => {
-
-                    keyCode = 76;
-                    initState = {
-                        ...initialState,
-                        isLoading: false,
-                        itemMaxLimit: 8,
-                        cursor: 2,
-                        tasklist: { id: 'fakeTasklistId'},
-                        items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
-                            id: index + 1, title: item, status: 'needsAction'
-                        })),
-                        isListPickerExpanded: false,
-                        isAppFocused: false
-                    };
-                    dispatch = MakeTestReducer(initState);
-                    keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
-                });
-
-                it('toggles app focus', async () => {
-
-                    keydownListener({ keyCode, ctrlKey: true, shiftKey: true }); // focus
-                    keydownListener({ keyCode, ctrlKey: true, shiftKey: true }); // blur
-
-                    expect(dispatch.mock.calls.length).toBe(2);
-
-                    const middleState = dispatch.mock.results[0].value;
-                    expect(middleState.isAppFocused).toBe(true);
-
-                    const newState = dispatch.mock.results[1].value;
-                    expect(newState.isAppFocused).toBe(false);
-                });
-            });
         });
 
         describe('Task is active', () => {
@@ -896,42 +860,6 @@ describe('MakeKeydownListener', () => {
                     expect(newState.items).toStrictEqual(['itemX', 'itemY']);
 
                     expect(GapiTasks.loadTasklists.mock.calls.length).toBe(1);
-                });
-            });
-
-            describe('Key 76 - l', () => {
-
-                beforeEach(async () => {
-
-                    keyCode = 76;
-                    initState = {
-                        ...initialState,
-                        isLoading: false,
-                        itemMaxLimit: 8,
-                        cursor: 2,
-                        tasklist: { id: 'fakeTasklistId'},
-                        items: ['item0', 'item1', 'item2', 'item3', 'item4'].map((item, index) => ({
-                            id: index + 1, title: item, status: 'needsAction'
-                        })),
-                        isListPickerExpanded: false,
-                        isAppFocused: false
-                    };
-                    dispatch = MakeTestReducer(initState);
-                    keydownListener = MakeKeyDownListener(initState, dispatch, GapiTasks);
-                });
-
-                it('toggles app focus', async () => {
-
-                    keydownListener({ keyCode, ctrlKey: true, shiftKey: true }); // focus
-                    keydownListener({ keyCode, ctrlKey: true, shiftKey: true }); // blur
-
-                    expect(dispatch.mock.calls.length).toBe(2);
-
-                    const middleState = dispatch.mock.results[0].value;
-                    expect(middleState.isAppFocused).toBe(true);
-
-                    const newState = dispatch.mock.results[1].value;
-                    expect(newState.isAppFocused).toBe(false);
                 });
             });
         });

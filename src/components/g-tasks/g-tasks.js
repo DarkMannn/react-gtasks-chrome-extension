@@ -1,3 +1,5 @@
+/* global chrome */
+
 import React, {
     useEffect, useLayoutEffect, useReducer, useMemo, useCallback
 } from 'react';
@@ -18,13 +20,13 @@ import Instructions from './instructions/instructions.js';
 
 const mainCss = css`
     outline: none;
-    opacity: ${({ isLoading, isAppFocused }) => isLoading || !isAppFocused ? 0.6 : 1};
+    opacity: ${({ isLoading }) => isLoading ? 0.6 : 1};
     background-color: ${({ hasErrored }) => hasErrored ? 'salmon' : 'white'};
     transition: background-color, opacity 0.15s linear 0s;
 `;
 const headingCss = css`
     height: 30px;
-    padding: 15px 0 15px 0;
+    padding: 5px 0 15px 0;
     border-top: 4px double black;
     border-bottom: 4px double black;
     background-color: ${({ isHovered }) => isHovered ? 'cadetblue' : 'white'};
@@ -78,8 +80,8 @@ function GTasks({ gapiTasks }) {
 
     const {
         isLoading, hasErrored, cursor, items, tasklist, task,
-        itemMaxLimit, itemOffset, isListPickerExpanded, isTaskExpanded,
-        isAppFocused, isEditingActive, isNextBlurInsertion
+        itemMaxLimit, itemOffset, isListPickerExpanded,
+        isTaskExpanded, isEditingActive, isNextBlurInsertion
     } = state;
     const showFor =
         isListPickerExpanded ? 'tasklist'
@@ -103,7 +105,6 @@ function GTasks({ gapiTasks }) {
         dispatch(actionCreators.resizeContent(window.innerHeight, keepCursor));
     };
 
-
     useEffect(function initRequestsEnqueuer() {
 
         const onError = () => {
@@ -120,10 +121,25 @@ function GTasks({ gapiTasks }) {
             if (hasErrored) {
                 return;
             }
-            const items = await GapiTasks.loadTasklists();
-            dispatch(actionCreators.loadTasklists(items));
+
+            const cachedState = await new Promise((resolve) => {
+
+                chrome.storage.local.get('state', (result) => resolve(result.state));
+            });
+            if (cachedState) {
+                dispatch(actionCreators.loadCache(cachedState));
+            }
+            else {
+                const items = await GapiTasks.loadTasklists();
+                dispatch(actionCreators.loadTasklists(items));
+            }
         })();
     }, [GapiTasks, hasErrored]);
+
+    useEffect(function cacheData() {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        chrome.storage.local.set({ state });
+    }, [items, tasklist, task, isListPickerExpanded, isTaskExpanded, isEditingActive]);
 
     useEffect(function attachKeydownListener() {
 
@@ -204,7 +220,7 @@ function GTasks({ gapiTasks }) {
         );
     }
 
-    return <div isAppFocused={isAppFocused} isLoading={isLoading} hasErrored={hasErrored} css={mainCss}>
+    return <div isLoading={isLoading} hasErrored={hasErrored} css={mainCss}>
         <div data-testid="header" css={headingCss} isHovered={!isListPickerExpanded && cursor === 0}>
             {headerHtml}
         </div>

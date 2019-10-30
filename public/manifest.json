@@ -1,9 +1,18 @@
 {
     "manifest_version": 2,
-    "name": "GTasks",
+    "name": "Google Tasks Popup",
     "author": "DarkMannn",
     "version": "1.0.0",
-    "description": "Google Tasks extension for power users.",
+    "description": "Google Tasks Extension for Keyboard Users",
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnboW7oK0gUzqQepC2t9P0SbLr+ZK8ZfO+cDQ0T3V9A4sbhSAhhnY4W0ymhP3AhACLN1DZHNoDfsQMVn9tvJxBErZVswwRx5kQjwI3tMxkfSiu7AqLjxrT645bnUYjCe2DUSBd6WdENZUnW6SCm52k/AFnGoTIRBZ5CLhhLFOwgSpKj2lcM4Wu0KX9y6uVhGghoOZ3TTqqNxAeDxK4dGEjYCBcbqRvxq56qhJaaEkQ9jyegDYKYfKFdoTJ9zpxA+J57aaS16xhhI1i5Hi2L4V9Mn/Mtm0U8oGHoCnVYiYmZJz0jwrgIGxoMYOzTY6LwWP+AOuz1hSy/lasMKOG4WCPwIDAQAB",
+    "oauth2": {
+        "client_id": "128290994570-7ot1lghfc5r90pqgutsevaliou717c0j.apps.googleusercontent.com",
+        "scopes": ["https://www.googleapis.com/auth/tasks"]
+    },
+    "permissions": [
+        "identity",
+        "storage"
+    ],
     "icons": {
       "16": "images/16.png",
       "32": "images/32.png",
@@ -12,7 +21,17 @@
     },
     "browser_action": {
         "default_popup": "index.html",
-        "default_title": "Open the popup"
+        "default_title": "Open Google Tasks Popup"
+    },
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "windows": "Ctrl+Shift+K",
+                "mac": "Command+Shift+K",
+                "chromeos": "Ctrl+Shift+K",
+                "linux": "Ctrl+Shift+K"
+            }
+        }
     },
     "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'"
 }

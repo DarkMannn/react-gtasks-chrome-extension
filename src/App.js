@@ -1,13 +1,8 @@
-import React, {
-    useState,
-    useEffect
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import { css } from 'styled-components';
 import 'styled-components/macro';
 import GTasks from './components/g-tasks/g-tasks.js';
 import loadGapi from './util/load-gapi.js';
-
-let gapi;
 
 const mainCss = css`
     position: fixed;
@@ -21,7 +16,7 @@ const mainCss = css`
 const headerCss = css`
     background-color: #282c34;
     width: 100%;
-    height: 95px;
+    height: 33px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -38,31 +33,18 @@ const bodyCss = css`
 
 function App() {
 
+    const [gapi, setGapi] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [isSignedIn, setIsSignedIn] = useState(false);
     const [hasErrored, setHasErrored] = useState(false);
 
-    const signIn = async () => {
-
-        try {
-            await gapi.auth2.getAuthInstance().signIn();
-            setIsSignedIn(true);
-        }
-        catch (err) {
-            setHasErrored(true);
-        }
-    };
     useEffect(function () {
 
         (async function loadGapiAndSetState() {
 
             try {
                 const initializedGapi = await loadGapi();
+                setGapi(initializedGapi);
                 setIsLoading(false);
-                gapi = initializedGapi;
-                if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-                    setIsSignedIn(true);
-                }
             }
             catch (err) {
                 setHasErrored(true);
@@ -77,15 +59,12 @@ function App() {
     else if (hasErrored) {
         body = <div>Something happened. Please reload page. :/</div>;
     }
-    else if (!isSignedIn) {
-        body = <button onClick={signIn}>Authorize</button>
-    }
     else {
         body = <GTasks gapiTasks={gapi.client.tasks}></GTasks>;
     }
 
     return <div css={mainCss}>
-        <header css={headerCss}>Google Tasks Power Mode</header>
+        <header css={headerCss}>Google Tasks Popup</header>
         <div css={bodyCss}>{body}</div>
     </div>;
 }

@@ -1,10 +1,10 @@
 
 export const actionTypes = {
     resetState: 'RESET_STATE',
+    loadCache: 'LOAD_CACHE',
     toggleIsLoading: 'TOGGLE_IS_LOADING',
     toggleHasErrored: 'TOGGLE_HAS_ERRORED',
     toggleShowCompleted: 'TOGGLE_SHOW_COMPLETED',
-    toggleAppFocus: 'TOGGLE_APP_FOCUS',
     toggleIsEditingActive: 'TOGGLE_IS_EDITING_ACTIVE',
     moveUp: 'MOVE_UP',
     moveDown: 'MOVE_DOWN',
@@ -25,6 +25,10 @@ export const actionCreators = {
     resetState: () => ({
         type: actionTypes.resetState
     }),
+    loadCache: (cachedState) => ({
+        type: actionTypes.loadCache,
+        cachedState
+    }),
     toggleIsLoading: () => ({
         type: actionTypes.toggleIsLoading
     }),
@@ -34,9 +38,6 @@ export const actionCreators = {
     toggleShowCompleted: (items) => ({
         type: actionTypes.toggleShowCompleted,
         items
-    }),
-    toggleAppFocus: () => ({
-        type: actionTypes.toggleAppFocus,
     }),
     toggleIsEditingActive: () => ({
         type: actionTypes.toggleIsEditingActive

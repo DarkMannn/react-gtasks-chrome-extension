@@ -13,7 +13,6 @@ export const initialState = {
     showCompleted: true,
     isListPickerExpanded: true,
     isTaskExpanded: false,
-    isAppFocused: false,
     isEditingActive: false,
     isNextBlurInsertion: false
 }
@@ -23,8 +22,10 @@ export function gTasksReducer(state, action) {
     const actionsHash = {
         [actionTypes.resetState]: () => ({
             ...initialState,
-            isAppFocused: true,
             itemMaxLimit: state.itemMaxLimit
+        }),
+        [actionTypes.loadCache]: () => ({
+            ...action.cachedState
         }),
         [actionTypes.toggleIsLoading]: () => ({
             ...state,
@@ -41,10 +42,6 @@ export function gTasksReducer(state, action) {
             items: action.items,
             showCompleted: !state.showCompleted,
             isLoading: false
-        }),
-        [actionTypes.toggleAppFocus]: () => ({
-            ...state,
-            isAppFocused: !state.isAppFocused
         }),
         [actionTypes.toggleIsEditingActive]: () => ({
             ...state,
@@ -133,8 +130,8 @@ export function gTasksReducer(state, action) {
         }),
         [actionTypes.resizeContent]: () => {
 
-            const upperHeaderHeight = 95;
-            const taskListNameHeight = 68;
+            const upperHeaderHeight = 33;
+            const taskListNameHeight = 58;
             const taskItemHeight = 34;
             const twoArrowDivHeight = 26 + 27;
             const instructions =
@@ -162,8 +159,13 @@ export function gTasksReducer(state, action) {
             const {
                 navigationDir, cursor, itemOffset, itemMaxLimit, isListPickerExpanded
             } = state;
+            const oneIfListPickerNotExpanded = isListPickerExpanded ? 0 : 1;
+            const oneIfListPickerExpanded = isListPickerExpanded ? 1 : 0;
 
-            if ((navigationDir === 'down') && (cursor >= itemOffset + itemMaxLimit + 1)) {
+            if (
+                (navigationDir === 'down')
+                && (cursor >= itemOffset + itemMaxLimit + oneIfListPickerNotExpanded)
+            ) {
                 return {
                     ...state,
                     itemOffset: itemOffset + 1
@@ -171,7 +173,7 @@ export function gTasksReducer(state, action) {
             }
             if (
                 (navigationDir === 'up')
-                && (cursor === itemOffset - (isListPickerExpanded ? 1 : 0))
+                && (cursor === itemOffset - oneIfListPickerExpanded)
                 && (itemOffset !== 0)
             ) {
                 return {

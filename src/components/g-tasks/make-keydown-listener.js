@@ -4,7 +4,7 @@ import SortTasks from '../../util/sort-tasks.js';
 
 const MakeKeydownListener = ({
     isLoading, hasErrored, items, cursor, tasklist, task, showCompleted,
-    isEditingActive, isListPickerExpanded, isTaskExpanded, isAppFocused
+    isEditingActive, isListPickerExpanded, isTaskExpanded
 }, dispatch, GapiTasks) => {
 
     const TasklistActionsByKeyCodeHash = {
@@ -259,17 +259,22 @@ const MakeKeydownListener = ({
         }
     };
 
-    return ({ keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed }) => {
+    return (keydownEvent) => {
+
+        const { keyCode, ctrlKey: ctrlKeyPressed, shiftKey: shiftKeyPressed } = keydownEvent;
 
         if (keyCode === 82 && !ctrlKeyPressed && shiftKeyPressed && hasErrored) { // r
             dispatch(actionCreators.resetState());
             return;
         }
-        if (keyCode === 76 && ctrlKeyPressed && shiftKeyPressed) { // l
-            dispatch(actionCreators.toggleAppFocus());
+
+        if (keyCode === 27) { // esc
+            keydownEvent.preventDefault();
+            keydownEvent.target.blur();
             return;
         }
-        if (!isAppFocused || isLoading || hasErrored) {
+
+        if (isLoading || hasErrored) {
             return;
         }
 
