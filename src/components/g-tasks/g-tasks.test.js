@@ -20,6 +20,19 @@ let gapiTasksMock;
 
 describe('GTasks component', () => {
 
+    beforeAll(async () => {
+
+        global.chrome = {
+            storage: {
+                local: {
+                    set: () => {},
+                    get: (string, cb) => cb({}),
+                    clear: () => {}
+                }
+            }
+        }
+    });
+
     beforeEach(async () => {
 
         jest.useFakeTimers();
