@@ -24,6 +24,9 @@ export function gTasksReducer(state, action) {
             ...initialState,
             itemMaxLimit: state.itemMaxLimit
         }),
+        [actionTypes.loadCache]: () => ({
+            ...action.cachedState
+        }),
         [actionTypes.toggleIsLoading]: () => ({
             ...state,
             isLoading: !state.isLoading

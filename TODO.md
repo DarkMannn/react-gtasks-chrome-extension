@@ -42,6 +42,7 @@ MVP:
   - [x] remove locking/unlocking of GTasks
   - [x] decide and set popup width/height
   - [x] prevent default for escape key
+  - [x] cache the selected tasklist
   - [ ] ask permission for extension
   - [ ] pay fee
   - [ ] wrap everything

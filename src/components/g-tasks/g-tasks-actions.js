@@ -1,6 +1,7 @@
 
 export const actionTypes = {
     resetState: 'RESET_STATE',
+    loadCache: 'LOAD_CACHE',
     toggleIsLoading: 'TOGGLE_IS_LOADING',
     toggleHasErrored: 'TOGGLE_HAS_ERRORED',
     toggleShowCompleted: 'TOGGLE_SHOW_COMPLETED',
@@ -23,6 +24,10 @@ export const actionTypes = {
 export const actionCreators = {
     resetState: () => ({
         type: actionTypes.resetState
+    }),
+    loadCache: (cachedState) => ({
+        type: actionTypes.loadCache,
+        cachedState
     }),
     toggleIsLoading: () => ({
         type: actionTypes.toggleIsLoading

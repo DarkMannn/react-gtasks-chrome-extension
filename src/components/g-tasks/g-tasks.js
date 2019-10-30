@@ -1,3 +1,5 @@
+/* global chrome */
+
 import React, {
     useEffect, useLayoutEffect, useReducer, useMemo, useCallback
 } from 'react';
@@ -119,10 +121,25 @@ function GTasks({ gapiTasks }) {
             if (hasErrored) {
                 return;
             }
-            const items = await GapiTasks.loadTasklists();
-            dispatch(actionCreators.loadTasklists(items));
+
+            const cachedState = await new Promise((resolve) => {
+
+                chrome.storage.local.get('state', (result) => resolve(result.state));
+            });
+            if (cachedState) {
+                dispatch(actionCreators.loadCache(cachedState));
+            }
+            else {
+                const items = await GapiTasks.loadTasklists();
+                dispatch(actionCreators.loadTasklists(items));
+            }
         })();
     }, [GapiTasks, hasErrored]);
+
+    useEffect(function cacheData() {
+        /* eslint-disable react-hooks/exhaustive-deps */
+        chrome.storage.local.set({ state });
+    }, [items, tasklist, task, isListPickerExpanded, isTaskExpanded, isEditingActive]);
 
     useEffect(function attachKeydownListener() {
 

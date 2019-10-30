@@ -1,7 +1,7 @@
 {
     "name": "react-gtasks-chrome-extension",
     "version": "1.0.0",
-    "description": "Google Tasks extension for keyboard users",
+    "description": "Google Tasks Extension for Keyboard Users",
     "repository": "https://github.com/DarkMannn/react-gtasks-chrome-extension",
     "private": true,
     "scripts": {
