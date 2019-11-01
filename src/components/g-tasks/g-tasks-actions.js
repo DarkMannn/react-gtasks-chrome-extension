@@ -6,6 +6,7 @@ export const actionTypes = {
     toggleHasErrored: 'TOGGLE_HAS_ERRORED',
     toggleShowCompleted: 'TOGGLE_SHOW_COMPLETED',
     toggleIsEditingActive: 'TOGGLE_IS_EDITING_ACTIVE',
+    toggleInstructions: 'TOGGLE_INSTRUCTIONS',
     moveUp: 'MOVE_UP',
     moveDown: 'MOVE_DOWN',
     scrollUp: "SCROLL_UP",
@@ -41,6 +42,9 @@ export const actionCreators = {
     }),
     toggleIsEditingActive: () => ({
         type: actionTypes.toggleIsEditingActive
+    }),
+    toggleInstructions: () => ({
+        type: actionTypes.toggleInstructions
     }),
     moveUp: (items) => ({
         type: actionTypes.moveUp,

@@ -51,12 +51,14 @@ const downArrowDivCss = css`
     ${arrowDivCss}
     border-top: 1px solid black;
     position: absolute;
-    bottom: ${({ showFor }) =>
-        showFor === 'tasklist' ? '100px'
+    bottom: ${({ showFor, showInstructions }) =>
+        !showInstructions ? '31px' // 28 + 3
+        : showFor === 'tasklist' ? '100px'
         : showFor === 'tasks' ? '136px'
         : '64px'
     };
     left: 0;
+    transition: bottom 0.15s linear 0s;
 `;
 const arrowSignCss = css`
     border: ${({ canScroll }) => canScroll ? 'solid black' : 'solid lightgray'};
@@ -80,7 +82,7 @@ function GTasks({ gapiTasks }) {
 
     const {
         isLoading, hasErrored, cursor, items, tasklist, task,
-        itemMaxLimit, itemOffset, isListPickerExpanded,
+        itemMaxLimit, itemOffset, isListPickerExpanded, showInstructions,
         isTaskExpanded, isEditingActive, isNextBlurInsertion
     } = state;
     const showFor =
@@ -157,9 +159,9 @@ function GTasks({ gapiTasks }) {
 
     useEffect(function invokeResizeListener() {
 
-        const keepCursor = true;
+        const keepCursor = itemOffset ? false : true;
         resizeListener(keepCursor);
-    }, [showFor]);
+    }, [showFor, showInstructions]);
 
     useLayoutEffect(function calculateItemOffset() {
 
@@ -233,14 +235,14 @@ function GTasks({ gapiTasks }) {
             {itemsHtml}
         </div>
         {!isTaskExpanded &&
-        <div showFor={showFor} css={downArrowDivCss}>
+        <div showFor={showFor} showInstructions={showInstructions} css={downArrowDivCss}>
             <span
                 canScroll={!(itemOffset + itemMaxLimit === items.length || items.length < itemMaxLimit)}
                 css={downArrowSignCss}>
             </span>
         </div>
         }
-        <Instructions showFor={showFor}></Instructions>
+        <Instructions showFor={showFor} showInstructions={showInstructions}></Instructions>
     </div>;
 }
 

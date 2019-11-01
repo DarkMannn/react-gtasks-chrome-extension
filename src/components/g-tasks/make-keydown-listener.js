@@ -268,13 +268,18 @@ const MakeKeydownListener = ({
             return;
         }
 
+        if (isLoading || hasErrored) {
+            return;
+        }
+
         if (keyCode === 27) { // esc
             keydownEvent.preventDefault();
             keydownEvent.target.blur();
             return;
         }
 
-        if (isLoading || hasErrored) {
+        if (keyCode === 73 && shiftKeyPressed) { // I
+            dispatch(actionCreators.toggleInstructions());
             return;
         }
 

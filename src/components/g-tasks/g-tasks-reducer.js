@@ -11,6 +11,7 @@ export const initialState = {
     task: {},
     navigationDir: 'down',
     showCompleted: true,
+    showInstructions: false,
     isListPickerExpanded: true,
     isTaskExpanded: false,
     isEditingActive: false,
@@ -46,6 +47,10 @@ export function gTasksReducer(state, action) {
         [actionTypes.toggleIsEditingActive]: () => ({
             ...state,
             isEditingActive: !state.isEditingActive
+        }),
+        [actionTypes.toggleInstructions]: () => ({
+            ...state,
+            showInstructions: !state.showInstructions
         }),
         [actionTypes.moveUp]: () => ({
             ...state,
@@ -135,7 +140,8 @@ export function gTasksReducer(state, action) {
             const taskItemHeight = 34;
             const twoArrowDivHeight = 26 + 27;
             const instructions =
-                state.isListPickerExpanded ? 100
+                !state.showInstructions ? 28
+                : state.isListPickerExpanded ? 100
                 : state.isTaskExpanded ? 64
                 : 136;
             const availableHeightForTasks = action.windowHeight

@@ -35,6 +35,7 @@ MVP:
 - [x] bug: shift + enter on 'get back to tasklist' button
 - [x] bug: deleting the not yet created task throws
 - [x] create instructions
+- [x] make instructions toggleable
 - [ ] make it to be a chrome extension
   - [x] handle new way to authenticate (specific to chrome extensions)
   - [x] handle new way to make g-api requests (specific to chrome extensions)
@@ -54,4 +55,3 @@ Backlog:
   - [ ] checkbox moves a little to the left when title is long string without whitespace
   - [ ] use monospace font for titles, insert your font
   - [ ] show the user when delete task action cannot be done because of ongoing request
-  - [ ] make instructions toggleable

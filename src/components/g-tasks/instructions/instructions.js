@@ -4,11 +4,6 @@ import 'styled-components/macro';
 
 const mainCss = css`
     width: 100%;
-    height: ${({ showFor }) =>
-        showFor === 'tasklist' ? '100px'
-        : showFor === 'tasks' ? '136px'
-        : '64px'
-    };
     position: absolute;
     bottom: 0;
     left: 0;
@@ -21,10 +16,18 @@ const titleCss = css`
 `;
 const instructionsCss = css`
     width: 100%;
+    height: ${({ showFor, showInstructions }) =>
+        !showInstructions ? 0
+        : showFor === 'tasklist' ? '72px'
+        : showFor === 'tasks' ? '108px'
+        : '36px'
+    };
+    opacity: ${({ showInstructions }) => showInstructions ? 1 : 0 };
     display: flex;
     justify-content: left;
     flex-wrap: wrap;
     text-align: left;
+    transition: opacity, height 0.15s linear 0s;
 `;
 const instructionCss = css`
     flex-grow: 1;
@@ -72,18 +75,19 @@ const keybindingsByShowForHash = {
     'task': taskKeybindings
 };
 
-function Instructions({ showFor }) {
+function Instructions({ showFor, showInstructions }) {
 
     const keybindings = keybindingsByShowForHash[showFor] || [];
-    return <div data-testid="instructions" showFor={showFor} css={mainCss}>
-        <div css={titleCss}>Keybindings</div>
-        <div css={instructionsCss}>
-        {keybindings.map(([key, instr], ind) =>
+    const arrow = showInstructions ? '↓' : '↑';
+    return <div data-testid="instructions" css={mainCss}>
+        <div css={titleCss}>{arrow} Keybindings {arrow} - [shift + I]</div>
+        <div showFor={showFor} showInstructions={showInstructions} css={instructionsCss}>
+            {keybindings.map(([key, instr], ind) =>
             <div key={ind} css={instructionCss}>
                 <div><b>[{key}]</b></div>
                 <div>{instr}</div>
             </div>
-        )}
+            )}
         </div>
     </div>;
 }
