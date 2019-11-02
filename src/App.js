@@ -64,7 +64,7 @@ function App() {
     }
 
     return <div css={mainCss}>
-        <header css={headerCss}>Google Tasks Popup</header>
+        <header css={headerCss}>Popup for Tasks</header>
         <div css={bodyCss}>{body}</div>
     </div>;
 }

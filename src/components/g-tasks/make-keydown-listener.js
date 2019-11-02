@@ -278,7 +278,7 @@ const MakeKeydownListener = ({
             return;
         }
 
-        if (keyCode === 73 && shiftKeyPressed) { // I
+        if (keyCode === 73 && ctrlKeyPressed) { // I
             dispatch(actionCreators.toggleInstructions());
             return;
         }

@@ -36,6 +36,8 @@ MVP:
 - [x] bug: deleting the not yet created task throws
 - [x] create instructions
 - [x] make instructions toggleable
+- [x] three dots appearing when they should not have
+- [x] change instructions keybinding from shift+i to something else
 - [ ] make it to be a chrome extension
   - [x] handle new way to authenticate (specific to chrome extensions)
   - [x] handle new way to make g-api requests (specific to chrome extensions)

@@ -76,11 +76,17 @@ function TaskItem({
     useFocusAndSetCursor(titleRef, isEditingActive);
 
     const isChecked = status === 'completed';
+    const isTitleOneRowUntruncated = isEditingActive;
+    const isTitleOneRowTruncated = !isEditingActive && (!isHovered || (due || notes));
+    const isTitleTwoRowsTruncated = !isEditingActive && !isTitleOneRowTruncated;
     const truncatedTitle =
-        isEditingActive ? title
-        : !isHovered || (due || notes) ? title.substring(0, 27)
-        : title.substring(0, 57);
-    const optionalThreeDots = !isEditingActive && title.length > 27 ? '...' : '';
+        isTitleOneRowUntruncated ? title
+        : isTitleOneRowTruncated ? title.substring(0, 30)
+        : title.substring(0, 60);
+    const optionalThreeDots =
+        isTitleOneRowTruncated && title.length > 30 ? '...'
+        : isTitleTwoRowsTruncated && title.length > 60 ? '...'
+        : '';
     const formatedTitle = `${truncatedTitle}${optionalThreeDots}`;
     const onBlur = async () => {
 

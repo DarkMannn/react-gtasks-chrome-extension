@@ -37,7 +37,7 @@ const _getAuthTokenAndClearStorageIfNeeded = async () => {
     if (cachedToken) {
         return cachedToken;
     }
-    chrome.storage.clear();
+    await new Promise((resolve) => chrome.storage.local.clear(resolve));
     const token = await _getAuthToken(true);
     return token;
 };

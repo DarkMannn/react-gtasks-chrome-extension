@@ -80,7 +80,7 @@ function Instructions({ showFor, showInstructions }) {
     const keybindings = keybindingsByShowForHash[showFor] || [];
     const arrow = showInstructions ? '↓' : '↑';
     return <div data-testid="instructions" css={mainCss}>
-        <div css={titleCss}>{arrow} Keybindings {arrow} - [shift + I]</div>
+        <div css={titleCss}>{arrow} Keybindings {arrow} - [ctrl + I]</div>
         <div showFor={showFor} showInstructions={showInstructions} css={instructionsCss}>
             {keybindings.map(([key, instr], ind) =>
             <div key={ind} css={instructionCss}>
