@@ -4,9 +4,9 @@
     "author": "DarkMannn",
     "version": "1.0.0",
     "description": "Google Tasks Popup For Chrome",
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnboW7oK0gUzqQepC2t9P0SbLr+ZK8ZfO+cDQ0T3V9A4sbhSAhhnY4W0ymhP3AhACLN1DZHNoDfsQMVn9tvJxBErZVswwRx5kQjwI3tMxkfSiu7AqLjxrT645bnUYjCe2DUSBd6WdENZUnW6SCm52k/AFnGoTIRBZ5CLhhLFOwgSpKj2lcM4Wu0KX9y6uVhGghoOZ3TTqqNxAeDxK4dGEjYCBcbqRvxq56qhJaaEkQ9jyegDYKYfKFdoTJ9zpxA+J57aaS16xhhI1i5Hi2L4V9Mn/Mtm0U8oGHoCnVYiYmZJz0jwrgIGxoMYOzTY6LwWP+AOuz1hSy/lasMKOG4WCPwIDAQAB",
+    "key": "<INSERT_KEY>",
     "oauth2": {
-        "client_id": "128290994570-7ot1lghfc5r90pqgutsevaliou717c0j.apps.googleusercontent.com",
+        "client_id": "<INSERT_CLIENT_ID>",
         "scopes": ["https://www.googleapis.com/auth/tasks"]
     },
     "permissions": [
