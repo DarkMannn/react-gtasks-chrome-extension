@@ -11,7 +11,7 @@
         "postbuild": "rm build/service-worker.js",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "zip": "zip -r g-tasks-popup.zip public/"
+        "zip": "zip -r popup-for-tasks.zip public/"
     },
     "dependencies": {
         "react": "^16.10.0",
