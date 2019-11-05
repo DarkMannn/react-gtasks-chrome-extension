@@ -38,7 +38,7 @@ MVP:
 - [x] make instructions toggleable
 - [x] three dots appearing when they should not have
 - [x] change instructions keybinding from shift+i to something else
-- [ ] make it to be a chrome extension
+- [x] make it to be a chrome extension
   - [x] handle new way to authenticate (specific to chrome extensions)
   - [x] handle new way to make g-api requests (specific to chrome extensions)
   - [x] handle all of the manifest.json/package.json details
@@ -46,9 +46,10 @@ MVP:
   - [x] decide and set popup width/height
   - [x] prevent default for escape key
   - [x] cache the selected tasklist
-  - [ ] ask permission for extension
-  - [ ] pay fee
-  - [ ] wrap everything
+- [x] pay fee
+- [x] bug for the ctrl + shift + H keybinding
+- [x] bug for opening empty tasklist
+- [ ] ask permission for extension
 
 Backlog:
   - [ ] make the items be flex-items, and the bottom arrow to fill the empty space

@@ -240,7 +240,7 @@ const MakeKeydownListener = ({
 
         72: async ({ ctrlKeyPressed, shiftKeyPressed }) => { // h
 
-            if (!ctrlKeyPressed && !shiftKeyPressed) {
+            if (!(ctrlKeyPressed && shiftKeyPressed)) {
                 return;
             }
 

@@ -1,5 +1,5 @@
 
-const sortTasks = (tasks) => tasks
+const sortTasks = (tasks = []) => tasks
     .sort((taskA, taskB) => parseInt(taskA.position) - parseInt(taskB.position))
     .reduce((acc, task) => {
 
