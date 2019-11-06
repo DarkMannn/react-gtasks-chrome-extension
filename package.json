@@ -1,9 +1,8 @@
 {
     "name": "react-gtasks-chrome-extension",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Google Tasks Popup For Chrome",
     "repository": "https://github.com/DarkMannn/react-gtasks-chrome-extension",
-    "private": true,
     "scripts": {
         "start": "react-scripts start",
         "start:debug": "react-scripts --inspect start --no-cache --runInBand",

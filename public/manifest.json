@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Popup for Tasks",
     "author": "DarkMannn",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Google Tasks Popup For Chrome",
     "key": "<INSERT_KEY>",
     "oauth2": {

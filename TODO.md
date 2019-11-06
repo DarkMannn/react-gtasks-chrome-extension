@@ -49,9 +49,10 @@ MVP:
 - [x] pay fee
 - [x] bug for the ctrl + shift + H keybinding
 - [x] bug for opening empty tasklist
-- [ ] ask permission for extension
+- [x] ask permission for extension
 
 Backlog:
+  - [ ] bug when no tasklists are present at all after deleting the last tasklist
   - [ ] make the items be flex-items, and the bottom arrow to fill the empty space
   - [ ] make splash screen
   - [ ] make title horizontally scrollable by arrow keys
