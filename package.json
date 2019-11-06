@@ -10,7 +10,7 @@
         "postbuild": "rm build/service-worker.js && node scripts/build-manifest.js",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "zip": "zip -r popup-for-tasks.zip public/"
+        "zip": "zip -r popup-for-tasks.zip build/"
     },
     "dependencies": {
         "react": "^16.10.0",

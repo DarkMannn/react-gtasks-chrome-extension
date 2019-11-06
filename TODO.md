@@ -52,7 +52,8 @@ MVP:
 - [x] ask permission for extension
 
 Backlog:
-  - [ ] bug when no tasklists are present at all after deleting the last tasklist
+  - [ ] bug when no task lists are present at all after deleting the last tasklist
+  - [ ] cannot move a task bellow the task which is a subtask
   - [ ] make the items be flex-items, and the bottom arrow to fill the empty space
   - [ ] make splash screen
   - [ ] make title horizontally scrollable by arrow keys
