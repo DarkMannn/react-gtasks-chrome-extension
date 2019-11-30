@@ -10,4 +10,4 @@ Chrome store url: https://chrome.google.com/webstore/detail/popup-for-tasks/fbfm
 Popup for Tasks site url: https://sites.google.com/view/popup-for-tasks
 
 ### Issues
-If you have any problems or feedback, please raise an issue in this repository and I respond as soon as I can.
+If you have any problems or feedback, please raise an issue in this repository and I will respond as soon as I can.
