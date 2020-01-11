@@ -7,7 +7,7 @@ The purpose of the extension is to complement standard Google Tasks app. The sta
 
 Chrome store url: https://chrome.google.com/webstore/detail/popup-for-tasks/fbfmjhllpjnchamhmhmbfbapfngpempc
 
-Popup for Tasks site url: https://sites.google.com/view/popup-for-tasks
+Popup for Tasks website url: https://sites.google.com/view/popup-for-tasks
 
 ### Issues
 If you have any problems or feedback, please raise an issue in this repository and I will respond as soon as I can.
