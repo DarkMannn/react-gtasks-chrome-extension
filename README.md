@@ -1,5 +1,8 @@
 # react-gtasks-chrome-extension
 
+## Info
+This repo is archived and no longer maintained.
+
 ### About
 This is the repository containing code for the [Popup for Tasks](https://chrome.google.com/webstore/detail/popup-for-tasks/fbfmjhllpjnchamhmhmbfbapfngpempc) chrome extension.
 
